@@ -10,8 +10,8 @@ import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 
 export const metadata: Metadata = {
-  title: "Sign in — Payables",
-  description: "Sign in or create your Payables workspace.",
+  title: "Sign in — Payabill",
+  description: "Sign in or create your Payabill workspace.",
 };
 
 export default async function LoginPage() {
@@ -57,7 +57,7 @@ export default async function LoginPage() {
             </svg>
           </div>
           <span className="text-xl font-bold tracking-tight text-[#1a174f]">
-            Payables
+            Payabill
           </span>
         </Link>
 

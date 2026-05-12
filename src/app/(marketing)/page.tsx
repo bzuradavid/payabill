@@ -44,7 +44,7 @@ export default async function LandingPage() {
               </svg>
             </div>
             <span className="text-lg font-bold tracking-tight text-[#1a174f]">
-              Payables
+              Payabill
             </span>
           </Link>
           <div className="flex items-center gap-6">
@@ -90,7 +90,7 @@ export default async function LandingPage() {
             </span>
           </h1>
           <p className="mt-6 text-lg leading-8 text-slate-600">
-            Payables is the modern AP workflow for small and mid-market finance
+            Payabill is the modern AP workflow for small and mid-market finance
             teams. Collect invoices, route approvals, and schedule payments —
             all from one calm, fast workspace.
           </p>
@@ -465,7 +465,7 @@ export default async function LandingPage() {
       <footer className="border-t border-[#ecebff] py-10">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-6 sm:flex-row lg:px-8">
           <p className="text-sm text-slate-500">
-            © {new Date().getFullYear()} Payables. A demo AP product.
+            © {new Date().getFullYear()} Payabill. A demo AP product.
           </p>
           <div className="flex items-center gap-6 text-sm text-slate-500">
             <Link href="/login" className="hover:text-[#312D97]">

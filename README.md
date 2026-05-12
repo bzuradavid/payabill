@@ -1,4 +1,4 @@
-# Payables
+# Payabill
 
 A modern accounts payable product inspired by Ramp Bill Pay. Built with Next.js 15, Prisma, and Tailwind CSS.
 
@@ -6,7 +6,7 @@ A modern accounts payable product inspired by Ramp Bill Pay. Built with Next.js 
 
 ## What This Product Does
 
-Payables is a workflow engine for managing vendor invoices through their full lifecycle — from receipt to payment. The core premise: finance teams need to track money they owe, route it through appropriate approval gates, and execute payment with a full audit trail.
+Payabill is a workflow engine for managing vendor invoices through their full lifecycle — from receipt to payment. The core premise: finance teams need to track money they owe, route it through appropriate approval gates, and execute payment with a full audit trail.
 
 The product has three primary surfaces:
 

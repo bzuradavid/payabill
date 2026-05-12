@@ -4,7 +4,7 @@ import { type Metadata, type Viewport } from "next";
 import { Geist } from "next/font/google";
 
 export const metadata: Metadata = {
-  title: "Payables",
+  title: "Payabill",
   description: "Accounts payable management",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
