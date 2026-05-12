@@ -58,20 +58,6 @@ export function DashboardTour() {
     setStep(0);
   }, []);
 
-  // Lift the current target above the backdrop while its step is active.
-  useEffect(() => {
-    if (step === null) return;
-    const target = document.getElementById(STEPS[step]!.targetId);
-    if (!target) return;
-    const prev = { position: target.style.position, zIndex: target.style.zIndex };
-    target.style.position = "relative";
-    target.style.zIndex = "101";
-    return () => {
-      target.style.position = prev.position;
-      target.style.zIndex = prev.zIndex;
-    };
-  }, [step]);
-
   const measure = useCallback(() => {
     if (step === null) return;
     const target = document.getElementById(STEPS[step]!.targetId);
@@ -116,24 +102,34 @@ export function DashboardTour() {
 
   return (
     <>
-      {/* Backdrop — clicks dismiss */}
+      {/* Transparent click-catcher — sits below spotlight, dismisses on click */}
       <button
         type="button"
         aria-label="Skip tour"
         onClick={finish}
-        className="bg-brand-900/55 fixed inset-0 z-[100] cursor-default backdrop-blur-[2px]"
+        className="fixed inset-0 z-99 cursor-default"
       />
 
-      {/* Spotlight outline on the target */}
+      {/*
+        Spotlight: transparent center reveals the target element naturally below it.
+        The outward box-shadow creates the dark overlay — no backdrop div needed,
+        so no z-index manipulation of target elements is required. This means
+        elements inside fixed stacking contexts (e.g. the sidebar) render correctly.
+      */}
       {rect && (
         <div
           aria-hidden
-          className="pointer-events-none fixed z-[101] rounded-2xl shadow-[0_0_0_4px_rgba(255,255,255,0.5),0_20px_60px_-10px_rgba(76,68,204,0.6)] ring-2 ring-white/80"
+          className="pointer-events-none fixed z-100 rounded-2xl"
           style={{
             top: rect.top - 6,
             left: rect.left - 6,
             width: rect.width + 12,
             height: rect.height + 12,
+            boxShadow: [
+              "0 0 0 3px rgba(255,255,255,0.85)",
+              "0 0 0 9999px rgba(20,17,63,0.62)",
+              "0 20px 60px -10px rgba(76,68,204,0.55)",
+            ].join(", "),
           }}
         />
       )}
