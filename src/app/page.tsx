@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { billService } from "~/server/container";
 import { StatCard } from "~/components/ui/StatCard";

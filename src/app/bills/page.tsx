@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { type BillStatus } from "../../../generated/prisma";
 import { billService } from "~/server/container";

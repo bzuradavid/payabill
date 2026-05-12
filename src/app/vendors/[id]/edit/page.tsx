@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { notFound } from "next/navigation";
 import { vendorService } from "~/server/container";
 import { VendorForm } from "../../VendorForm";

@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { vendorService, glAccountService } from "~/server/container";
 import { NewBillForm } from "./NewBillForm";
 
