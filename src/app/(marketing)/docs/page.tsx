@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 
+import Link from "next/link";
 import { type Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -135,7 +136,51 @@ function StatusPill({
 
 export default function DocsPage() {
   return (
-    <div className="flex min-h-full">
+    <div className="min-h-screen bg-white">
+      {/* Top bar */}
+      <header className="sticky top-0 z-10 border-b border-slate-100 bg-white/80 backdrop-blur">
+        <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 lg:px-8">
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#312D97] shadow-md shadow-[#312D97]/30">
+              <svg
+                className="h-4 w-4 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <span className="text-base font-bold tracking-tight text-[#1a174f]">
+              Payables
+            </span>
+            <span className="ml-1 hidden text-sm text-slate-400 sm:inline">
+              / Documentation
+            </span>
+          </Link>
+          <div className="flex items-center gap-6">
+            <Link
+              href="/"
+              className="hidden text-sm font-medium text-slate-600 hover:text-[#312D97] sm:block"
+            >
+              Home
+            </Link>
+            <Link
+              href="/login"
+              className="rounded-full bg-[#312D97] px-4 py-1.5 text-sm font-semibold text-white shadow-md shadow-[#312D97]/30 transition-all hover:-translate-y-0.5 hover:bg-brand-900"
+            >
+              Sign in
+            </Link>
+          </div>
+        </nav>
+      </header>
+
+      <div className="flex min-h-full">
       {/* Sticky TOC */}
       <aside className="hidden w-52 flex-shrink-0 xl:block">
         <div className="sticky top-0 overflow-y-auto py-10 pl-8 pr-4">
@@ -240,13 +285,13 @@ export default function DocsPage() {
               "(marketing)",
               "src/app/(marketing)/layout.tsx",
               "Public",
-              "/ (landing), /login",
+              "/ (landing), /login, /docs",
             ],
             [
               "(app)",
               "src/app/(app)/layout.tsx",
               "Required — redirects to /login",
-              "/dashboard, /bills/*, /vendors/*, /docs",
+              "/dashboard, /bills/*, /vendors/*",
             ],
           ]}
         />
@@ -379,13 +424,13 @@ export async function setShowSeed(showSeed: boolean) {
 ├── app/              Next.js pages (Server Components by default)
 │   ├── (marketing)/  Public surfaces — no AppShell, no auth
 │   │   ├── page.tsx          Landing
-│   │   └── login/page.tsx    Sign in / sign up
+│   │   ├── login/page.tsx    Sign in / sign up
+│   │   └── docs/page.tsx     This documentation
 │   ├── (app)/        Authenticated surfaces — AppShell + auth guard
 │   │   ├── layout.tsx        Calls auth() → redirect("/login") if unauthed
 │   │   ├── dashboard/        Live stats + "Show demo data" toggle
 │   │   ├── bills/            Bills inbox + create + detail
-│   │   ├── vendors/          Vendor directory + create + edit + detail
-│   │   └── docs/             This documentation
+│   │   └── vendors/          Vendor directory + create + edit + detail
 │   ├── layout.tsx    Root: html/body + Geist font (no AppShell)
 │   └── api/
 │       ├── auth/     NextAuth route handler
@@ -661,7 +706,7 @@ export async function setShowSeed(showSeed: boolean) {
             ["/vendors/new", "(app)", "app/(app)/vendors/new/page.tsx", "Create vendor"],
             ["/vendors/[id]", "(app)", "app/(app)/vendors/[id]/page.tsx", "Vendor detail + bill history"],
             ["/vendors/[id]/edit", "(app)", "app/(app)/vendors/[id]/edit/page.tsx", "Edit vendor"],
-            ["/docs", "(app)", "app/(app)/docs/page.tsx", "This page"],
+            ["/docs", "(marketing)", "app/(marketing)/docs/page.tsx", "This page (public, no auth required)"],
             ["/api/auth/[...nextauth]", "—", "app/api/auth/[...nextauth]/route.ts", "NextAuth handler (signin, callback, signout, session)"],
             ["/api/docs", "—", "app/api/docs/route.ts", "Machine-readable JSON documentation"],
           ]}
@@ -825,6 +870,7 @@ Content-Type: application/json
           </a>
         </div>
       </article>
+      </div>
     </div>
   );
 }

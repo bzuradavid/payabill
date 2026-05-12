@@ -21,7 +21,7 @@ const docs = {
 
   auth: {
     description:
-      "Authentication is required for every /dashboard, /bills, /vendors, and /docs route. The (app) route group's layout calls auth() and redirects unauthenticated users to /login. The (marketing) route group (landing + login) is public.",
+      "Authentication is required for every /dashboard, /bills, and /vendors route. The (app) route group's layout calls auth() and redirects unauthenticated users to /login. The (marketing) route group (landing, login, and docs) is public.",
     provider: "Google OAuth (single button handles both sign-in and sign-up).",
     sessionStrategy: "database (via PrismaAdapter; required for events.createUser to fire)",
     onSignUp:
@@ -33,7 +33,7 @@ const docs = {
         name: "(marketing)",
         layout: "src/app/(marketing)/layout.tsx",
         protected: false,
-        routes: ["/", "/login"],
+        routes: ["/", "/login", "/docs"],
       },
       {
         name: "(app)",
@@ -41,7 +41,7 @@ const docs = {
         protected: true,
         protection:
           "Calls auth(); if no session, redirects to /login. Renders AppShell with the authenticated user.",
-        routes: ["/dashboard", "/bills/*", "/vendors/*", "/docs"],
+        routes: ["/dashboard", "/bills/*", "/vendors/*"],
       },
     ],
   },
@@ -176,10 +176,10 @@ const docs = {
       path: "/docs",
       method: "GET",
       type: "page",
-      group: "(app)",
-      auth: "required",
+      group: "(marketing)",
+      auth: "public",
       description: "Human-readable technical documentation.",
-      file: "src/app/(app)/docs/page.tsx",
+      file: "src/app/(marketing)/docs/page.tsx",
     },
     {
       path: "/api/docs",

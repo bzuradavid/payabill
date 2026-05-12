@@ -56,6 +56,12 @@ export default async function LandingPage() {
               Workflow
             </a>
             <Link
+              href="/docs"
+              className="hidden text-sm font-medium text-slate-600 hover:text-[#312D97] sm:block"
+            >
+              Docs
+            </Link>
+            <Link
               href="/login"
               className="rounded-full bg-[#312D97] px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-[#312D97]/30 transition-all hover:-translate-y-0.5 hover:bg-[#1d175a]"
             >
