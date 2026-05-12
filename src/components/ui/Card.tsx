@@ -9,7 +9,7 @@ export function Card({ className, children }: CardProps) {
   return (
     <div
       className={cn(
-        "rounded-xl border border-slate-200 bg-white shadow-sm",
+        "rounded-2xl border border-[#ecebff] bg-white shadow-lg shadow-[#d3d1ff]/40",
         className,
       )}
     >
@@ -28,7 +28,7 @@ export function CardHeader({
   return (
     <div
       className={cn(
-        "flex items-center justify-between border-b border-slate-100 px-6 py-4",
+        "flex items-center justify-between border-b border-[#ecebff] px-6 py-4",
         className,
       )}
     >

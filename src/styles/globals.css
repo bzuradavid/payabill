@@ -3,4 +3,21 @@
 @theme {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  /* TrashLab brand palette */
+  --color-brand-900: #1d175a;
+  --color-brand-800: #2f2a90;
+  --color-brand-700: #312d97;
+  --color-brand-600: #3d3899;
+  --color-brand-500: #4c44cc;
+  --color-brand-400: #6260af;
+  --color-brand-300: #818df0;
+  --color-brand-200: #edeaff;
+  --color-brand-100: #f7f7ff;
+  --color-brand-50: #f6f7fb;
+
+  --color-accent: #10a6cc;
+
+  --shadow-card: 0 4px 24px 0 rgba(211, 209, 255, 0.4);
+  --shadow-card-hover: 0 8px 32px 0 rgba(211, 209, 255, 0.6);
 }

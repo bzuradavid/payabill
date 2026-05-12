@@ -63,17 +63,16 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "flex h-screen flex-col bg-slate-900",
-        // Mobile: fixed overlay, slides in from left
+        "flex h-screen flex-col",
         "fixed inset-y-0 left-0 z-40 w-64 transition-transform duration-200 ease-in-out",
         open ? "translate-x-0" : "-translate-x-full",
-        // Desktop: in-flow, always visible
         "md:relative md:w-56 md:shrink-0 md:translate-x-0",
       )}
+      style={{ background: "linear-gradient(to bottom, #312D97, #2f2a90)" }}
     >
       {/* Logo */}
-      <div className="flex h-16 items-center gap-2.5 border-b border-slate-800 px-5">
-        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-indigo-500">
+      <div className="flex h-16 items-center gap-2.5 border-b border-white/10 px-5">
+        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/15 backdrop-blur">
           <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
               d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -85,29 +84,34 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 space-y-0.5 px-3 py-4">
+      <nav className="flex-1 space-y-1 px-3 py-4">
         {navItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}
             onClick={onClose}
             className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+              "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
               isActive(item.href)
-                ? "bg-slate-800 text-white"
-                : "text-slate-400 hover:bg-slate-800 hover:text-slate-200",
+                ? "bg-white/15 text-white shadow-sm"
+                : "text-white/60 hover:bg-white/10 hover:text-white",
             )}
           >
-            {item.icon}
+            <span className={cn(
+              "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors",
+              isActive(item.href) ? "bg-white/20" : "bg-transparent",
+            )}>
+              {item.icon}
+            </span>
             {item.label}
           </Link>
         ))}
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-slate-800 px-5 py-4">
-        <p className="text-xs text-slate-500">Acme Corp</p>
-        <p className="text-xs text-slate-600">Demo workspace</p>
+      <div className="border-t border-white/10 px-5 py-4">
+        <p className="text-xs font-medium text-white/70">Acme Corp</p>
+        <p className="text-xs text-white/40">Demo workspace</p>
       </div>
     </aside>
   );
