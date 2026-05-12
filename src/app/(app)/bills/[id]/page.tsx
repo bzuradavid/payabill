@@ -14,7 +14,7 @@ interface BillDetailPageProps {
 
 export default async function BillDetailPage({ params }: BillDetailPageProps) {
   const { id } = await params;
-  const { billService } = await getServices();
+  const { billService, ctx } = await getServices();
   const bill = await billService.getById(id);
   if (!bill) notFound();
 
@@ -214,7 +214,13 @@ export default async function BillDetailPage({ params }: BillDetailPageProps) {
         {/* Right column: metadata + actions */}
         <div className="flex flex-col gap-4">
           {/* Actions */}
-          <BillActions bill={{ id: bill.id, status: bill.status }} />
+          <BillActions
+            bill={{ id: bill.id, status: bill.status, createdById: bill.createdById }}
+            role={ctx.role}
+            userId={ctx.userId}
+          />
+
+          {/* Vendor link is manager-only */}
 
           {/* Metadata */}
           <Card>
@@ -251,12 +257,14 @@ export default async function BillDetailPage({ params }: BillDetailPageProps) {
           <Card>
             <CardHeader>
               <h2 className="text-sm font-semibold text-slate-900">Vendor</h2>
-              <Link
-                href={`/vendors/${bill.vendor.id}`}
-                className="text-xs font-medium text-indigo-600 hover:text-indigo-700"
-              >
-                View
-              </Link>
+              {ctx.role === "MANAGER" && (
+                <Link
+                  href={`/vendors/${bill.vendor.id}`}
+                  className="text-xs font-medium text-indigo-600 hover:text-indigo-700"
+                >
+                  View
+                </Link>
+              )}
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
               <p className="font-medium text-slate-900">{bill.vendor.name}</p>

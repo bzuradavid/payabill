@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { type BillStatus } from "../../../../../generated/prisma";
+import { type BillStatus, type UserRole } from "../../../../../generated/prisma";
 import { Button } from "~/components/ui/Button";
 import { Modal } from "~/components/ui/Modal";
 import { Card, CardContent, CardHeader } from "~/components/ui/Card";
@@ -16,10 +16,14 @@ import {
 } from "~/actions/bills";
 
 interface BillActionsProps {
-  bill: { id: string; status: BillStatus };
+  bill: { id: string; status: BillStatus; createdById: string };
+  role: UserRole;
+  userId: string;
 }
 
-export function BillActions({ bill }: BillActionsProps) {
+export function BillActions({ bill, role, userId }: BillActionsProps) {
+  const isManager = role === "MANAGER";
+  const isCreator = bill.createdById === userId;
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +48,7 @@ export function BillActions({ bill }: BillActionsProps) {
 
   const actions: React.ReactNode[] = [];
 
-  if (bill.status === "DRAFT") {
+  if (bill.status === "DRAFT" && (isManager || isCreator)) {
     actions.push(
       <Button
         key="submit"
@@ -57,7 +61,7 @@ export function BillActions({ bill }: BillActionsProps) {
     );
   }
 
-  if (bill.status === "PENDING_APPROVAL") {
+  if (bill.status === "PENDING_APPROVAL" && isManager) {
     actions.push(
       <Button
         key="approve"
@@ -77,7 +81,7 @@ export function BillActions({ bill }: BillActionsProps) {
     );
   }
 
-  if (bill.status === "APPROVED") {
+  if (bill.status === "APPROVED" && isManager) {
     actions.push(
       <Button
         key="schedule"
@@ -89,7 +93,7 @@ export function BillActions({ bill }: BillActionsProps) {
     );
   }
 
-  if (bill.status === "SCHEDULED") {
+  if (bill.status === "SCHEDULED" && isManager) {
     actions.push(
       <Button
         key="paid"
@@ -102,7 +106,7 @@ export function BillActions({ bill }: BillActionsProps) {
     );
   }
 
-  const canVoid = !["PAID", "VOID"].includes(bill.status);
+  const canVoid = isManager && !["PAID", "VOID"].includes(bill.status);
   if (canVoid) {
     actions.push(
       <Button

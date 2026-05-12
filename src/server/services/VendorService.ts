@@ -31,23 +31,28 @@ export interface VendorListFilters {
   status?: VendorStatus;
 }
 
+export interface CreateInlineVendorInput {
+  name: string;
+  email?: string;
+  defaultPaymentMethod?: PaymentMethod;
+}
+
 export class VendorService {
   constructor(
     private db: PrismaClient,
     private ctx: UserContext,
   ) {}
 
-  private scope() {
-    return {
-      userId: this.ctx.userId,
-      ...(this.ctx.showSeed ? {} : { seed: false }),
-    };
+  private requireManager() {
+    if (this.ctx.role !== "MANAGER") {
+      throw new Error("Forbidden: manager role required");
+    }
   }
 
   async list(filters: VendorListFilters = {}) {
     const vendors = await this.db.vendor.findMany({
       where: {
-        ...this.scope(),
+        organizationId: this.ctx.organizationId,
         status: filters.status,
         ...(filters.search
           ? {
@@ -63,7 +68,6 @@ export class VendorService {
           select: {
             bills: {
               where: {
-                ...(this.ctx.showSeed ? {} : { seed: false }),
                 status: {
                   notIn: [BillStatus.VOID, BillStatus.REJECTED],
                 },
@@ -72,10 +76,7 @@ export class VendorService {
           },
         },
         bills: {
-          where: {
-            ...(this.ctx.showSeed ? {} : { seed: false }),
-            status: BillStatus.PAID,
-          },
+          where: { status: BillStatus.PAID },
           include: { lineItems: true },
         },
       },
@@ -103,12 +104,20 @@ export class VendorService {
     });
   }
 
+  /** Lightweight list for vendor pickers — active org vendors only, sorted by name. */
+  listForPicker() {
+    return this.db.vendor.findMany({
+      where: { organizationId: this.ctx.organizationId, status: "ACTIVE" },
+      select: { id: true, name: true, defaultPaymentMethod: true },
+      orderBy: { name: "asc" },
+    });
+  }
+
   async getById(id: string) {
     return this.db.vendor.findFirst({
-      where: { id, userId: this.ctx.userId },
+      where: { id, organizationId: this.ctx.organizationId },
       include: {
         bills: {
-          where: this.ctx.showSeed ? undefined : { seed: false },
           include: {
             lineItems: true,
           },
@@ -119,14 +128,31 @@ export class VendorService {
   }
 
   create(data: CreateVendorInput) {
+    this.requireManager();
     return this.db.vendor.create({
-      data: { ...data, userId: this.ctx.userId },
+      data: { ...data, organizationId: this.ctx.organizationId },
+    });
+  }
+
+  /**
+   * Lightweight vendor creation usable by staff while submitting a bill —
+   * only requires a name. Managers can fill in bank details later.
+   */
+  createInline(data: CreateInlineVendorInput) {
+    return this.db.vendor.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        defaultPaymentMethod: data.defaultPaymentMethod,
+        organizationId: this.ctx.organizationId,
+      },
     });
   }
 
   async update(id: string, data: UpdateVendorInput) {
+    this.requireManager();
     const vendor = await this.db.vendor.findFirst({
-      where: { id, userId: this.ctx.userId },
+      where: { id, organizationId: this.ctx.organizationId },
       select: { id: true },
     });
     if (!vendor) throw new Error("Vendor not found");
@@ -134,8 +160,9 @@ export class VendorService {
   }
 
   async deactivate(id: string) {
+    this.requireManager();
     const vendor = await this.db.vendor.findFirst({
-      where: { id, userId: this.ctx.userId },
+      where: { id, organizationId: this.ctx.organizationId },
       select: { id: true },
     });
     if (!vendor) throw new Error("Vendor not found");

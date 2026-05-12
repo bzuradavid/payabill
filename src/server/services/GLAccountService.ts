@@ -9,10 +9,7 @@ export class GLAccountService {
 
   list() {
     return this.db.gLAccount.findMany({
-      where: {
-        userId: this.ctx.userId,
-        ...(this.ctx.showSeed ? {} : { seed: false }),
-      },
+      where: { organizationId: this.ctx.organizationId },
       orderBy: [{ type: "asc" }, { code: "asc" }],
     });
   }

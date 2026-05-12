@@ -1,5 +1,3 @@
-import "server-only";
-
 import {
   BillStatus,
   GLAccountType,
@@ -23,14 +21,18 @@ const daysFromNow = (n: number) => {
 };
 
 /**
- * Seed a complete demo dataset for one user. All rows are marked `seed: true`
- * so they remain hidden unless the user enables the "Show demo data" toggle.
+ * Seed a complete demo dataset for one organization.
  *
- * Callers MUST guard with `User.seededAt` to ensure this runs at most once
- * per user — bills are not deduped (invoiceNumber isn't unique), so a second
- * call would create duplicates.
+ * Bills are split between the manager and the staff member so that signing in
+ * as either role demonstrates the role-based filtering: managers see everything,
+ * staff see only the bills they themselves created.
  */
-export async function seedUserData(db: PrismaClient, userId: string) {
+export async function seedOrganization(
+  db: PrismaClient,
+  organizationId: string,
+  managerUserId: string,
+  staffUserId: string,
+) {
   // GL accounts (chart of accounts)
   const accountDefs: { code: string; name: string; type: GLAccountType }[] = [
     { code: "6010", name: "Software Subscriptions", type: GLAccountType.EXPENSE },
@@ -46,9 +48,9 @@ export async function seedUserData(db: PrismaClient, userId: string) {
   const glAccounts = await Promise.all(
     accountDefs.map((a) =>
       db.gLAccount.upsert({
-        where: { userId_code: { userId, code: a.code } },
+        where: { organizationId_code: { organizationId, code: a.code } },
         update: {},
-        create: { ...a, userId, seed: true },
+        create: { ...a, organizationId },
       }),
     ),
   );
@@ -154,7 +156,7 @@ export async function seedUserData(db: PrismaClient, userId: string) {
   const createdVendors = await Promise.all(
     vendorDefs.map((v) =>
       db.vendor.create({
-        data: { ...v, userId, seed: true, status: VendorStatus.ACTIVE },
+        data: { ...v, organizationId, status: VendorStatus.ACTIVE },
       }),
     ),
   );
@@ -164,7 +166,12 @@ export async function seedUserData(db: PrismaClient, userId: string) {
   }
 
   // Bills + line items + payments
+  // createdById alternates between manager and staff so each role has visible work.
+  const M = managerUserId;
+  const S = staffUserId;
+
   const billsToCreate: Array<{
+    createdById: string;
     vendorId: string;
     invoiceNumber: string | null;
     invoiceDate: Date;
@@ -194,6 +201,7 @@ export async function seedUserData(db: PrismaClient, userId: string) {
   }> = [
     // PAID
     {
+      createdById: M,
       vendorId: aws.id,
       invoiceNumber: "AWS-2025-03-0041",
       invoiceDate: daysAgo(45),
@@ -219,6 +227,7 @@ export async function seedUserData(db: PrismaClient, userId: string) {
       },
     },
     {
+      createdById: M,
       vendorId: wework.id,
       invoiceNumber: "WW-2025-APR-0112",
       invoiceDate: daysAgo(35),
@@ -243,6 +252,7 @@ export async function seedUserData(db: PrismaClient, userId: string) {
       },
     },
     {
+      createdById: S,
       vendorId: gusto.id,
       invoiceNumber: "GST-2025-APR",
       invoiceDate: daysAgo(32),
@@ -267,6 +277,7 @@ export async function seedUserData(db: PrismaClient, userId: string) {
       },
     },
     {
+      createdById: M,
       vendorId: hubspot.id,
       invoiceNumber: "HS-INV-2025-0228",
       invoiceDate: daysAgo(70),
@@ -291,6 +302,7 @@ export async function seedUserData(db: PrismaClient, userId: string) {
       },
     },
     {
+      createdById: S,
       vendorId: stripe.id,
       invoiceNumber: "STR-2025-03-8821",
       invoiceDate: daysAgo(50),
@@ -316,6 +328,7 @@ export async function seedUserData(db: PrismaClient, userId: string) {
     },
     // SCHEDULED
     {
+      createdById: M,
       vendorId: wework.id,
       invoiceNumber: "WW-2025-MAY-0139",
       invoiceDate: daysAgo(5),
@@ -338,6 +351,7 @@ export async function seedUserData(db: PrismaClient, userId: string) {
       },
     },
     {
+      createdById: S,
       vendorId: gusto.id,
       invoiceNumber: "GST-2025-MAY",
       invoiceDate: daysAgo(3),
@@ -360,6 +374,7 @@ export async function seedUserData(db: PrismaClient, userId: string) {
     },
     // APPROVED
     {
+      createdById: M,
       vendorId: aws.id,
       invoiceNumber: "AWS-2025-04-0052",
       invoiceDate: daysAgo(8),
@@ -376,6 +391,7 @@ export async function seedUserData(db: PrismaClient, userId: string) {
       ],
     },
     {
+      createdById: M,
       vendorId: hubspot.id,
       invoiceNumber: "HS-INV-2025-0431",
       invoiceDate: daysAgo(6),
@@ -390,6 +406,7 @@ export async function seedUserData(db: PrismaClient, userId: string) {
       ],
     },
     {
+      createdById: S,
       vendorId: notion.id,
       invoiceNumber: "NOT-2025-0089",
       invoiceDate: daysAgo(4),
@@ -405,6 +422,7 @@ export async function seedUserData(db: PrismaClient, userId: string) {
     },
     // PENDING_APPROVAL
     {
+      createdById: S,
       vendorId: stripe.id,
       invoiceNumber: "STR-2025-04-8821",
       invoiceDate: daysAgo(3),
@@ -420,6 +438,7 @@ export async function seedUserData(db: PrismaClient, userId: string) {
       ],
     },
     {
+      createdById: S,
       vendorId: aws.id,
       invoiceNumber: "AWS-SUPPORT-0021",
       invoiceDate: daysAgo(2),
@@ -433,6 +452,7 @@ export async function seedUserData(db: PrismaClient, userId: string) {
       ],
     },
     {
+      createdById: M,
       vendorId: hubspot.id,
       invoiceNumber: "HS-PS-2025-0112",
       invoiceDate: daysAgo(4),
@@ -446,6 +466,7 @@ export async function seedUserData(db: PrismaClient, userId: string) {
       ],
     },
     {
+      createdById: S,
       vendorId: notion.id,
       invoiceNumber: "NOT-2025-0095",
       invoiceDate: daysAgo(1),
@@ -460,6 +481,7 @@ export async function seedUserData(db: PrismaClient, userId: string) {
     },
     // DRAFT
     {
+      createdById: M,
       vendorId: wework.id,
       invoiceNumber: "WW-2025-JUN-0158",
       invoiceDate: new Date(),
@@ -473,6 +495,7 @@ export async function seedUserData(db: PrismaClient, userId: string) {
       ],
     },
     {
+      createdById: S,
       vendorId: gusto.id,
       invoiceNumber: null,
       invoiceDate: new Date(),
@@ -485,6 +508,7 @@ export async function seedUserData(db: PrismaClient, userId: string) {
       ],
     },
     {
+      createdById: S,
       vendorId: stripe.id,
       invoiceNumber: null,
       invoiceDate: new Date(),
@@ -496,6 +520,7 @@ export async function seedUserData(db: PrismaClient, userId: string) {
     },
     // REJECTED
     {
+      createdById: S,
       vendorId: hubspot.id,
       invoiceNumber: "HS-PS-2025-0098",
       invoiceDate: daysAgo(15),
@@ -511,6 +536,7 @@ export async function seedUserData(db: PrismaClient, userId: string) {
       ],
     },
     {
+      createdById: M,
       vendorId: aws.id,
       invoiceNumber: "AWS-2025-RESERVE-007",
       invoiceDate: daysAgo(20),
@@ -526,6 +552,7 @@ export async function seedUserData(db: PrismaClient, userId: string) {
     },
     // VOID
     {
+      createdById: M,
       vendorId: notion.id,
       invoiceNumber: "NOT-2025-0071",
       invoiceDate: daysAgo(25),
@@ -544,16 +571,13 @@ export async function seedUserData(db: PrismaClient, userId: string) {
     const bill = await db.bill.create({
       data: {
         ...rest,
-        userId,
-        seed: true,
-        lineItems: {
-          create: lineItems.map((li) => ({ ...li, seed: true })),
-        },
+        organizationId,
+        lineItems: { create: lineItems },
       },
     });
     if (payment) {
       await db.payment.create({
-        data: { ...payment, billId: bill.id, seed: true },
+        data: { ...payment, billId: bill.id },
       });
     }
   }

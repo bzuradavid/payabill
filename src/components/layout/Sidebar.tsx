@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTransition } from "react";
-import { cn } from "~/lib/utils";
+
+import { type UserRole } from "../../../generated/prisma";
 import { signOutAction } from "~/actions/auth";
+import { cn } from "~/lib/utils";
 
 export interface SidebarUser {
   id: string;
@@ -13,7 +15,15 @@ export interface SidebarUser {
   image: string | null;
 }
 
-const navItems = [
+interface NavItem {
+  href: string;
+  label: string;
+  managerOnly?: boolean;
+  tourId?: string;
+  icon: React.ReactNode;
+}
+
+const allNavItems: NavItem[] = [
   {
     href: "/dashboard",
     label: "Dashboard",
@@ -37,6 +47,7 @@ const navItems = [
   {
     href: "/vendors",
     label: "Vendors",
+    managerOnly: true,
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
@@ -44,15 +55,31 @@ const navItems = [
       </svg>
     ),
   },
+  {
+    href: "/staff",
+    label: "Staff",
+    managerOnly: true,
+    tourId: "tour-staff-nav",
+    icon: (
+      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+          d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-5.13a4 4 0 11-8 0 4 4 0 018 0zm6 0a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    ),
+  },
 ];
 
 interface SidebarProps {
   user: SidebarUser;
+  role: UserRole;
   open?: boolean;
   onClose?: () => void;
 }
 
-export function Sidebar({ user, open = false, onClose }: SidebarProps) {
+export function Sidebar({ user, role, open = false, onClose }: SidebarProps) {
+  const navItems = allNavItems.filter(
+    (item) => !item.managerOnly || role === "MANAGER",
+  );
   const pathname = usePathname();
   const [isSigningOut, startSignOut] = useTransition();
 
@@ -99,6 +126,7 @@ export function Sidebar({ user, open = false, onClose }: SidebarProps) {
           <Link
             key={item.href}
             href={item.href}
+            id={item.tourId}
             onClick={onClose}
             className={cn(
               "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",

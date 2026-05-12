@@ -1,13 +1,56 @@
-// Demo data is no longer seeded globally or on first sign-in.
-//
-// Every authenticated user starts with an empty workspace. Demo data
-// (vendors, GL accounts, bills, payments) is seeded per-user the first
-// time they flip on the "Show demo data" switch on the dashboard. That
-// flow lives in `src/actions/preferences.ts` → `setShowSeed()`, gated
-// by `User.seededAt` so seeding only ever runs once per user.
-//
-// This file is kept as a no-op so `npm run db:seed` still exits cleanly.
+import bcrypt from "bcryptjs";
 
-console.log(
-  "[seed] Demo data is seeded per-user on first 'Show demo data' toggle. See src/actions/preferences.ts.",
-);
+import { PrismaClient } from "../generated/prisma/index.js";
+import { seedOrganization } from "../src/server/seed-user";
+
+const db = new PrismaClient();
+
+async function main() {
+  // Wipe any prior demo state so seeding is fully idempotent. Org delete
+  // cascades to vendors / bills / GL accounts / invitations; users with
+  // `User.organizationId` pointing at the deleted org get nulled out, so
+  // we also delete the test-user rows explicitly by email.
+  await db.organization.deleteMany({ where: { name: "Payable Demo Co" } });
+  await db.user.deleteMany({
+    where: { email: { in: ["manager@payable.com", "staff@payable.com"] } },
+  });
+
+  const passwordHash = await bcrypt.hash("pass1234", 10);
+
+  const org = await db.organization.create({
+    data: { name: "Payable Demo Co" },
+  });
+
+  const manager = await db.user.create({
+    data: {
+      name: "Demo Manager",
+      email: "manager@payable.com",
+      passwordHash,
+      organizationId: org.id,
+      role: "MANAGER",
+    },
+  });
+
+  const staff = await db.user.create({
+    data: {
+      name: "Demo Staff",
+      email: "staff@payable.com",
+      passwordHash,
+      organizationId: org.id,
+      role: "STAFF",
+    },
+  });
+
+  await seedOrganization(db, org.id, manager.id, staff.id);
+
+  console.log("[seed] Demo org seeded:");
+  console.log("       manager@payable.com / pass1234");
+  console.log("       staff@payable.com / pass1234");
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(() => db.$disconnect());

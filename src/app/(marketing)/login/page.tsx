@@ -3,32 +3,41 @@ export const dynamic = "force-dynamic";
 import { type Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { auth } from "~/server/auth";
+
 import { signInWithGoogle } from "~/actions/auth";
+import { CredentialsForm } from "~/components/auth/CredentialsForm";
+import { auth } from "~/server/auth";
+import { db } from "~/server/db";
 
 export const metadata: Metadata = {
   title: "Sign in — Payables",
-  description: "Sign in or create your Payables workspace with Google.",
+  description: "Sign in or create your Payables workspace.",
 };
 
 export default async function LoginPage() {
   const session = await auth();
-  if (session?.user?.id) redirect("/dashboard");
+  if (session?.user?.id) {
+    const user = await db.user.findUnique({
+      where: { id: session.user.id },
+      select: { organizationId: true },
+    });
+    // Only short-circuit to the app if the user is fully set up. Otherwise
+    // fall through and let them sign in again — avoids a redirect loop with
+    // the (app) layout when the session token references a deleted user.
+    if (user?.organizationId) redirect("/dashboard");
+  }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white px-6">
-      {/* Decorative background */}
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white px-6 py-10">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
       >
-        <div
-          className="absolute -top-40 left-1/2 aspect-square w-[60rem] -translate-x-1/2 rounded-full bg-gradient-to-br from-[#312D97]/15 to-[#10A6CC]/15 blur-3xl"
-        />
+        <div className="absolute -top-40 left-1/2 aspect-square w-[60rem] -translate-x-1/2 rounded-full bg-gradient-to-br from-[#312D97]/15 to-[#10A6CC]/15 blur-3xl" />
       </div>
 
       <div className="w-full max-w-md">
-        <Link href="/" className="mb-10 flex items-center justify-center gap-2.5">
+        <Link href="/" className="mb-8 flex items-center justify-center gap-2.5">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#312D97] shadow-lg shadow-[#312D97]/30">
             <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
@@ -44,19 +53,17 @@ export default async function LoginPage() {
           </span>
         </Link>
 
-        <div className="rounded-3xl border border-[#ecebff] bg-white p-8 shadow-2xl shadow-[#312D97]/10 sm:p-10">
+        <div className="rounded-3xl border border-[#ecebff] bg-white p-7 shadow-2xl shadow-[#312D97]/10 sm:p-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold tracking-tight text-[#1a174f]">
               Welcome
             </h1>
-            <p className="mt-2 text-sm leading-6 text-slate-500">
-              Sign in or create your workspace.
-              <br />
-              The same button does both.
+            <p className="mt-1.5 text-sm leading-6 text-slate-500">
+              Sign in to your workspace or create a new one.
             </p>
           </div>
 
-          <form action={signInWithGoogle} className="mt-8">
+          <form action={signInWithGoogle} className="mt-6">
             <button
               type="submit"
               className="group flex w-full items-center justify-center gap-3 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-[#1a174f] shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#312D97] hover:shadow-lg hover:shadow-[#312D97]/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#312D97] focus-visible:ring-offset-2"
@@ -66,53 +73,26 @@ export default async function LoginPage() {
             </button>
           </form>
 
-          <div className="mt-6 flex items-center gap-4">
+          <div className="mt-5 flex items-center gap-4">
             <div className="h-px flex-1 bg-slate-100" />
             <span className="text-[0.7rem] font-medium uppercase tracking-widest text-slate-400">
-              What happens next
+              Or with email
             </span>
             <div className="h-px flex-1 bg-slate-100" />
           </div>
 
-          <ul className="mt-5 space-y-3 text-sm text-slate-600">
-            <Step
-              n={1}
-              title="One click with Google"
-              body="No passwords. New users get a workspace created on the spot."
-            />
-            <Step
-              n={2}
-              title="A clean, empty workspace"
-              body="You start with nothing — no fake data cluttering your view. Add real vendors and bills as you go."
-            />
-            <Step
-              n={3}
-              title="Flip on demo data anytime"
-              body='Toggle "Show demo data" on the dashboard to load a realistic demo dataset (vendors, bills, GL accounts, payments) so you can explore the product.'
-            />
-          </ul>
+          <div className="mt-5">
+            <CredentialsForm />
+          </div>
         </div>
 
-        <p className="mt-8 text-center text-xs text-slate-400">
-          By continuing, you agree to be the sole user of your workspace. Your
-          data is private to your account.
+        <p className="mt-6 text-center text-xs text-slate-400">
+          Try the demo: <span className="font-medium">manager@payable.com</span>{" "}
+          or <span className="font-medium">staff@payable.com</span> with password{" "}
+          <span className="font-medium">pass1234</span>.
         </p>
       </div>
     </div>
-  );
-}
-
-function Step({ n, title, body }: { n: number; title: string; body: string }) {
-  return (
-    <li className="flex gap-3">
-      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-50 text-xs font-bold text-[#312D97]">
-        {n}
-      </span>
-      <div>
-        <p className="text-sm font-medium text-[#1a174f]">{title}</p>
-        <p className="text-xs leading-5 text-slate-500">{body}</p>
-      </div>
-    </li>
   );
 }
 

@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { notFound } from "next/navigation";
 import { getServices } from "~/server/container";
+import { requireManagerContext } from "~/server/get-user";
 import { VendorForm } from "../../VendorForm";
 
 interface EditVendorPageProps {
@@ -9,6 +10,7 @@ interface EditVendorPageProps {
 }
 
 export default async function EditVendorPage({ params }: EditVendorPageProps) {
+  await requireManagerContext();
   const { id } = await params;
   const { vendorService } = await getServices();
   const vendor = await vendorService.getById(id);

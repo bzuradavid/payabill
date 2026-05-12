@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import { type ReactNode, useCallback, useTransition } from "react";
+import { type ReactNode, useCallback, useOptimistic, useTransition } from "react";
 import { type BillStatus } from "../../../../generated/prisma";
 import { cn } from "~/lib/utils";
 import { BillsTableSkeleton } from "./BillsTableSkeleton";
@@ -22,6 +22,7 @@ export function BillsFilterBar({ tabs, activeStatus, search, children }: BillsFi
   const router = useRouter();
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
+  const [optimisticStatus, setOptimisticStatus] = useOptimistic(activeStatus);
 
   const navigate = useCallback(
     (status: BillStatus | "ALL", q: string) => {
@@ -30,10 +31,11 @@ export function BillsFilterBar({ tabs, activeStatus, search, children }: BillsFi
       if (q) params.set("q", q);
       const qs = params.toString();
       startTransition(() => {
+        setOptimisticStatus(status);
         router.push(qs ? `${pathname}?${qs}` : pathname);
       });
     },
-    [router, pathname],
+    [router, pathname, setOptimisticStatus],
   );
 
   return (
@@ -48,7 +50,7 @@ export function BillsFilterBar({ tabs, activeStatus, search, children }: BillsFi
                 onClick={() => navigate(tab.value, search)}
                 className={cn(
                   "rounded-xl px-3 py-1.5 text-sm font-medium transition-colors whitespace-nowrap",
-                  activeStatus === tab.value
+                  optimisticStatus === tab.value
                     ? "bg-[#312D97] text-white shadow-sm"
                     : "text-slate-500 hover:bg-brand-50 hover:text-[#312D97]",
                 )}

@@ -50,12 +50,17 @@ export class BillService {
     private ctx: UserContext,
   ) {}
 
-  /** Base where-clause scoping every query to the current user and honoring showSeed. */
   private scope() {
     return {
-      userId: this.ctx.userId,
-      ...(this.ctx.showSeed ? {} : { seed: false }),
+      organizationId: this.ctx.organizationId,
+      ...(this.ctx.role === "STAFF" ? { createdById: this.ctx.userId } : {}),
     };
+  }
+
+  private requireManager() {
+    if (this.ctx.role !== "MANAGER") {
+      throw new Error("Forbidden: manager role required");
+    }
   }
 
   async list(filters: BillListFilters = {}) {
@@ -114,7 +119,7 @@ export class BillService {
 
   async create(data: CreateBillInput) {
     const vendor = await this.db.vendor.findFirst({
-      where: { id: data.vendorId, userId: this.ctx.userId },
+      where: { id: data.vendorId, organizationId: this.ctx.organizationId },
       select: { id: true },
     });
     if (!vendor) throw new Error("Vendor not found");
@@ -123,7 +128,8 @@ export class BillService {
     return this.db.bill.create({
       data: {
         ...billData,
-        userId: this.ctx.userId,
+        organizationId: this.ctx.organizationId,
+        createdById: this.ctx.userId,
         status: BillStatus.DRAFT,
         lineItems: { create: lineItems },
       },
@@ -133,7 +139,7 @@ export class BillService {
 
   async update(id: string, data: UpdateBillInput) {
     const bill = await this.db.bill.findFirst({
-      where: { id, userId: this.ctx.userId },
+      where: { id, ...this.scope() },
     });
     if (!bill) throw new Error("Bill not found");
     if (bill.status !== BillStatus.DRAFT) {
@@ -157,7 +163,7 @@ export class BillService {
 
   async submit(id: string) {
     const bill = await this.db.bill.findFirst({
-      where: { id, userId: this.ctx.userId },
+      where: { id, ...this.scope() },
       include: { lineItems: true },
     });
     if (!bill) throw new Error("Bill not found");
@@ -175,8 +181,9 @@ export class BillService {
   }
 
   async approve(id: string) {
+    this.requireManager();
     const bill = await this.db.bill.findFirst({
-      where: { id, userId: this.ctx.userId },
+      where: { id, organizationId: this.ctx.organizationId },
     });
     if (!bill) throw new Error("Bill not found");
     if (bill.status !== BillStatus.PENDING_APPROVAL) {
@@ -190,8 +197,9 @@ export class BillService {
   }
 
   async reject(id: string, reason: string) {
+    this.requireManager();
     const bill = await this.db.bill.findFirst({
-      where: { id, userId: this.ctx.userId },
+      where: { id, organizationId: this.ctx.organizationId },
     });
     if (!bill) throw new Error("Bill not found");
     if (bill.status !== BillStatus.PENDING_APPROVAL) {
@@ -208,8 +216,9 @@ export class BillService {
   }
 
   async schedulePayment(id: string, scheduledDate: Date) {
+    this.requireManager();
     const bill = await this.db.bill.findFirst({
-      where: { id, userId: this.ctx.userId },
+      where: { id, organizationId: this.ctx.organizationId },
       include: { lineItems: true },
     });
     if (!bill) throw new Error("Bill not found");
@@ -239,8 +248,9 @@ export class BillService {
   }
 
   async markPaid(id: string) {
+    this.requireManager();
     const bill = await this.db.bill.findFirst({
-      where: { id, userId: this.ctx.userId },
+      where: { id, organizationId: this.ctx.organizationId },
       include: { payments: true },
     });
     if (!bill) throw new Error("Bill not found");
@@ -270,8 +280,9 @@ export class BillService {
   }
 
   async void(id: string) {
+    this.requireManager();
     const bill = await this.db.bill.findFirst({
-      where: { id, userId: this.ctx.userId },
+      where: { id, organizationId: this.ctx.organizationId },
     });
     if (!bill) throw new Error("Bill not found");
     if (bill.status === BillStatus.PAID) {
@@ -359,6 +370,22 @@ export class BillService {
       take: limit,
       orderBy: { updatedAt: "desc" },
       include: { vendor: true, lineItems: true },
+    });
+    return bills.map((b) => ({
+      ...b,
+      totalAmount: b.lineItems.reduce((s, li) => s + li.amount, 0),
+    }));
+  }
+
+  async getPendingApprovals(limit = 5) {
+    const bills = await this.db.bill.findMany({
+      where: {
+        organizationId: this.ctx.organizationId,
+        status: BillStatus.PENDING_APPROVAL,
+      },
+      take: limit,
+      orderBy: { submittedAt: "asc" },
+      include: { vendor: true, lineItems: true, createdBy: { select: { name: true, email: true } } },
     });
     return bills.map((b) => ({
       ...b,

@@ -12,15 +12,27 @@ const lineItemSchema = z.object({
   glAccountId: z.string().optional(),
 });
 
-const createBillSchema = z.object({
-  vendorId: z.string().min(1),
-  invoiceNumber: z.string().optional(),
-  invoiceDate: z.string(),
-  dueDate: z.string(),
-  paymentMethod: z.enum(["ACH", "CHECK", "WIRE"]).optional(),
-  memo: z.string().optional(),
-  lineItems: z.array(lineItemSchema).min(1, "At least one line item required"),
+const inlineVendorSchema = z.object({
+  name: z.string().min(1, "Vendor name is required"),
+  email: z.string().email().optional().or(z.literal("")),
+  defaultPaymentMethod: z.enum(["ACH", "CHECK", "WIRE"]).optional(),
 });
+
+const createBillSchema = z
+  .object({
+    vendorId: z.string().optional(),
+    inlineVendor: inlineVendorSchema.optional(),
+    invoiceNumber: z.string().optional(),
+    invoiceDate: z.string(),
+    dueDate: z.string(),
+    paymentMethod: z.enum(["ACH", "CHECK", "WIRE"]).optional(),
+    memo: z.string().optional(),
+    lineItems: z.array(lineItemSchema).min(1, "At least one line item required"),
+  })
+  .refine((d) => !!d.vendorId || !!d.inlineVendor, {
+    message: "Select an existing vendor or add a new one",
+    path: ["vendorId"],
+  });
 
 type ActionResult<T = void> =
   | { success: true; data: T }
@@ -37,9 +49,26 @@ export async function createBill(
 ): Promise<ActionResult<{ id: string }>> {
   try {
     const data = createBillSchema.parse(rawData);
-    const { billService } = await getServices();
+    const { billService, vendorService } = await getServices();
+
+    let vendorId = data.vendorId;
+    if (!vendorId && data.inlineVendor) {
+      const created = await vendorService.createInline({
+        name: data.inlineVendor.name,
+        email: data.inlineVendor.email || undefined,
+        defaultPaymentMethod: data.inlineVendor.defaultPaymentMethod,
+      });
+      vendorId = created.id;
+    }
+    if (!vendorId) {
+      return { success: false, error: "Select an existing vendor or add a new one" };
+    }
+
     const bill = await billService.create({
-      ...data,
+      vendorId,
+      invoiceNumber: data.invoiceNumber,
+      memo: data.memo,
+      lineItems: data.lineItems,
       invoiceDate: new Date(data.invoiceDate),
       dueDate: new Date(data.dueDate),
       paymentMethod: data.paymentMethod,

@@ -107,8 +107,8 @@ export default async function LandingPage() {
             </a>
           </div>
           <p className="mt-5 text-xs text-slate-400">
-            One click to sign up with Google. Includes a complete demo dataset
-            you can hide with a toggle.
+            Sign up with Google or email. New workspaces are fully empty until
+            you create your first vendor and bill.
           </p>
         </div>
 
@@ -246,11 +246,11 @@ export default async function LandingPage() {
                 ),
               },
               {
-                title: "Demo data toggle",
-                body: "Every new workspace starts with a realistic demo dataset. One switch hides it so you can start working with your real data immediately.",
+                title: "Roles built in",
+                body: "Staff submit bills (including to brand-new vendors). Managers approve, schedule, and invite teammates. Everyone sees only what they should.",
                 icon: (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-5.13a4 4 0 11-8 0 4 4 0 018 0zm6 0a3 3 0 11-6 0 3 3 0 016 0z" />
                 ),
               },
             ].map((f) => (

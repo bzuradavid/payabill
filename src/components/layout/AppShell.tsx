@@ -1,20 +1,29 @@
 "use client";
 
 import { useState } from "react";
+
+import { type UserRole } from "../../../generated/prisma";
 import { Sidebar, type SidebarUser } from "./Sidebar";
 
 export function AppShell({
   children,
   user,
+  role,
 }: {
   children: React.ReactNode;
   user: SidebarUser;
+  role: UserRole;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#F6F7FB]">
-      <Sidebar user={user} open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar
+        user={user}
+        role={role}
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
 
       {/* Mobile backdrop */}
       {sidebarOpen && (

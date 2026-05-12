@@ -121,14 +121,29 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.OrganizationScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.InvitationScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  email: 'email',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
   email: 'email',
   emailVerified: 'emailVerified',
   image: 'image',
-  showSeed: 'showSeed',
-  seededAt: 'seededAt',
+  passwordHash: 'passwordHash',
+  organizationId: 'organizationId',
+  role: 'role',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -164,8 +179,7 @@ exports.Prisma.VerificationTokenScalarFieldEnum = {
 
 exports.Prisma.VendorScalarFieldEnum = {
   id: 'id',
-  userId: 'userId',
-  seed: 'seed',
+  organizationId: 'organizationId',
   name: 'name',
   email: 'email',
   phone: 'phone',
@@ -188,8 +202,7 @@ exports.Prisma.VendorScalarFieldEnum = {
 
 exports.Prisma.GLAccountScalarFieldEnum = {
   id: 'id',
-  userId: 'userId',
-  seed: 'seed',
+  organizationId: 'organizationId',
   code: 'code',
   name: 'name',
   type: 'type',
@@ -198,8 +211,8 @@ exports.Prisma.GLAccountScalarFieldEnum = {
 
 exports.Prisma.BillScalarFieldEnum = {
   id: 'id',
-  userId: 'userId',
-  seed: 'seed',
+  organizationId: 'organizationId',
+  createdById: 'createdById',
   vendorId: 'vendorId',
   invoiceNumber: 'invoiceNumber',
   invoiceDate: 'invoiceDate',
@@ -218,7 +231,6 @@ exports.Prisma.BillScalarFieldEnum = {
 exports.Prisma.BillLineItemScalarFieldEnum = {
   id: 'id',
   billId: 'billId',
-  seed: 'seed',
   description: 'description',
   quantity: 'quantity',
   unitPrice: 'unitPrice',
@@ -230,7 +242,6 @@ exports.Prisma.BillLineItemScalarFieldEnum = {
 exports.Prisma.PaymentScalarFieldEnum = {
   id: 'id',
   billId: 'billId',
-  seed: 'seed',
   amount: 'amount',
   method: 'method',
   status: 'status',
@@ -256,6 +267,11 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.UserRole = exports.$Enums.UserRole = {
+  MANAGER: 'MANAGER',
+  STAFF: 'STAFF'
+};
+
 exports.PaymentMethod = exports.$Enums.PaymentMethod = {
   ACH: 'ACH',
   CHECK: 'CHECK',
@@ -291,6 +307,8 @@ exports.PaymentStatus = exports.$Enums.PaymentStatus = {
 };
 
 exports.Prisma.ModelName = {
+  Organization: 'Organization',
+  Invitation: 'Invitation',
   User: 'User',
   Account: 'Account',
   Session: 'Session',

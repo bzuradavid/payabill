@@ -6,7 +6,7 @@ import { NewBillForm } from "./NewBillForm";
 export default async function NewBillPage() {
   const { vendorService, glAccountService } = await getServices();
   const [vendors, glAccounts] = await Promise.all([
-    vendorService.list({ status: "ACTIVE" }),
+    vendorService.listForPicker(),
     glAccountService.list(),
   ]);
 

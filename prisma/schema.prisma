@@ -9,6 +9,11 @@ datasource db {
     directUrl = env("DIRECT_URL")
 }
 
+enum UserRole {
+    MANAGER
+    STAFF
+}
+
 enum BillStatus {
     DRAFT
     PENDING_APPROVAL
@@ -43,21 +48,46 @@ enum GLAccountType {
     ASSET
 }
 
+model Organization {
+    id          String       @id @default(cuid())
+    name        String
+    users       User[]
+    vendors     Vendor[]
+    bills       Bill[]
+    glAccounts  GLAccount[]
+    invitations Invitation[]
+    createdAt   DateTime     @default(now())
+    updatedAt   DateTime     @updatedAt
+}
+
+model Invitation {
+    id             String       @id @default(cuid())
+    organizationId String
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    email          String
+    createdAt      DateTime     @default(now())
+
+    @@unique([organizationId, email])
+    @@index([email])
+}
+
 model User {
-    id            String      @id @default(cuid())
-    name          String?
-    email         String?     @unique
-    emailVerified DateTime?
-    image         String?
-    showSeed      Boolean     @default(false)
-    seededAt      DateTime?
-    accounts      Account[]
-    sessions      Session[]
-    vendors       Vendor[]
-    bills         Bill[]
-    glAccounts    GLAccount[]
-    createdAt     DateTime    @default(now())
-    updatedAt     DateTime    @updatedAt
+    id             String        @id @default(cuid())
+    name           String?
+    email          String?       @unique
+    emailVerified  DateTime?
+    image          String?
+    passwordHash   String?
+    organizationId String?
+    organization   Organization? @relation(fields: [organizationId], references: [id])
+    role           UserRole      @default(STAFF)
+    accounts       Account[]
+    sessions       Session[]
+    createdBills   Bill[]
+    createdAt      DateTime      @default(now())
+    updatedAt      DateTime      @updatedAt
+
+    @@index([organizationId])
 }
 
 model Account {
@@ -97,9 +127,8 @@ model VerificationToken {
 
 model Vendor {
     id                   String        @id @default(cuid())
-    userId               String
-    user                 User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-    seed                 Boolean       @default(false)
+    organizationId       String
+    organization         Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
     name                 String
     email                String?
     phone                String?
@@ -120,32 +149,32 @@ model Vendor {
     createdAt            DateTime      @default(now())
     updatedAt            DateTime      @updatedAt
 
-    @@index([userId])
+    @@index([organizationId])
     @@index([name])
     @@index([status])
 }
 
 model GLAccount {
-    id        String         @id @default(cuid())
-    userId    String
-    user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-    seed      Boolean        @default(false)
-    code      String
-    name      String
-    type      GLAccountType
-    lineItems BillLineItem[]
-    createdAt DateTime       @default(now())
+    id             String         @id @default(cuid())
+    organizationId String
+    organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    code           String
+    name           String
+    type           GLAccountType
+    lineItems      BillLineItem[]
+    createdAt      DateTime       @default(now())
 
-    @@unique([userId, code])
-    @@index([userId])
+    @@unique([organizationId, code])
+    @@index([organizationId])
     @@index([type])
 }
 
 model Bill {
     id              String         @id @default(cuid())
-    userId          String
-    user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-    seed            Boolean        @default(false)
+    organizationId  String
+    organization    Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+    createdById     String
+    createdBy       User           @relation(fields: [createdById], references: [id])
     vendor          Vendor         @relation(fields: [vendorId], references: [id])
     vendorId        String
     invoiceNumber   String?
@@ -163,7 +192,8 @@ model Bill {
     createdAt       DateTime       @default(now())
     updatedAt       DateTime       @updatedAt
 
-    @@index([userId])
+    @@index([organizationId])
+    @@index([createdById])
     @@index([status])
     @@index([vendorId])
     @@index([dueDate])
@@ -173,7 +203,6 @@ model BillLineItem {
     id          String     @id @default(cuid())
     bill        Bill       @relation(fields: [billId], references: [id], onDelete: Cascade)
     billId      String
-    seed        Boolean    @default(false)
     description String
     quantity    Float      @default(1)
     unitPrice   Float
@@ -187,7 +216,6 @@ model Payment {
     id            String        @id @default(cuid())
     bill          Bill          @relation(fields: [billId], references: [id])
     billId        String
-    seed          Boolean       @default(false)
     amount        Float
     method        PaymentMethod
     status        PaymentStatus @default(PENDING)

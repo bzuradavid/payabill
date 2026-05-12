@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getServices } from "~/server/container";
+import { requireManagerContext } from "~/server/get-user";
 import { Card, CardContent, CardHeader } from "~/components/ui/Card";
 import { BillStatusBadge } from "~/components/bills/BillStatusBadge";
 import { Badge } from "~/components/ui/Badge";
@@ -15,6 +16,7 @@ interface VendorDetailPageProps {
 }
 
 export default async function VendorDetailPage({ params }: VendorDetailPageProps) {
+  await requireManagerContext();
   const { id } = await params;
   const { vendorService } = await getServices();
   const vendor = await vendorService.getById(id);

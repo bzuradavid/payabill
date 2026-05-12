@@ -1,6 +1,9 @@
+import { requireManagerContext } from "~/server/get-user";
 import { VendorForm } from "../VendorForm";
 
-export default function NewVendorPage() {
+export default async function NewVendorPage() {
+  await requireManagerContext();
+
   return (
     <div className="flex flex-col gap-6 p-8">
       <div>

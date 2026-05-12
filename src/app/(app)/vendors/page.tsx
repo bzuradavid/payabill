@@ -2,12 +2,14 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { getServices } from "~/server/container";
+import { requireManagerContext } from "~/server/get-user";
 import { Button } from "~/components/ui/Button";
 import { Badge } from "~/components/ui/Badge";
 import { EmptyState } from "~/components/ui/EmptyState";
 import { formatCurrency } from "~/lib/utils";
 
 export default async function VendorsPage() {
+  await requireManagerContext();
   const { vendorService } = await getServices();
   const vendors = await vendorService.list();
 
