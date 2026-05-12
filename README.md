@@ -67,7 +67,6 @@ DRAFT → PENDING_APPROVAL → APPROVED → SCHEDULED → PAID
 | OCR / invoice parsing                   | Useful but product-agnostic; doesn't test AP-specific thinking                                          |
 | ERP integrations (QuickBooks, NetSuite) | Integration layer belongs after core product is proven                                                  |
 | Recurring bills                         | Adds scheduling complexity; correct v2 feature                                                          |
-| Multi-entity / multi-company            | Each workspace is already a single org; cross-org use cases are v2                                      |
 | 1099 tracking                           | Separate tax compliance concern                                                                          |
 | Multi-level approval chains             | Single-step approval covers the core workflow; routing rules are v2                                      |
 | Email notifications                     | Invitations are link-based only; email delivery not wired up                                            |
@@ -90,33 +89,22 @@ DRAFT → PENDING_APPROVAL → APPROVED → SCHEDULED → PAID
 Spin up a PostgreSQL container with one command:
 
 ```bash
-docker run -d \
-  --name payabill-db \
-  -e POSTGRES_USER=payabill \
-  -e POSTGRES_PASSWORD=payabill \
-  -e POSTGRES_DB=payabill \
-  -p 5432:5432 \
-  postgres:16
+./start-database.sh
 ```
 
-Your connection string will be:
+The script reads your `.env` file, handles both Docker and Podman, checks for port conflicts, and skips creation if the container already exists. Run it again after a reboot to restart a stopped container.
 
-```
-postgresql://payabill:payabill@localhost:5432/payabill
-```
-
-To stop and start the container later:
+To wipe and recreate the database schema (keeps the container):
 
 ```bash
-docker stop payabill-db
-docker start payabill-db
+npm run db:reset -- --force
 ```
 
-To reset the database entirely:
+To destroy the container entirely and start fresh:
 
 ```bash
-docker rm -f payabill-db
-# then re-run the docker run command above
+docker rm -f payabill-postgres
+./start-database.sh
 ```
 
 ---
@@ -133,7 +121,7 @@ npm install
 cp .env.example .env
 ```
 
-Edit `.env` with your values. If you used the Docker command above, you can paste these in directly:
+Edit `.env` with your values. If you used `start-database.sh` with the defaults, you can paste these in directly:
 
 ```
 # PostgreSQL — use the same URL for both in local dev
