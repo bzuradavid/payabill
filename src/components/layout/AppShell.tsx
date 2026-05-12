@@ -17,7 +17,7 @@ export function AppShell({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#F6F7FB]">
+    <div className="flex h-dvh overflow-hidden bg-[#F6F7FB]">
       <Sidebar
         user={user}
         role={role}
@@ -77,7 +77,7 @@ export function AppShell({
           </div>
         </div>
 
-        <main className="flex-1 overflow-y-auto">{children}</main>
+        <main className="min-h-0 flex-1 overflow-y-auto">{children}</main>
       </div>
     </div>
   );
