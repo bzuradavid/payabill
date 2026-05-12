@@ -32,7 +32,7 @@ export class StaffService {
 
   async inviteStaff(rawEmail: string) {
     this.requireManager();
-    const email = rawEmail.toLowerCase().trim();
+    const email = (rawEmail ?? "").toLowerCase().trim();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       throw new Error("Enter a valid email address");
