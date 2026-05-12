@@ -2,11 +2,21 @@
 
 A modern accounts payable product inspired by Ramp Bill Pay. Built with Next.js 15, Prisma, NextAuth v5, and Tailwind CSS.
 
+**Live demo:** [payabill.vercel.app](https://payabill.vercel.app) — sign in with `manager@payabill.com` / `pass1234` to explore the full workflow.
+
 ---
 
 ## What This Product Does
 
-Payabill is a multi-tenant workflow engine for managing vendor invoices through their full lifecycle — from receipt to payment. The core premise: finance teams need to track money they owe, route it through appropriate approval gates, and execute payment with a full audit trail.
+Finance teams lose hours every week chasing paper invoices, hunting down approvers over Slack, and reconciling spreadsheets to figure out what's actually been paid. Payabill replaces that with a structured workflow: every bill is tracked from the moment it arrives, routed to the right approver, and closed out with a timestamped payment record.
+
+The concrete payoff for finance teams:
+- **Visibility** — one view shows every outstanding payable, its status, and whether it's overdue — no spreadsheet digging
+- **Control** — bills cannot be paid without manager approval; rejections require a reason that feeds back to the submitter
+- **Auditability** — every state transition (submission → approval → payment) is recorded with who did it and when
+- **Accountability** — staff see only their own bills; managers see everything across the workspace
+
+Payabill is a multi-tenant workflow engine for managing vendor invoices through their full lifecycle — from receipt to payment.
 
 The product has four primary surfaces:
 

@@ -33,8 +33,9 @@ export class StaffService {
   async inviteStaff(rawEmail: string) {
     this.requireManager();
     const email = rawEmail.toLowerCase().trim();
-    if (!email?.includes("@")) {
-      throw new Error("Enter a valid email");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      throw new Error("Enter a valid email address");
     }
 
     const existingUser = await this.db.user.findUnique({
