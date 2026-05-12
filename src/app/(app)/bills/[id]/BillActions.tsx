@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { type BillStatus } from "../../../../generated/prisma";
+import { type BillStatus } from "../../../../../generated/prisma";
 import { Button } from "~/components/ui/Button";
 import { Modal } from "~/components/ui/Modal";
 import { Card, CardContent, CardHeader } from "~/components/ui/Card";

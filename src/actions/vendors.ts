@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { vendorService } from "~/server/container";
+import { getServices } from "~/server/container";
 
 const vendorSchema = z.object({
   name: z.string().min(1, "Vendor name is required"),
@@ -31,6 +31,7 @@ export async function createVendor(
 ): Promise<ActionResult<{ id: string }>> {
   try {
     const data = vendorSchema.parse(rawData);
+    const { vendorService } = await getServices();
     const vendor = await vendorService.create({
       ...data,
       email: data.email ?? undefined,
@@ -51,6 +52,7 @@ export async function updateVendor(
 ): Promise<ActionResult> {
   try {
     const data = vendorSchema.parse(rawData);
+    const { vendorService } = await getServices();
     await vendorService.update(id, {
       ...data,
       email: data.email ?? undefined,
@@ -68,6 +70,7 @@ export async function updateVendor(
 
 export async function deactivateVendor(id: string): Promise<ActionResult> {
   try {
+    const { vendorService } = await getServices();
     await vendorService.deactivate(id);
     revalidatePath(`/vendors/${id}`);
     revalidatePath("/vendors");

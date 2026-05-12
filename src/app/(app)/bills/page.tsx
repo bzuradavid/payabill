@@ -1,8 +1,8 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
-import { type BillStatus } from "../../../generated/prisma";
-import { billService } from "~/server/container";
+import { type BillStatus } from "../../../../generated/prisma";
+import { getServices } from "~/server/container";
 import { Button } from "~/components/ui/Button";
 import { BillStatusBadge } from "~/components/bills/BillStatusBadge";
 import { EmptyState } from "~/components/ui/EmptyState";
@@ -28,6 +28,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
   const activeStatus = (params.status as BillStatus | "ALL") ?? "ALL";
   const search = params.q ?? "";
 
+  const { billService } = await getServices();
   const bills = await billService.list({
     statuses:
       activeStatus === "ALL"

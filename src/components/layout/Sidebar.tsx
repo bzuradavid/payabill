@@ -2,11 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTransition } from "react";
 import { cn } from "~/lib/utils";
+import { signOutAction } from "~/actions/auth";
+
+export interface SidebarUser {
+  id: string;
+  name: string | null;
+  email: string | null;
+  image: string | null;
+}
 
 const navItems = [
   {
-    href: "/",
+    href: "/dashboard",
     label: "Dashboard",
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -48,17 +57,28 @@ const navItems = [
 ];
 
 interface SidebarProps {
+  user: SidebarUser;
   open?: boolean;
   onClose?: () => void;
 }
 
-export function Sidebar({ open = false, onClose }: SidebarProps) {
+export function Sidebar({ user, open = false, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const [isSigningOut, startSignOut] = useTransition();
 
   const isActive = (href: string) => {
-    if (href === "/") return pathname === "/";
+    if (href === "/dashboard") return pathname === "/dashboard";
     return pathname.startsWith(href);
   };
+
+  const handleSignOut = () => {
+    startSignOut(async () => {
+      await signOutAction();
+    });
+  };
+
+  const initial = (user.name ?? user.email ?? "?").trim().charAt(0).toUpperCase();
+  const displayName = user.name ?? user.email ?? "Account";
 
   return (
     <aside
@@ -108,10 +128,43 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
         ))}
       </nav>
 
-      {/* Footer */}
-      <div className="border-t border-white/10 px-5 py-4">
-        <p className="text-xs font-medium text-white/70">Acme Corp</p>
-        <p className="text-xs text-white/40">Demo workspace</p>
+      {/* User footer */}
+      <div className="border-t border-white/10 p-3">
+        <div className="flex items-center gap-3 rounded-xl bg-white/5 px-3 py-2.5">
+          {user.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={user.image}
+              alt=""
+              className="h-9 w-9 shrink-0 rounded-full border border-white/20 object-cover"
+            />
+          ) : (
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 text-sm font-semibold text-white">
+              {initial}
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-xs font-semibold text-white">
+              {displayName}
+            </p>
+            {user.email && (
+              <p className="truncate text-[0.7rem] text-white/50">
+                {user.email}
+              </p>
+            )}
+          </div>
+        </div>
+        <button
+          onClick={handleSignOut}
+          disabled={isSigningOut}
+          className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-white/70 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-50"
+        >
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          {isSigningOut ? "Signing out…" : "Sign out"}
+        </button>
       </div>
     </aside>
   );

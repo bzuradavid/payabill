@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { billService } from "~/server/container";
+import { getServices } from "~/server/container";
 import { Card, CardContent, CardHeader } from "~/components/ui/Card";
 import { BillStatusBadge } from "~/components/bills/BillStatusBadge";
 import { formatCurrency, formatDate } from "~/lib/utils";
@@ -14,6 +14,7 @@ interface BillDetailPageProps {
 
 export default async function BillDetailPage({ params }: BillDetailPageProps) {
   const { id } = await params;
+  const { billService } = await getServices();
   const bill = await billService.getById(id);
   if (!bill) notFound();
 

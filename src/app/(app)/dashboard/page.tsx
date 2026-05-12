@@ -1,15 +1,17 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
-import { billService } from "~/server/container";
+import { getServices } from "~/server/container";
 import { StatCard } from "~/components/ui/StatCard";
 import { Card, CardContent, CardHeader } from "~/components/ui/Card";
 import { BillStatusBadge } from "~/components/bills/BillStatusBadge";
 import { Button } from "~/components/ui/Button";
+import { HideSeedToggle } from "~/components/dashboard/HideSeedToggle";
 import { formatCurrency, getDueDateLabel, isOverdue } from "~/lib/utils";
 import { cn } from "~/lib/utils";
 
 export default async function DashboardPage() {
+  const { billService, ctx } = await getServices();
   const [stats, recentBills] = await Promise.all([
     billService.getDashboardStats(),
     billService.getRecentBills(8),
@@ -25,14 +27,17 @@ export default async function DashboardPage() {
             Overview of your accounts payable
           </p>
         </div>
-        <Link href="/bills/new">
-          <Button size="md">
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            New Bill
-          </Button>
-        </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          <HideSeedToggle initialHideSeed={ctx.hideSeed} />
+          <Link href="/bills/new">
+            <Button size="md">
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              New Bill
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Stat cards */}

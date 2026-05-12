@@ -4,6 +4,7 @@ import {
   PaymentStatus,
   type PaymentMethod,
 } from "../../../generated/prisma";
+import { type UserContext } from "~/server/get-user";
 
 export interface CreateLineItemInput {
   description: string;
@@ -44,11 +45,23 @@ const BILL_INCLUDE = {
 } as const;
 
 export class BillService {
-  constructor(private db: PrismaClient) {}
+  constructor(
+    private db: PrismaClient,
+    private ctx: UserContext,
+  ) {}
+
+  /** Base where-clause scoping every query to the current user and honoring hideSeed. */
+  private scope() {
+    return {
+      userId: this.ctx.userId,
+      ...(this.ctx.hideSeed ? { seed: false } : {}),
+    };
+  }
 
   async list(filters: BillListFilters = {}) {
     const bills = await this.db.bill.findMany({
       where: {
+        ...this.scope(),
         ...(filters.statuses?.length ? { status: { in: filters.statuses } } : {}),
         ...(filters.search
           ? {
@@ -88,8 +101,8 @@ export class BillService {
   }
 
   async getById(id: string) {
-    const bill = await this.db.bill.findUnique({
-      where: { id },
+    const bill = await this.db.bill.findFirst({
+      where: { id, ...this.scope() },
       include: BILL_INCLUDE,
     });
     if (!bill) return null;
@@ -100,10 +113,17 @@ export class BillService {
   }
 
   async create(data: CreateBillInput) {
+    const vendor = await this.db.vendor.findFirst({
+      where: { id: data.vendorId, userId: this.ctx.userId },
+      select: { id: true },
+    });
+    if (!vendor) throw new Error("Vendor not found");
+
     const { lineItems, ...billData } = data;
     return this.db.bill.create({
       data: {
         ...billData,
+        userId: this.ctx.userId,
         status: BillStatus.DRAFT,
         lineItems: { create: lineItems },
       },
@@ -112,7 +132,9 @@ export class BillService {
   }
 
   async update(id: string, data: UpdateBillInput) {
-    const bill = await this.db.bill.findUnique({ where: { id } });
+    const bill = await this.db.bill.findFirst({
+      where: { id, userId: this.ctx.userId },
+    });
     if (!bill) throw new Error("Bill not found");
     if (bill.status !== BillStatus.DRAFT) {
       throw new Error("Only draft bills can be edited");
@@ -134,8 +156,8 @@ export class BillService {
   }
 
   async submit(id: string) {
-    const bill = await this.db.bill.findUnique({
-      where: { id },
+    const bill = await this.db.bill.findFirst({
+      where: { id, userId: this.ctx.userId },
       include: { lineItems: true },
     });
     if (!bill) throw new Error("Bill not found");
@@ -153,7 +175,9 @@ export class BillService {
   }
 
   async approve(id: string) {
-    const bill = await this.db.bill.findUnique({ where: { id } });
+    const bill = await this.db.bill.findFirst({
+      where: { id, userId: this.ctx.userId },
+    });
     if (!bill) throw new Error("Bill not found");
     if (bill.status !== BillStatus.PENDING_APPROVAL) {
       throw new Error("Only pending bills can be approved");
@@ -166,7 +190,9 @@ export class BillService {
   }
 
   async reject(id: string, reason: string) {
-    const bill = await this.db.bill.findUnique({ where: { id } });
+    const bill = await this.db.bill.findFirst({
+      where: { id, userId: this.ctx.userId },
+    });
     if (!bill) throw new Error("Bill not found");
     if (bill.status !== BillStatus.PENDING_APPROVAL) {
       throw new Error("Only pending bills can be rejected");
@@ -182,8 +208,8 @@ export class BillService {
   }
 
   async schedulePayment(id: string, scheduledDate: Date) {
-    const bill = await this.db.bill.findUnique({
-      where: { id },
+    const bill = await this.db.bill.findFirst({
+      where: { id, userId: this.ctx.userId },
       include: { lineItems: true },
     });
     if (!bill) throw new Error("Bill not found");
@@ -213,8 +239,8 @@ export class BillService {
   }
 
   async markPaid(id: string) {
-    const bill = await this.db.bill.findUnique({
-      where: { id },
+    const bill = await this.db.bill.findFirst({
+      where: { id, userId: this.ctx.userId },
       include: { payments: true },
     });
     if (!bill) throw new Error("Bill not found");
@@ -244,7 +270,9 @@ export class BillService {
   }
 
   async void(id: string) {
-    const bill = await this.db.bill.findUnique({ where: { id } });
+    const bill = await this.db.bill.findFirst({
+      where: { id, userId: this.ctx.userId },
+    });
     if (!bill) throw new Error("Bill not found");
     if (bill.status === BillStatus.PAID) {
       throw new Error("Paid bills cannot be voided");
@@ -266,6 +294,7 @@ export class BillService {
     const [allActiveBills, paidThisMonth] = await Promise.all([
       this.db.bill.findMany({
         where: {
+          ...this.scope(),
           status: {
             in: [
               BillStatus.DRAFT,
@@ -279,6 +308,7 @@ export class BillService {
       }),
       this.db.bill.findMany({
         where: {
+          ...this.scope(),
           status: BillStatus.PAID,
           paidAt: { gte: startOfMonth },
         },
@@ -325,6 +355,7 @@ export class BillService {
 
   async getRecentBills(limit = 8) {
     const bills = await this.db.bill.findMany({
+      where: this.scope(),
       take: limit,
       orderBy: { updatedAt: "desc" },
       include: { vendor: true, lineItems: true },

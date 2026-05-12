@@ -1,9 +1,10 @@
 export const dynamic = "force-dynamic";
 
-import { vendorService, glAccountService } from "~/server/container";
+import { getServices } from "~/server/container";
 import { NewBillForm } from "./NewBillForm";
 
 export default async function NewBillPage() {
+  const { vendorService, glAccountService } = await getServices();
   const [vendors, glAccounts] = await Promise.all([
     vendorService.list({ status: "ACTIVE" }),
     glAccountService.list(),

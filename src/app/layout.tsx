@@ -3,8 +3,6 @@ import "~/styles/globals.css";
 import { type Metadata, type Viewport } from "next";
 import { Geist } from "next/font/google";
 
-import { AppShell } from "~/components/layout/AppShell";
-
 export const metadata: Metadata = {
   title: "Payables",
   description: "Accounts payable management",
@@ -26,9 +24,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${geist.variable}`}>
-      <body className="antialiased">
-        <AppShell>{children}</AppShell>
-      </body>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }

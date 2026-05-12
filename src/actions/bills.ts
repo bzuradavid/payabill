@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { billService } from "~/server/container";
+import { getServices } from "~/server/container";
 
 const lineItemSchema = z.object({
   description: z.string().min(1),
@@ -15,7 +15,7 @@ const lineItemSchema = z.object({
 const createBillSchema = z.object({
   vendorId: z.string().min(1),
   invoiceNumber: z.string().optional(),
-  invoiceDate: z.string(), // ISO string from form
+  invoiceDate: z.string(),
   dueDate: z.string(),
   paymentMethod: z.enum(["ACH", "CHECK", "WIRE"]).optional(),
   memo: z.string().optional(),
@@ -26,19 +26,25 @@ type ActionResult<T = void> =
   | { success: true; data: T }
   | { success: false; error: string };
 
+function invalidateBillSurfaces(id?: string) {
+  if (id) revalidatePath(`/bills/${id}`);
+  revalidatePath("/bills");
+  revalidatePath("/dashboard");
+}
+
 export async function createBill(
   rawData: unknown,
 ): Promise<ActionResult<{ id: string }>> {
   try {
     const data = createBillSchema.parse(rawData);
+    const { billService } = await getServices();
     const bill = await billService.create({
       ...data,
       invoiceDate: new Date(data.invoiceDate),
       dueDate: new Date(data.dueDate),
       paymentMethod: data.paymentMethod,
     });
-    revalidatePath("/bills");
-    revalidatePath("/");
+    invalidateBillSurfaces();
     return { success: true, data: { id: bill.id } };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Failed to create bill" };
@@ -47,10 +53,9 @@ export async function createBill(
 
 export async function submitBill(id: string): Promise<ActionResult> {
   try {
+    const { billService } = await getServices();
     await billService.submit(id);
-    revalidatePath(`/bills/${id}`);
-    revalidatePath("/bills");
-    revalidatePath("/");
+    invalidateBillSurfaces(id);
     return { success: true, data: undefined };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Failed to submit bill" };
@@ -59,10 +64,9 @@ export async function submitBill(id: string): Promise<ActionResult> {
 
 export async function approveBill(id: string): Promise<ActionResult> {
   try {
+    const { billService } = await getServices();
     await billService.approve(id);
-    revalidatePath(`/bills/${id}`);
-    revalidatePath("/bills");
-    revalidatePath("/");
+    invalidateBillSurfaces(id);
     return { success: true, data: undefined };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Failed to approve bill" };
@@ -77,10 +81,9 @@ export async function rejectBill(
     if (!reason.trim()) {
       return { success: false, error: "Rejection reason is required" };
     }
+    const { billService } = await getServices();
     await billService.reject(id, reason);
-    revalidatePath(`/bills/${id}`);
-    revalidatePath("/bills");
-    revalidatePath("/");
+    invalidateBillSurfaces(id);
     return { success: true, data: undefined };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Failed to reject bill" };
@@ -96,10 +99,9 @@ export async function schedulePayment(
     if (isNaN(date.getTime())) {
       return { success: false, error: "Invalid scheduled date" };
     }
+    const { billService } = await getServices();
     await billService.schedulePayment(id, date);
-    revalidatePath(`/bills/${id}`);
-    revalidatePath("/bills");
-    revalidatePath("/");
+    invalidateBillSurfaces(id);
     return { success: true, data: undefined };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Failed to schedule payment" };
@@ -108,10 +110,9 @@ export async function schedulePayment(
 
 export async function markPaid(id: string): Promise<ActionResult> {
   try {
+    const { billService } = await getServices();
     await billService.markPaid(id);
-    revalidatePath(`/bills/${id}`);
-    revalidatePath("/bills");
-    revalidatePath("/");
+    invalidateBillSurfaces(id);
     return { success: true, data: undefined };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Failed to mark bill as paid" };
@@ -120,10 +121,9 @@ export async function markPaid(id: string): Promise<ActionResult> {
 
 export async function voidBill(id: string): Promise<ActionResult> {
   try {
+    const { billService } = await getServices();
     await billService.void(id);
-    revalidatePath(`/bills/${id}`);
-    revalidatePath("/bills");
-    revalidatePath("/");
+    invalidateBillSurfaces(id);
     return { success: true, data: undefined };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Failed to void bill" };

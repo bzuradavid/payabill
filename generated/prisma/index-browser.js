@@ -127,6 +127,7 @@ exports.Prisma.UserScalarFieldEnum = {
   email: 'email',
   emailVerified: 'emailVerified',
   image: 'image',
+  hideSeed: 'hideSeed',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -162,6 +163,8 @@ exports.Prisma.VerificationTokenScalarFieldEnum = {
 
 exports.Prisma.VendorScalarFieldEnum = {
   id: 'id',
+  userId: 'userId',
+  seed: 'seed',
   name: 'name',
   email: 'email',
   phone: 'phone',
@@ -184,6 +187,8 @@ exports.Prisma.VendorScalarFieldEnum = {
 
 exports.Prisma.GLAccountScalarFieldEnum = {
   id: 'id',
+  userId: 'userId',
+  seed: 'seed',
   code: 'code',
   name: 'name',
   type: 'type',
@@ -192,6 +197,8 @@ exports.Prisma.GLAccountScalarFieldEnum = {
 
 exports.Prisma.BillScalarFieldEnum = {
   id: 'id',
+  userId: 'userId',
+  seed: 'seed',
   vendorId: 'vendorId',
   invoiceNumber: 'invoiceNumber',
   invoiceDate: 'invoiceDate',
@@ -210,6 +217,7 @@ exports.Prisma.BillScalarFieldEnum = {
 exports.Prisma.BillLineItemScalarFieldEnum = {
   id: 'id',
   billId: 'billId',
+  seed: 'seed',
   description: 'description',
   quantity: 'quantity',
   unitPrice: 'unitPrice',
@@ -221,6 +229,7 @@ exports.Prisma.BillLineItemScalarFieldEnum = {
 exports.Prisma.PaymentScalarFieldEnum = {
   id: 'id',
   billId: 'billId',
+  seed: 'seed',
   amount: 'amount',
   method: 'method',
   status: 'status',

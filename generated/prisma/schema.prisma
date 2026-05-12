@@ -44,15 +44,19 @@ enum GLAccountType {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String      @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?     @unique
   emailVerified DateTime?
   image         String?
+  hideSeed      Boolean     @default(false)
   accounts      Account[]
   sessions      Session[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  vendors       Vendor[]
+  bills         Bill[]
+  glAccounts    GLAccount[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
 model Account {
@@ -92,6 +96,9 @@ model VerificationToken {
 
 model Vendor {
   id                   String        @id @default(cuid())
+  userId               String
+  user                 User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  seed                 Boolean       @default(false)
   name                 String
   email                String?
   phone                String?
@@ -112,23 +119,32 @@ model Vendor {
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
 
+  @@index([userId])
   @@index([name])
   @@index([status])
 }
 
 model GLAccount {
   id        String         @id @default(cuid())
-  code      String         @unique
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  seed      Boolean        @default(false)
+  code      String
   name      String
   type      GLAccountType
   lineItems BillLineItem[]
   createdAt DateTime       @default(now())
 
+  @@unique([userId, code])
+  @@index([userId])
   @@index([type])
 }
 
 model Bill {
   id              String         @id @default(cuid())
+  userId          String
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  seed            Boolean        @default(false)
   vendor          Vendor         @relation(fields: [vendorId], references: [id])
   vendorId        String
   invoiceNumber   String?
@@ -146,6 +162,7 @@ model Bill {
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
 
+  @@index([userId])
   @@index([status])
   @@index([vendorId])
   @@index([dueDate])
@@ -155,6 +172,7 @@ model BillLineItem {
   id          String     @id @default(cuid())
   bill        Bill       @relation(fields: [billId], references: [id], onDelete: Cascade)
   billId      String
+  seed        Boolean    @default(false)
   description String
   quantity    Float      @default(1)
   unitPrice   Float
@@ -168,6 +186,7 @@ model Payment {
   id            String        @id @default(cuid())
   bill          Bill          @relation(fields: [billId], references: [id])
   billId        String
+  seed          Boolean       @default(false)
   amount        Float
   method        PaymentMethod
   status        PaymentStatus @default(PENDING)

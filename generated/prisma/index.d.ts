@@ -1665,11 +1665,17 @@ export namespace Prisma {
   export type UserCountOutputType = {
     accounts: number
     sessions: number
+    vendors: number
+    bills: number
+    glAccounts: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     accounts?: boolean | UserCountOutputTypeCountAccountsArgs
     sessions?: boolean | UserCountOutputTypeCountSessionsArgs
+    vendors?: boolean | UserCountOutputTypeCountVendorsArgs
+    bills?: boolean | UserCountOutputTypeCountBillsArgs
+    glAccounts?: boolean | UserCountOutputTypeCountGlAccountsArgs
   }
 
   // Custom InputTypes
@@ -1695,6 +1701,27 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SessionWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountVendorsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: VendorWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountBillsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BillWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountGlAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GLAccountWhereInput
   }
 
 
@@ -1820,6 +1847,7 @@ export namespace Prisma {
     email: string | null
     emailVerified: Date | null
     image: string | null
+    hideSeed: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1830,6 +1858,7 @@ export namespace Prisma {
     email: string | null
     emailVerified: Date | null
     image: string | null
+    hideSeed: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1840,6 +1869,7 @@ export namespace Prisma {
     email: number
     emailVerified: number
     image: number
+    hideSeed: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -1852,6 +1882,7 @@ export namespace Prisma {
     email?: true
     emailVerified?: true
     image?: true
+    hideSeed?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1862,6 +1893,7 @@ export namespace Prisma {
     email?: true
     emailVerified?: true
     image?: true
+    hideSeed?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1872,6 +1904,7 @@ export namespace Prisma {
     email?: true
     emailVerified?: true
     image?: true
+    hideSeed?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -1955,6 +1988,7 @@ export namespace Prisma {
     email: string | null
     emailVerified: Date | null
     image: string | null
+    hideSeed: boolean
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
@@ -1982,10 +2016,14 @@ export namespace Prisma {
     email?: boolean
     emailVerified?: boolean
     image?: boolean
+    hideSeed?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     accounts?: boolean | User$accountsArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
+    vendors?: boolean | User$vendorsArgs<ExtArgs>
+    bills?: boolean | User$billsArgs<ExtArgs>
+    glAccounts?: boolean | User$glAccountsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -1995,6 +2033,7 @@ export namespace Prisma {
     email?: boolean
     emailVerified?: boolean
     image?: boolean
+    hideSeed?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -2005,6 +2044,7 @@ export namespace Prisma {
     email?: boolean
     emailVerified?: boolean
     image?: boolean
+    hideSeed?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -2015,14 +2055,18 @@ export namespace Prisma {
     email?: boolean
     emailVerified?: boolean
     image?: boolean
+    hideSeed?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "hideSeed" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     accounts?: boolean | User$accountsArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
+    vendors?: boolean | User$vendorsArgs<ExtArgs>
+    bills?: boolean | User$billsArgs<ExtArgs>
+    glAccounts?: boolean | User$glAccountsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2033,6 +2077,9 @@ export namespace Prisma {
     objects: {
       accounts: Prisma.$AccountPayload<ExtArgs>[]
       sessions: Prisma.$SessionPayload<ExtArgs>[]
+      vendors: Prisma.$VendorPayload<ExtArgs>[]
+      bills: Prisma.$BillPayload<ExtArgs>[]
+      glAccounts: Prisma.$GLAccountPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2040,6 +2087,7 @@ export namespace Prisma {
       email: string | null
       emailVerified: Date | null
       image: string | null
+      hideSeed: boolean
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["user"]>
@@ -2438,6 +2486,9 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     accounts<T extends User$accountsArgs<ExtArgs> = {}>(args?: Subset<T, User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sessions<T extends User$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    vendors<T extends User$vendorsArgs<ExtArgs> = {}>(args?: Subset<T, User$vendorsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VendorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    bills<T extends User$billsArgs<ExtArgs> = {}>(args?: Subset<T, User$billsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    glAccounts<T extends User$glAccountsArgs<ExtArgs> = {}>(args?: Subset<T, User$glAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GLAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2472,6 +2523,7 @@ export namespace Prisma {
     readonly email: FieldRef<"User", 'String'>
     readonly emailVerified: FieldRef<"User", 'DateTime'>
     readonly image: FieldRef<"User", 'String'>
+    readonly hideSeed: FieldRef<"User", 'Boolean'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
@@ -2907,6 +2959,78 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SessionScalarFieldEnum | SessionScalarFieldEnum[]
+  }
+
+  /**
+   * User.vendors
+   */
+  export type User$vendorsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Vendor
+     */
+    select?: VendorSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Vendor
+     */
+    omit?: VendorOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VendorInclude<ExtArgs> | null
+    where?: VendorWhereInput
+    orderBy?: VendorOrderByWithRelationInput | VendorOrderByWithRelationInput[]
+    cursor?: VendorWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: VendorScalarFieldEnum | VendorScalarFieldEnum[]
+  }
+
+  /**
+   * User.bills
+   */
+  export type User$billsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bill
+     */
+    select?: BillSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Bill
+     */
+    omit?: BillOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillInclude<ExtArgs> | null
+    where?: BillWhereInput
+    orderBy?: BillOrderByWithRelationInput | BillOrderByWithRelationInput[]
+    cursor?: BillWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BillScalarFieldEnum | BillScalarFieldEnum[]
+  }
+
+  /**
+   * User.glAccounts
+   */
+  export type User$glAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GLAccount
+     */
+    select?: GLAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GLAccount
+     */
+    omit?: GLAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GLAccountInclude<ExtArgs> | null
+    where?: GLAccountWhereInput
+    orderBy?: GLAccountOrderByWithRelationInput | GLAccountOrderByWithRelationInput[]
+    cursor?: GLAccountWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: GLAccountScalarFieldEnum | GLAccountScalarFieldEnum[]
   }
 
   /**
@@ -6154,6 +6278,8 @@ export namespace Prisma {
 
   export type VendorMinAggregateOutputType = {
     id: string | null
+    userId: string | null
+    seed: boolean | null
     name: string | null
     email: string | null
     phone: string | null
@@ -6176,6 +6302,8 @@ export namespace Prisma {
 
   export type VendorMaxAggregateOutputType = {
     id: string | null
+    userId: string | null
+    seed: boolean | null
     name: string | null
     email: string | null
     phone: string | null
@@ -6198,6 +6326,8 @@ export namespace Prisma {
 
   export type VendorCountAggregateOutputType = {
     id: number
+    userId: number
+    seed: number
     name: number
     email: number
     phone: number
@@ -6222,6 +6352,8 @@ export namespace Prisma {
 
   export type VendorMinAggregateInputType = {
     id?: true
+    userId?: true
+    seed?: true
     name?: true
     email?: true
     phone?: true
@@ -6244,6 +6376,8 @@ export namespace Prisma {
 
   export type VendorMaxAggregateInputType = {
     id?: true
+    userId?: true
+    seed?: true
     name?: true
     email?: true
     phone?: true
@@ -6266,6 +6400,8 @@ export namespace Prisma {
 
   export type VendorCountAggregateInputType = {
     id?: true
+    userId?: true
+    seed?: true
     name?: true
     email?: true
     phone?: true
@@ -6361,6 +6497,8 @@ export namespace Prisma {
 
   export type VendorGroupByOutputType = {
     id: string
+    userId: string
+    seed: boolean
     name: string
     email: string | null
     phone: string | null
@@ -6400,6 +6538,8 @@ export namespace Prisma {
 
   export type VendorSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    userId?: boolean
+    seed?: boolean
     name?: boolean
     email?: boolean
     phone?: boolean
@@ -6418,12 +6558,15 @@ export namespace Prisma {
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
     bills?: boolean | Vendor$billsArgs<ExtArgs>
     _count?: boolean | VendorCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["vendor"]>
 
   export type VendorSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    userId?: boolean
+    seed?: boolean
     name?: boolean
     email?: boolean
     phone?: boolean
@@ -6442,10 +6585,13 @@ export namespace Prisma {
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["vendor"]>
 
   export type VendorSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    userId?: boolean
+    seed?: boolean
     name?: boolean
     email?: boolean
     phone?: boolean
@@ -6464,10 +6610,13 @@ export namespace Prisma {
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["vendor"]>
 
   export type VendorSelectScalar = {
     id?: boolean
+    userId?: boolean
+    seed?: boolean
     name?: boolean
     email?: boolean
     phone?: boolean
@@ -6488,21 +6637,29 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type VendorOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "phone" | "website" | "addressLine1" | "addressLine2" | "city" | "state" | "zip" | "country" | "defaultPaymentMethod" | "bankName" | "bankRoutingNumber" | "bankAccountNumber" | "taxId" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["vendor"]>
+  export type VendorOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "seed" | "name" | "email" | "phone" | "website" | "addressLine1" | "addressLine2" | "city" | "state" | "zip" | "country" | "defaultPaymentMethod" | "bankName" | "bankRoutingNumber" | "bankAccountNumber" | "taxId" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["vendor"]>
   export type VendorInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
     bills?: boolean | Vendor$billsArgs<ExtArgs>
     _count?: boolean | VendorCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type VendorIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type VendorIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type VendorIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type VendorIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
 
   export type $VendorPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Vendor"
     objects: {
+      user: Prisma.$UserPayload<ExtArgs>
       bills: Prisma.$BillPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      userId: string
+      seed: boolean
       name: string
       email: string | null
       phone: string | null
@@ -6915,6 +7072,7 @@ export namespace Prisma {
    */
   export interface Prisma__VendorClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     bills<T extends Vendor$billsArgs<ExtArgs> = {}>(args?: Subset<T, Vendor$billsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -6946,6 +7104,8 @@ export namespace Prisma {
    */
   interface VendorFieldRefs {
     readonly id: FieldRef<"Vendor", 'String'>
+    readonly userId: FieldRef<"Vendor", 'String'>
+    readonly seed: FieldRef<"Vendor", 'Boolean'>
     readonly name: FieldRef<"Vendor", 'String'>
     readonly email: FieldRef<"Vendor", 'String'>
     readonly phone: FieldRef<"Vendor", 'String'>
@@ -7213,6 +7373,10 @@ export namespace Prisma {
      */
     data: VendorCreateManyInput | VendorCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VendorIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -7283,6 +7447,10 @@ export namespace Prisma {
      * Limit how many Vendors to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VendorIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -7406,6 +7574,8 @@ export namespace Prisma {
 
   export type GLAccountMinAggregateOutputType = {
     id: string | null
+    userId: string | null
+    seed: boolean | null
     code: string | null
     name: string | null
     type: $Enums.GLAccountType | null
@@ -7414,6 +7584,8 @@ export namespace Prisma {
 
   export type GLAccountMaxAggregateOutputType = {
     id: string | null
+    userId: string | null
+    seed: boolean | null
     code: string | null
     name: string | null
     type: $Enums.GLAccountType | null
@@ -7422,6 +7594,8 @@ export namespace Prisma {
 
   export type GLAccountCountAggregateOutputType = {
     id: number
+    userId: number
+    seed: number
     code: number
     name: number
     type: number
@@ -7432,6 +7606,8 @@ export namespace Prisma {
 
   export type GLAccountMinAggregateInputType = {
     id?: true
+    userId?: true
+    seed?: true
     code?: true
     name?: true
     type?: true
@@ -7440,6 +7616,8 @@ export namespace Prisma {
 
   export type GLAccountMaxAggregateInputType = {
     id?: true
+    userId?: true
+    seed?: true
     code?: true
     name?: true
     type?: true
@@ -7448,6 +7626,8 @@ export namespace Prisma {
 
   export type GLAccountCountAggregateInputType = {
     id?: true
+    userId?: true
+    seed?: true
     code?: true
     name?: true
     type?: true
@@ -7529,6 +7709,8 @@ export namespace Prisma {
 
   export type GLAccountGroupByOutputType = {
     id: string
+    userId: string
+    seed: boolean
     code: string
     name: string
     type: $Enums.GLAccountType
@@ -7554,53 +7736,72 @@ export namespace Prisma {
 
   export type GLAccountSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    userId?: boolean
+    seed?: boolean
     code?: boolean
     name?: boolean
     type?: boolean
     createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
     lineItems?: boolean | GLAccount$lineItemsArgs<ExtArgs>
     _count?: boolean | GLAccountCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["gLAccount"]>
 
   export type GLAccountSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    userId?: boolean
+    seed?: boolean
     code?: boolean
     name?: boolean
     type?: boolean
     createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["gLAccount"]>
 
   export type GLAccountSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    userId?: boolean
+    seed?: boolean
     code?: boolean
     name?: boolean
     type?: boolean
     createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["gLAccount"]>
 
   export type GLAccountSelectScalar = {
     id?: boolean
+    userId?: boolean
+    seed?: boolean
     code?: boolean
     name?: boolean
     type?: boolean
     createdAt?: boolean
   }
 
-  export type GLAccountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "name" | "type" | "createdAt", ExtArgs["result"]["gLAccount"]>
+  export type GLAccountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "seed" | "code" | "name" | "type" | "createdAt", ExtArgs["result"]["gLAccount"]>
   export type GLAccountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
     lineItems?: boolean | GLAccount$lineItemsArgs<ExtArgs>
     _count?: boolean | GLAccountCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type GLAccountIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type GLAccountIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type GLAccountIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type GLAccountIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
 
   export type $GLAccountPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "GLAccount"
     objects: {
+      user: Prisma.$UserPayload<ExtArgs>
       lineItems: Prisma.$BillLineItemPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      userId: string
+      seed: boolean
       code: string
       name: string
       type: $Enums.GLAccountType
@@ -7999,6 +8200,7 @@ export namespace Prisma {
    */
   export interface Prisma__GLAccountClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     lineItems<T extends GLAccount$lineItemsArgs<ExtArgs> = {}>(args?: Subset<T, GLAccount$lineItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillLineItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -8030,6 +8232,8 @@ export namespace Prisma {
    */
   interface GLAccountFieldRefs {
     readonly id: FieldRef<"GLAccount", 'String'>
+    readonly userId: FieldRef<"GLAccount", 'String'>
+    readonly seed: FieldRef<"GLAccount", 'Boolean'>
     readonly code: FieldRef<"GLAccount", 'String'>
     readonly name: FieldRef<"GLAccount", 'String'>
     readonly type: FieldRef<"GLAccount", 'GLAccountType'>
@@ -8283,6 +8487,10 @@ export namespace Prisma {
      */
     data: GLAccountCreateManyInput | GLAccountCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GLAccountIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -8353,6 +8561,10 @@ export namespace Prisma {
      * Limit how many GLAccounts to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GLAccountIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -8476,6 +8688,8 @@ export namespace Prisma {
 
   export type BillMinAggregateOutputType = {
     id: string | null
+    userId: string | null
+    seed: boolean | null
     vendorId: string | null
     invoiceNumber: string | null
     invoiceDate: Date | null
@@ -8493,6 +8707,8 @@ export namespace Prisma {
 
   export type BillMaxAggregateOutputType = {
     id: string | null
+    userId: string | null
+    seed: boolean | null
     vendorId: string | null
     invoiceNumber: string | null
     invoiceDate: Date | null
@@ -8510,6 +8726,8 @@ export namespace Prisma {
 
   export type BillCountAggregateOutputType = {
     id: number
+    userId: number
+    seed: number
     vendorId: number
     invoiceNumber: number
     invoiceDate: number
@@ -8529,6 +8747,8 @@ export namespace Prisma {
 
   export type BillMinAggregateInputType = {
     id?: true
+    userId?: true
+    seed?: true
     vendorId?: true
     invoiceNumber?: true
     invoiceDate?: true
@@ -8546,6 +8766,8 @@ export namespace Prisma {
 
   export type BillMaxAggregateInputType = {
     id?: true
+    userId?: true
+    seed?: true
     vendorId?: true
     invoiceNumber?: true
     invoiceDate?: true
@@ -8563,6 +8785,8 @@ export namespace Prisma {
 
   export type BillCountAggregateInputType = {
     id?: true
+    userId?: true
+    seed?: true
     vendorId?: true
     invoiceNumber?: true
     invoiceDate?: true
@@ -8653,6 +8877,8 @@ export namespace Prisma {
 
   export type BillGroupByOutputType = {
     id: string
+    userId: string
+    seed: boolean
     vendorId: string
     invoiceNumber: string | null
     invoiceDate: Date
@@ -8687,6 +8913,8 @@ export namespace Prisma {
 
   export type BillSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    userId?: boolean
+    seed?: boolean
     vendorId?: boolean
     invoiceNumber?: boolean
     invoiceDate?: boolean
@@ -8700,6 +8928,7 @@ export namespace Prisma {
     paidAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
     vendor?: boolean | VendorDefaultArgs<ExtArgs>
     lineItems?: boolean | Bill$lineItemsArgs<ExtArgs>
     payments?: boolean | Bill$paymentsArgs<ExtArgs>
@@ -8708,6 +8937,8 @@ export namespace Prisma {
 
   export type BillSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    userId?: boolean
+    seed?: boolean
     vendorId?: boolean
     invoiceNumber?: boolean
     invoiceDate?: boolean
@@ -8721,11 +8952,14 @@ export namespace Prisma {
     paidAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
     vendor?: boolean | VendorDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["bill"]>
 
   export type BillSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    userId?: boolean
+    seed?: boolean
     vendorId?: boolean
     invoiceNumber?: boolean
     invoiceDate?: boolean
@@ -8739,11 +8973,14 @@ export namespace Prisma {
     paidAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
     vendor?: boolean | VendorDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["bill"]>
 
   export type BillSelectScalar = {
     id?: boolean
+    userId?: boolean
+    seed?: boolean
     vendorId?: boolean
     invoiceNumber?: boolean
     invoiceDate?: boolean
@@ -8759,29 +8996,35 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "vendorId" | "invoiceNumber" | "invoiceDate" | "dueDate" | "status" | "memo" | "paymentMethod" | "rejectionReason" | "submittedAt" | "approvedAt" | "paidAt" | "createdAt" | "updatedAt", ExtArgs["result"]["bill"]>
+  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "seed" | "vendorId" | "invoiceNumber" | "invoiceDate" | "dueDate" | "status" | "memo" | "paymentMethod" | "rejectionReason" | "submittedAt" | "approvedAt" | "paidAt" | "createdAt" | "updatedAt", ExtArgs["result"]["bill"]>
   export type BillInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
     vendor?: boolean | VendorDefaultArgs<ExtArgs>
     lineItems?: boolean | Bill$lineItemsArgs<ExtArgs>
     payments?: boolean | Bill$paymentsArgs<ExtArgs>
     _count?: boolean | BillCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type BillIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
     vendor?: boolean | VendorDefaultArgs<ExtArgs>
   }
   export type BillIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
     vendor?: boolean | VendorDefaultArgs<ExtArgs>
   }
 
   export type $BillPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Bill"
     objects: {
+      user: Prisma.$UserPayload<ExtArgs>
       vendor: Prisma.$VendorPayload<ExtArgs>
       lineItems: Prisma.$BillLineItemPayload<ExtArgs>[]
       payments: Prisma.$PaymentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      userId: string
+      seed: boolean
       vendorId: string
       invoiceNumber: string | null
       invoiceDate: Date
@@ -9189,6 +9432,7 @@ export namespace Prisma {
    */
   export interface Prisma__BillClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     vendor<T extends VendorDefaultArgs<ExtArgs> = {}>(args?: Subset<T, VendorDefaultArgs<ExtArgs>>): Prisma__VendorClient<$Result.GetResult<Prisma.$VendorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     lineItems<T extends Bill$lineItemsArgs<ExtArgs> = {}>(args?: Subset<T, Bill$lineItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillLineItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     payments<T extends Bill$paymentsArgs<ExtArgs> = {}>(args?: Subset<T, Bill$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -9222,6 +9466,8 @@ export namespace Prisma {
    */
   interface BillFieldRefs {
     readonly id: FieldRef<"Bill", 'String'>
+    readonly userId: FieldRef<"Bill", 'String'>
+    readonly seed: FieldRef<"Bill", 'Boolean'>
     readonly vendorId: FieldRef<"Bill", 'String'>
     readonly invoiceNumber: FieldRef<"Bill", 'String'>
     readonly invoiceDate: FieldRef<"Bill", 'DateTime'>
@@ -9724,6 +9970,7 @@ export namespace Prisma {
   export type BillLineItemMinAggregateOutputType = {
     id: string | null
     billId: string | null
+    seed: boolean | null
     description: string | null
     quantity: number | null
     unitPrice: number | null
@@ -9735,6 +9982,7 @@ export namespace Prisma {
   export type BillLineItemMaxAggregateOutputType = {
     id: string | null
     billId: string | null
+    seed: boolean | null
     description: string | null
     quantity: number | null
     unitPrice: number | null
@@ -9746,6 +9994,7 @@ export namespace Prisma {
   export type BillLineItemCountAggregateOutputType = {
     id: number
     billId: number
+    seed: number
     description: number
     quantity: number
     unitPrice: number
@@ -9771,6 +10020,7 @@ export namespace Prisma {
   export type BillLineItemMinAggregateInputType = {
     id?: true
     billId?: true
+    seed?: true
     description?: true
     quantity?: true
     unitPrice?: true
@@ -9782,6 +10032,7 @@ export namespace Prisma {
   export type BillLineItemMaxAggregateInputType = {
     id?: true
     billId?: true
+    seed?: true
     description?: true
     quantity?: true
     unitPrice?: true
@@ -9793,6 +10044,7 @@ export namespace Prisma {
   export type BillLineItemCountAggregateInputType = {
     id?: true
     billId?: true
+    seed?: true
     description?: true
     quantity?: true
     unitPrice?: true
@@ -9891,6 +10143,7 @@ export namespace Prisma {
   export type BillLineItemGroupByOutputType = {
     id: string
     billId: string
+    seed: boolean
     description: string
     quantity: number
     unitPrice: number
@@ -9921,6 +10174,7 @@ export namespace Prisma {
   export type BillLineItemSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     billId?: boolean
+    seed?: boolean
     description?: boolean
     quantity?: boolean
     unitPrice?: boolean
@@ -9934,6 +10188,7 @@ export namespace Prisma {
   export type BillLineItemSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     billId?: boolean
+    seed?: boolean
     description?: boolean
     quantity?: boolean
     unitPrice?: boolean
@@ -9947,6 +10202,7 @@ export namespace Prisma {
   export type BillLineItemSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     billId?: boolean
+    seed?: boolean
     description?: boolean
     quantity?: boolean
     unitPrice?: boolean
@@ -9960,6 +10216,7 @@ export namespace Prisma {
   export type BillLineItemSelectScalar = {
     id?: boolean
     billId?: boolean
+    seed?: boolean
     description?: boolean
     quantity?: boolean
     unitPrice?: boolean
@@ -9968,7 +10225,7 @@ export namespace Prisma {
     createdAt?: boolean
   }
 
-  export type BillLineItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billId" | "description" | "quantity" | "unitPrice" | "amount" | "glAccountId" | "createdAt", ExtArgs["result"]["billLineItem"]>
+  export type BillLineItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billId" | "seed" | "description" | "quantity" | "unitPrice" | "amount" | "glAccountId" | "createdAt", ExtArgs["result"]["billLineItem"]>
   export type BillLineItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     bill?: boolean | BillDefaultArgs<ExtArgs>
     glAccount?: boolean | BillLineItem$glAccountArgs<ExtArgs>
@@ -9991,6 +10248,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       billId: string
+      seed: boolean
       description: string
       quantity: number
       unitPrice: number
@@ -10424,6 +10682,7 @@ export namespace Prisma {
   interface BillLineItemFieldRefs {
     readonly id: FieldRef<"BillLineItem", 'String'>
     readonly billId: FieldRef<"BillLineItem", 'String'>
+    readonly seed: FieldRef<"BillLineItem", 'Boolean'>
     readonly description: FieldRef<"BillLineItem", 'String'>
     readonly quantity: FieldRef<"BillLineItem", 'Float'>
     readonly unitPrice: FieldRef<"BillLineItem", 'Float'>
@@ -10886,6 +11145,7 @@ export namespace Prisma {
   export type PaymentMinAggregateOutputType = {
     id: string | null
     billId: string | null
+    seed: boolean | null
     amount: number | null
     method: $Enums.PaymentMethod | null
     status: $Enums.PaymentStatus | null
@@ -10900,6 +11160,7 @@ export namespace Prisma {
   export type PaymentMaxAggregateOutputType = {
     id: string | null
     billId: string | null
+    seed: boolean | null
     amount: number | null
     method: $Enums.PaymentMethod | null
     status: $Enums.PaymentStatus | null
@@ -10914,6 +11175,7 @@ export namespace Prisma {
   export type PaymentCountAggregateOutputType = {
     id: number
     billId: number
+    seed: number
     amount: number
     method: number
     status: number
@@ -10938,6 +11200,7 @@ export namespace Prisma {
   export type PaymentMinAggregateInputType = {
     id?: true
     billId?: true
+    seed?: true
     amount?: true
     method?: true
     status?: true
@@ -10952,6 +11215,7 @@ export namespace Prisma {
   export type PaymentMaxAggregateInputType = {
     id?: true
     billId?: true
+    seed?: true
     amount?: true
     method?: true
     status?: true
@@ -10966,6 +11230,7 @@ export namespace Prisma {
   export type PaymentCountAggregateInputType = {
     id?: true
     billId?: true
+    seed?: true
     amount?: true
     method?: true
     status?: true
@@ -11067,6 +11332,7 @@ export namespace Prisma {
   export type PaymentGroupByOutputType = {
     id: string
     billId: string
+    seed: boolean
     amount: number
     method: $Enums.PaymentMethod
     status: $Enums.PaymentStatus
@@ -11100,6 +11366,7 @@ export namespace Prisma {
   export type PaymentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     billId?: boolean
+    seed?: boolean
     amount?: boolean
     method?: boolean
     status?: boolean
@@ -11115,6 +11382,7 @@ export namespace Prisma {
   export type PaymentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     billId?: boolean
+    seed?: boolean
     amount?: boolean
     method?: boolean
     status?: boolean
@@ -11130,6 +11398,7 @@ export namespace Prisma {
   export type PaymentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     billId?: boolean
+    seed?: boolean
     amount?: boolean
     method?: boolean
     status?: boolean
@@ -11145,6 +11414,7 @@ export namespace Prisma {
   export type PaymentSelectScalar = {
     id?: boolean
     billId?: boolean
+    seed?: boolean
     amount?: boolean
     method?: boolean
     status?: boolean
@@ -11156,7 +11426,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type PaymentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billId" | "amount" | "method" | "status" | "reference" | "scheduledDate" | "processedDate" | "memo" | "createdAt" | "updatedAt", ExtArgs["result"]["payment"]>
+  export type PaymentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "billId" | "seed" | "amount" | "method" | "status" | "reference" | "scheduledDate" | "processedDate" | "memo" | "createdAt" | "updatedAt", ExtArgs["result"]["payment"]>
   export type PaymentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     bill?: boolean | BillDefaultArgs<ExtArgs>
   }
@@ -11175,6 +11445,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       billId: string
+      seed: boolean
       amount: number
       method: $Enums.PaymentMethod
       status: $Enums.PaymentStatus
@@ -11610,6 +11881,7 @@ export namespace Prisma {
   interface PaymentFieldRefs {
     readonly id: FieldRef<"Payment", 'String'>
     readonly billId: FieldRef<"Payment", 'String'>
+    readonly seed: FieldRef<"Payment", 'Boolean'>
     readonly amount: FieldRef<"Payment", 'Float'>
     readonly method: FieldRef<"Payment", 'PaymentMethod'>
     readonly status: FieldRef<"Payment", 'PaymentStatus'>
@@ -12053,6 +12325,7 @@ export namespace Prisma {
     email: 'email',
     emailVerified: 'emailVerified',
     image: 'image',
+    hideSeed: 'hideSeed',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -12100,6 +12373,8 @@ export namespace Prisma {
 
   export const VendorScalarFieldEnum: {
     id: 'id',
+    userId: 'userId',
+    seed: 'seed',
     name: 'name',
     email: 'email',
     phone: 'phone',
@@ -12125,6 +12400,8 @@ export namespace Prisma {
 
   export const GLAccountScalarFieldEnum: {
     id: 'id',
+    userId: 'userId',
+    seed: 'seed',
     code: 'code',
     name: 'name',
     type: 'type',
@@ -12136,6 +12413,8 @@ export namespace Prisma {
 
   export const BillScalarFieldEnum: {
     id: 'id',
+    userId: 'userId',
+    seed: 'seed',
     vendorId: 'vendorId',
     invoiceNumber: 'invoiceNumber',
     invoiceDate: 'invoiceDate',
@@ -12157,6 +12436,7 @@ export namespace Prisma {
   export const BillLineItemScalarFieldEnum: {
     id: 'id',
     billId: 'billId',
+    seed: 'seed',
     description: 'description',
     quantity: 'quantity',
     unitPrice: 'unitPrice',
@@ -12171,6 +12451,7 @@ export namespace Prisma {
   export const PaymentScalarFieldEnum: {
     id: 'id',
     billId: 'billId',
+    seed: 'seed',
     amount: 'amount',
     method: 'method',
     status: 'status',
@@ -12239,6 +12520,13 @@ export namespace Prisma {
    * Reference to a field of type 'DateTime[]'
    */
   export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -12352,10 +12640,14 @@ export namespace Prisma {
     email?: StringNullableFilter<"User"> | string | null
     emailVerified?: DateTimeNullableFilter<"User"> | Date | string | null
     image?: StringNullableFilter<"User"> | string | null
+    hideSeed?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     accounts?: AccountListRelationFilter
     sessions?: SessionListRelationFilter
+    vendors?: VendorListRelationFilter
+    bills?: BillListRelationFilter
+    glAccounts?: GLAccountListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -12364,10 +12656,14 @@ export namespace Prisma {
     email?: SortOrderInput | SortOrder
     emailVerified?: SortOrderInput | SortOrder
     image?: SortOrderInput | SortOrder
+    hideSeed?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     accounts?: AccountOrderByRelationAggregateInput
     sessions?: SessionOrderByRelationAggregateInput
+    vendors?: VendorOrderByRelationAggregateInput
+    bills?: BillOrderByRelationAggregateInput
+    glAccounts?: GLAccountOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -12379,10 +12675,14 @@ export namespace Prisma {
     name?: StringNullableFilter<"User"> | string | null
     emailVerified?: DateTimeNullableFilter<"User"> | Date | string | null
     image?: StringNullableFilter<"User"> | string | null
+    hideSeed?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     accounts?: AccountListRelationFilter
     sessions?: SessionListRelationFilter
+    vendors?: VendorListRelationFilter
+    bills?: BillListRelationFilter
+    glAccounts?: GLAccountListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -12391,6 +12691,7 @@ export namespace Prisma {
     email?: SortOrderInput | SortOrder
     emailVerified?: SortOrderInput | SortOrder
     image?: SortOrderInput | SortOrder
+    hideSeed?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -12407,6 +12708,7 @@ export namespace Prisma {
     email?: StringNullableWithAggregatesFilter<"User"> | string | null
     emailVerified?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     image?: StringNullableWithAggregatesFilter<"User"> | string | null
+    hideSeed?: BoolWithAggregatesFilter<"User"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
@@ -12607,6 +12909,8 @@ export namespace Prisma {
     OR?: VendorWhereInput[]
     NOT?: VendorWhereInput | VendorWhereInput[]
     id?: StringFilter<"Vendor"> | string
+    userId?: StringFilter<"Vendor"> | string
+    seed?: BoolFilter<"Vendor"> | boolean
     name?: StringFilter<"Vendor"> | string
     email?: StringNullableFilter<"Vendor"> | string | null
     phone?: StringNullableFilter<"Vendor"> | string | null
@@ -12625,11 +12929,14 @@ export namespace Prisma {
     status?: EnumVendorStatusFilter<"Vendor"> | $Enums.VendorStatus
     createdAt?: DateTimeFilter<"Vendor"> | Date | string
     updatedAt?: DateTimeFilter<"Vendor"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     bills?: BillListRelationFilter
   }
 
   export type VendorOrderByWithRelationInput = {
     id?: SortOrder
+    userId?: SortOrder
+    seed?: SortOrder
     name?: SortOrder
     email?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
@@ -12648,6 +12955,7 @@ export namespace Prisma {
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
     bills?: BillOrderByRelationAggregateInput
   }
 
@@ -12656,6 +12964,8 @@ export namespace Prisma {
     AND?: VendorWhereInput | VendorWhereInput[]
     OR?: VendorWhereInput[]
     NOT?: VendorWhereInput | VendorWhereInput[]
+    userId?: StringFilter<"Vendor"> | string
+    seed?: BoolFilter<"Vendor"> | boolean
     name?: StringFilter<"Vendor"> | string
     email?: StringNullableFilter<"Vendor"> | string | null
     phone?: StringNullableFilter<"Vendor"> | string | null
@@ -12674,11 +12984,14 @@ export namespace Prisma {
     status?: EnumVendorStatusFilter<"Vendor"> | $Enums.VendorStatus
     createdAt?: DateTimeFilter<"Vendor"> | Date | string
     updatedAt?: DateTimeFilter<"Vendor"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     bills?: BillListRelationFilter
   }, "id">
 
   export type VendorOrderByWithAggregationInput = {
     id?: SortOrder
+    userId?: SortOrder
+    seed?: SortOrder
     name?: SortOrder
     email?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
@@ -12707,6 +13020,8 @@ export namespace Prisma {
     OR?: VendorScalarWhereWithAggregatesInput[]
     NOT?: VendorScalarWhereWithAggregatesInput | VendorScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Vendor"> | string
+    userId?: StringWithAggregatesFilter<"Vendor"> | string
+    seed?: BoolWithAggregatesFilter<"Vendor"> | boolean
     name?: StringWithAggregatesFilter<"Vendor"> | string
     email?: StringNullableWithAggregatesFilter<"Vendor"> | string | null
     phone?: StringNullableWithAggregatesFilter<"Vendor"> | string | null
@@ -12732,36 +13047,48 @@ export namespace Prisma {
     OR?: GLAccountWhereInput[]
     NOT?: GLAccountWhereInput | GLAccountWhereInput[]
     id?: StringFilter<"GLAccount"> | string
+    userId?: StringFilter<"GLAccount"> | string
+    seed?: BoolFilter<"GLAccount"> | boolean
     code?: StringFilter<"GLAccount"> | string
     name?: StringFilter<"GLAccount"> | string
     type?: EnumGLAccountTypeFilter<"GLAccount"> | $Enums.GLAccountType
     createdAt?: DateTimeFilter<"GLAccount"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     lineItems?: BillLineItemListRelationFilter
   }
 
   export type GLAccountOrderByWithRelationInput = {
     id?: SortOrder
+    userId?: SortOrder
+    seed?: SortOrder
     code?: SortOrder
     name?: SortOrder
     type?: SortOrder
     createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
     lineItems?: BillLineItemOrderByRelationAggregateInput
   }
 
   export type GLAccountWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    code?: string
+    userId_code?: GLAccountUserIdCodeCompoundUniqueInput
     AND?: GLAccountWhereInput | GLAccountWhereInput[]
     OR?: GLAccountWhereInput[]
     NOT?: GLAccountWhereInput | GLAccountWhereInput[]
+    userId?: StringFilter<"GLAccount"> | string
+    seed?: BoolFilter<"GLAccount"> | boolean
+    code?: StringFilter<"GLAccount"> | string
     name?: StringFilter<"GLAccount"> | string
     type?: EnumGLAccountTypeFilter<"GLAccount"> | $Enums.GLAccountType
     createdAt?: DateTimeFilter<"GLAccount"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     lineItems?: BillLineItemListRelationFilter
-  }, "id" | "code">
+  }, "id" | "userId_code">
 
   export type GLAccountOrderByWithAggregationInput = {
     id?: SortOrder
+    userId?: SortOrder
+    seed?: SortOrder
     code?: SortOrder
     name?: SortOrder
     type?: SortOrder
@@ -12776,6 +13103,8 @@ export namespace Prisma {
     OR?: GLAccountScalarWhereWithAggregatesInput[]
     NOT?: GLAccountScalarWhereWithAggregatesInput | GLAccountScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"GLAccount"> | string
+    userId?: StringWithAggregatesFilter<"GLAccount"> | string
+    seed?: BoolWithAggregatesFilter<"GLAccount"> | boolean
     code?: StringWithAggregatesFilter<"GLAccount"> | string
     name?: StringWithAggregatesFilter<"GLAccount"> | string
     type?: EnumGLAccountTypeWithAggregatesFilter<"GLAccount"> | $Enums.GLAccountType
@@ -12787,6 +13116,8 @@ export namespace Prisma {
     OR?: BillWhereInput[]
     NOT?: BillWhereInput | BillWhereInput[]
     id?: StringFilter<"Bill"> | string
+    userId?: StringFilter<"Bill"> | string
+    seed?: BoolFilter<"Bill"> | boolean
     vendorId?: StringFilter<"Bill"> | string
     invoiceNumber?: StringNullableFilter<"Bill"> | string | null
     invoiceDate?: DateTimeFilter<"Bill"> | Date | string
@@ -12800,6 +13131,7 @@ export namespace Prisma {
     paidAt?: DateTimeNullableFilter<"Bill"> | Date | string | null
     createdAt?: DateTimeFilter<"Bill"> | Date | string
     updatedAt?: DateTimeFilter<"Bill"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     vendor?: XOR<VendorScalarRelationFilter, VendorWhereInput>
     lineItems?: BillLineItemListRelationFilter
     payments?: PaymentListRelationFilter
@@ -12807,6 +13139,8 @@ export namespace Prisma {
 
   export type BillOrderByWithRelationInput = {
     id?: SortOrder
+    userId?: SortOrder
+    seed?: SortOrder
     vendorId?: SortOrder
     invoiceNumber?: SortOrderInput | SortOrder
     invoiceDate?: SortOrder
@@ -12820,6 +13154,7 @@ export namespace Prisma {
     paidAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
     vendor?: VendorOrderByWithRelationInput
     lineItems?: BillLineItemOrderByRelationAggregateInput
     payments?: PaymentOrderByRelationAggregateInput
@@ -12830,6 +13165,8 @@ export namespace Prisma {
     AND?: BillWhereInput | BillWhereInput[]
     OR?: BillWhereInput[]
     NOT?: BillWhereInput | BillWhereInput[]
+    userId?: StringFilter<"Bill"> | string
+    seed?: BoolFilter<"Bill"> | boolean
     vendorId?: StringFilter<"Bill"> | string
     invoiceNumber?: StringNullableFilter<"Bill"> | string | null
     invoiceDate?: DateTimeFilter<"Bill"> | Date | string
@@ -12843,6 +13180,7 @@ export namespace Prisma {
     paidAt?: DateTimeNullableFilter<"Bill"> | Date | string | null
     createdAt?: DateTimeFilter<"Bill"> | Date | string
     updatedAt?: DateTimeFilter<"Bill"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
     vendor?: XOR<VendorScalarRelationFilter, VendorWhereInput>
     lineItems?: BillLineItemListRelationFilter
     payments?: PaymentListRelationFilter
@@ -12850,6 +13188,8 @@ export namespace Prisma {
 
   export type BillOrderByWithAggregationInput = {
     id?: SortOrder
+    userId?: SortOrder
+    seed?: SortOrder
     vendorId?: SortOrder
     invoiceNumber?: SortOrderInput | SortOrder
     invoiceDate?: SortOrder
@@ -12873,6 +13213,8 @@ export namespace Prisma {
     OR?: BillScalarWhereWithAggregatesInput[]
     NOT?: BillScalarWhereWithAggregatesInput | BillScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Bill"> | string
+    userId?: StringWithAggregatesFilter<"Bill"> | string
+    seed?: BoolWithAggregatesFilter<"Bill"> | boolean
     vendorId?: StringWithAggregatesFilter<"Bill"> | string
     invoiceNumber?: StringNullableWithAggregatesFilter<"Bill"> | string | null
     invoiceDate?: DateTimeWithAggregatesFilter<"Bill"> | Date | string
@@ -12894,6 +13236,7 @@ export namespace Prisma {
     NOT?: BillLineItemWhereInput | BillLineItemWhereInput[]
     id?: StringFilter<"BillLineItem"> | string
     billId?: StringFilter<"BillLineItem"> | string
+    seed?: BoolFilter<"BillLineItem"> | boolean
     description?: StringFilter<"BillLineItem"> | string
     quantity?: FloatFilter<"BillLineItem"> | number
     unitPrice?: FloatFilter<"BillLineItem"> | number
@@ -12907,6 +13250,7 @@ export namespace Prisma {
   export type BillLineItemOrderByWithRelationInput = {
     id?: SortOrder
     billId?: SortOrder
+    seed?: SortOrder
     description?: SortOrder
     quantity?: SortOrder
     unitPrice?: SortOrder
@@ -12923,6 +13267,7 @@ export namespace Prisma {
     OR?: BillLineItemWhereInput[]
     NOT?: BillLineItemWhereInput | BillLineItemWhereInput[]
     billId?: StringFilter<"BillLineItem"> | string
+    seed?: BoolFilter<"BillLineItem"> | boolean
     description?: StringFilter<"BillLineItem"> | string
     quantity?: FloatFilter<"BillLineItem"> | number
     unitPrice?: FloatFilter<"BillLineItem"> | number
@@ -12936,6 +13281,7 @@ export namespace Prisma {
   export type BillLineItemOrderByWithAggregationInput = {
     id?: SortOrder
     billId?: SortOrder
+    seed?: SortOrder
     description?: SortOrder
     quantity?: SortOrder
     unitPrice?: SortOrder
@@ -12955,6 +13301,7 @@ export namespace Prisma {
     NOT?: BillLineItemScalarWhereWithAggregatesInput | BillLineItemScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"BillLineItem"> | string
     billId?: StringWithAggregatesFilter<"BillLineItem"> | string
+    seed?: BoolWithAggregatesFilter<"BillLineItem"> | boolean
     description?: StringWithAggregatesFilter<"BillLineItem"> | string
     quantity?: FloatWithAggregatesFilter<"BillLineItem"> | number
     unitPrice?: FloatWithAggregatesFilter<"BillLineItem"> | number
@@ -12969,6 +13316,7 @@ export namespace Prisma {
     NOT?: PaymentWhereInput | PaymentWhereInput[]
     id?: StringFilter<"Payment"> | string
     billId?: StringFilter<"Payment"> | string
+    seed?: BoolFilter<"Payment"> | boolean
     amount?: FloatFilter<"Payment"> | number
     method?: EnumPaymentMethodFilter<"Payment"> | $Enums.PaymentMethod
     status?: EnumPaymentStatusFilter<"Payment"> | $Enums.PaymentStatus
@@ -12984,6 +13332,7 @@ export namespace Prisma {
   export type PaymentOrderByWithRelationInput = {
     id?: SortOrder
     billId?: SortOrder
+    seed?: SortOrder
     amount?: SortOrder
     method?: SortOrder
     status?: SortOrder
@@ -13002,6 +13351,7 @@ export namespace Prisma {
     OR?: PaymentWhereInput[]
     NOT?: PaymentWhereInput | PaymentWhereInput[]
     billId?: StringFilter<"Payment"> | string
+    seed?: BoolFilter<"Payment"> | boolean
     amount?: FloatFilter<"Payment"> | number
     method?: EnumPaymentMethodFilter<"Payment"> | $Enums.PaymentMethod
     status?: EnumPaymentStatusFilter<"Payment"> | $Enums.PaymentStatus
@@ -13017,6 +13367,7 @@ export namespace Prisma {
   export type PaymentOrderByWithAggregationInput = {
     id?: SortOrder
     billId?: SortOrder
+    seed?: SortOrder
     amount?: SortOrder
     method?: SortOrder
     status?: SortOrder
@@ -13039,6 +13390,7 @@ export namespace Prisma {
     NOT?: PaymentScalarWhereWithAggregatesInput | PaymentScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Payment"> | string
     billId?: StringWithAggregatesFilter<"Payment"> | string
+    seed?: BoolWithAggregatesFilter<"Payment"> | boolean
     amount?: FloatWithAggregatesFilter<"Payment"> | number
     method?: EnumPaymentMethodWithAggregatesFilter<"Payment"> | $Enums.PaymentMethod
     status?: EnumPaymentStatusWithAggregatesFilter<"Payment"> | $Enums.PaymentStatus
@@ -13056,10 +13408,14 @@ export namespace Prisma {
     email?: string | null
     emailVerified?: Date | string | null
     image?: string | null
+    hideSeed?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    vendors?: VendorCreateNestedManyWithoutUserInput
+    bills?: BillCreateNestedManyWithoutUserInput
+    glAccounts?: GLAccountCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -13068,10 +13424,14 @@ export namespace Prisma {
     email?: string | null
     emailVerified?: Date | string | null
     image?: string | null
+    hideSeed?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    vendors?: VendorUncheckedCreateNestedManyWithoutUserInput
+    bills?: BillUncheckedCreateNestedManyWithoutUserInput
+    glAccounts?: GLAccountUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -13080,10 +13440,14 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    hideSeed?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    vendors?: VendorUpdateManyWithoutUserNestedInput
+    bills?: BillUpdateManyWithoutUserNestedInput
+    glAccounts?: GLAccountUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -13092,10 +13456,14 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    hideSeed?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    vendors?: VendorUncheckedUpdateManyWithoutUserNestedInput
+    bills?: BillUncheckedUpdateManyWithoutUserNestedInput
+    glAccounts?: GLAccountUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -13104,6 +13472,7 @@ export namespace Prisma {
     email?: string | null
     emailVerified?: Date | string | null
     image?: string | null
+    hideSeed?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -13114,6 +13483,7 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    hideSeed?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -13124,6 +13494,7 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    hideSeed?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -13331,6 +13702,7 @@ export namespace Prisma {
 
   export type VendorCreateInput = {
     id?: string
+    seed?: boolean
     name: string
     email?: string | null
     phone?: string | null
@@ -13349,11 +13721,14 @@ export namespace Prisma {
     status?: $Enums.VendorStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutVendorsInput
     bills?: BillCreateNestedManyWithoutVendorInput
   }
 
   export type VendorUncheckedCreateInput = {
     id?: string
+    userId: string
+    seed?: boolean
     name: string
     email?: string | null
     phone?: string | null
@@ -13377,6 +13752,7 @@ export namespace Prisma {
 
   export type VendorUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13395,11 +13771,14 @@ export namespace Prisma {
     status?: EnumVendorStatusFieldUpdateOperationsInput | $Enums.VendorStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutVendorsNestedInput
     bills?: BillUpdateManyWithoutVendorNestedInput
   }
 
   export type VendorUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13423,6 +13802,8 @@ export namespace Prisma {
 
   export type VendorCreateManyInput = {
     id?: string
+    userId: string
+    seed?: boolean
     name: string
     email?: string | null
     phone?: string | null
@@ -13445,6 +13826,7 @@ export namespace Prisma {
 
   export type VendorUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13467,6 +13849,8 @@ export namespace Prisma {
 
   export type VendorUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13489,15 +13873,19 @@ export namespace Prisma {
 
   export type GLAccountCreateInput = {
     id?: string
+    seed?: boolean
     code: string
     name: string
     type: $Enums.GLAccountType
     createdAt?: Date | string
+    user: UserCreateNestedOneWithoutGlAccountsInput
     lineItems?: BillLineItemCreateNestedManyWithoutGlAccountInput
   }
 
   export type GLAccountUncheckedCreateInput = {
     id?: string
+    userId: string
+    seed?: boolean
     code: string
     name: string
     type: $Enums.GLAccountType
@@ -13507,15 +13895,19 @@ export namespace Prisma {
 
   export type GLAccountUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     code?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumGLAccountTypeFieldUpdateOperationsInput | $Enums.GLAccountType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutGlAccountsNestedInput
     lineItems?: BillLineItemUpdateManyWithoutGlAccountNestedInput
   }
 
   export type GLAccountUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     code?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumGLAccountTypeFieldUpdateOperationsInput | $Enums.GLAccountType
@@ -13525,6 +13917,8 @@ export namespace Prisma {
 
   export type GLAccountCreateManyInput = {
     id?: string
+    userId: string
+    seed?: boolean
     code: string
     name: string
     type: $Enums.GLAccountType
@@ -13533,6 +13927,7 @@ export namespace Prisma {
 
   export type GLAccountUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     code?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumGLAccountTypeFieldUpdateOperationsInput | $Enums.GLAccountType
@@ -13541,6 +13936,8 @@ export namespace Prisma {
 
   export type GLAccountUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     code?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumGLAccountTypeFieldUpdateOperationsInput | $Enums.GLAccountType
@@ -13549,6 +13946,7 @@ export namespace Prisma {
 
   export type BillCreateInput = {
     id?: string
+    seed?: boolean
     invoiceNumber?: string | null
     invoiceDate: Date | string
     dueDate: Date | string
@@ -13561,6 +13959,7 @@ export namespace Prisma {
     paidAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutBillsInput
     vendor: VendorCreateNestedOneWithoutBillsInput
     lineItems?: BillLineItemCreateNestedManyWithoutBillInput
     payments?: PaymentCreateNestedManyWithoutBillInput
@@ -13568,6 +13967,8 @@ export namespace Prisma {
 
   export type BillUncheckedCreateInput = {
     id?: string
+    userId: string
+    seed?: boolean
     vendorId: string
     invoiceNumber?: string | null
     invoiceDate: Date | string
@@ -13587,6 +13988,7 @@ export namespace Prisma {
 
   export type BillUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13599,6 +14001,7 @@ export namespace Prisma {
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutBillsNestedInput
     vendor?: VendorUpdateOneRequiredWithoutBillsNestedInput
     lineItems?: BillLineItemUpdateManyWithoutBillNestedInput
     payments?: PaymentUpdateManyWithoutBillNestedInput
@@ -13606,6 +14009,8 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     vendorId?: StringFieldUpdateOperationsInput | string
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13625,6 +14030,8 @@ export namespace Prisma {
 
   export type BillCreateManyInput = {
     id?: string
+    userId: string
+    seed?: boolean
     vendorId: string
     invoiceNumber?: string | null
     invoiceDate: Date | string
@@ -13642,6 +14049,7 @@ export namespace Prisma {
 
   export type BillUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13658,6 +14066,8 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     vendorId?: StringFieldUpdateOperationsInput | string
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13675,6 +14085,7 @@ export namespace Prisma {
 
   export type BillLineItemCreateInput = {
     id?: string
+    seed?: boolean
     description: string
     quantity?: number
     unitPrice: number
@@ -13687,6 +14098,7 @@ export namespace Prisma {
   export type BillLineItemUncheckedCreateInput = {
     id?: string
     billId: string
+    seed?: boolean
     description: string
     quantity?: number
     unitPrice: number
@@ -13697,6 +14109,7 @@ export namespace Prisma {
 
   export type BillLineItemUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     description?: StringFieldUpdateOperationsInput | string
     quantity?: FloatFieldUpdateOperationsInput | number
     unitPrice?: FloatFieldUpdateOperationsInput | number
@@ -13709,6 +14122,7 @@ export namespace Prisma {
   export type BillLineItemUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     billId?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     description?: StringFieldUpdateOperationsInput | string
     quantity?: FloatFieldUpdateOperationsInput | number
     unitPrice?: FloatFieldUpdateOperationsInput | number
@@ -13720,6 +14134,7 @@ export namespace Prisma {
   export type BillLineItemCreateManyInput = {
     id?: string
     billId: string
+    seed?: boolean
     description: string
     quantity?: number
     unitPrice: number
@@ -13730,6 +14145,7 @@ export namespace Prisma {
 
   export type BillLineItemUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     description?: StringFieldUpdateOperationsInput | string
     quantity?: FloatFieldUpdateOperationsInput | number
     unitPrice?: FloatFieldUpdateOperationsInput | number
@@ -13740,6 +14156,7 @@ export namespace Prisma {
   export type BillLineItemUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     billId?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     description?: StringFieldUpdateOperationsInput | string
     quantity?: FloatFieldUpdateOperationsInput | number
     unitPrice?: FloatFieldUpdateOperationsInput | number
@@ -13750,6 +14167,7 @@ export namespace Prisma {
 
   export type PaymentCreateInput = {
     id?: string
+    seed?: boolean
     amount: number
     method: $Enums.PaymentMethod
     status?: $Enums.PaymentStatus
@@ -13765,6 +14183,7 @@ export namespace Prisma {
   export type PaymentUncheckedCreateInput = {
     id?: string
     billId: string
+    seed?: boolean
     amount: number
     method: $Enums.PaymentMethod
     status?: $Enums.PaymentStatus
@@ -13778,6 +14197,7 @@ export namespace Prisma {
 
   export type PaymentUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     amount?: FloatFieldUpdateOperationsInput | number
     method?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
@@ -13793,6 +14213,7 @@ export namespace Prisma {
   export type PaymentUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     billId?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     amount?: FloatFieldUpdateOperationsInput | number
     method?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
@@ -13807,6 +14228,7 @@ export namespace Prisma {
   export type PaymentCreateManyInput = {
     id?: string
     billId: string
+    seed?: boolean
     amount: number
     method: $Enums.PaymentMethod
     status?: $Enums.PaymentStatus
@@ -13820,6 +14242,7 @@ export namespace Prisma {
 
   export type PaymentUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     amount?: FloatFieldUpdateOperationsInput | number
     method?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
@@ -13834,6 +14257,7 @@ export namespace Prisma {
   export type PaymentUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     billId?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     amount?: FloatFieldUpdateOperationsInput | number
     method?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
@@ -13886,6 +14310,11 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -13909,6 +14338,24 @@ export namespace Prisma {
     none?: SessionWhereInput
   }
 
+  export type VendorListRelationFilter = {
+    every?: VendorWhereInput
+    some?: VendorWhereInput
+    none?: VendorWhereInput
+  }
+
+  export type BillListRelationFilter = {
+    every?: BillWhereInput
+    some?: BillWhereInput
+    none?: BillWhereInput
+  }
+
+  export type GLAccountListRelationFilter = {
+    every?: GLAccountWhereInput
+    some?: GLAccountWhereInput
+    none?: GLAccountWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -13922,12 +14369,25 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type VendorOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type BillOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type GLAccountOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     email?: SortOrder
     emailVerified?: SortOrder
     image?: SortOrder
+    hideSeed?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -13938,6 +14398,7 @@ export namespace Prisma {
     email?: SortOrder
     emailVerified?: SortOrder
     image?: SortOrder
+    hideSeed?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -13948,6 +14409,7 @@ export namespace Prisma {
     email?: SortOrder
     emailVerified?: SortOrder
     image?: SortOrder
+    hideSeed?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14000,6 +14462,14 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -14169,18 +14639,10 @@ export namespace Prisma {
     not?: NestedEnumVendorStatusFilter<$PrismaModel> | $Enums.VendorStatus
   }
 
-  export type BillListRelationFilter = {
-    every?: BillWhereInput
-    some?: BillWhereInput
-    none?: BillWhereInput
-  }
-
-  export type BillOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
   export type VendorCountOrderByAggregateInput = {
     id?: SortOrder
+    userId?: SortOrder
+    seed?: SortOrder
     name?: SortOrder
     email?: SortOrder
     phone?: SortOrder
@@ -14203,6 +14665,8 @@ export namespace Prisma {
 
   export type VendorMaxOrderByAggregateInput = {
     id?: SortOrder
+    userId?: SortOrder
+    seed?: SortOrder
     name?: SortOrder
     email?: SortOrder
     phone?: SortOrder
@@ -14225,6 +14689,8 @@ export namespace Prisma {
 
   export type VendorMinOrderByAggregateInput = {
     id?: SortOrder
+    userId?: SortOrder
+    seed?: SortOrder
     name?: SortOrder
     email?: SortOrder
     phone?: SortOrder
@@ -14282,8 +14748,15 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type GLAccountUserIdCodeCompoundUniqueInput = {
+    userId: string
+    code: string
+  }
+
   export type GLAccountCountOrderByAggregateInput = {
     id?: SortOrder
+    userId?: SortOrder
+    seed?: SortOrder
     code?: SortOrder
     name?: SortOrder
     type?: SortOrder
@@ -14292,6 +14765,8 @@ export namespace Prisma {
 
   export type GLAccountMaxOrderByAggregateInput = {
     id?: SortOrder
+    userId?: SortOrder
+    seed?: SortOrder
     code?: SortOrder
     name?: SortOrder
     type?: SortOrder
@@ -14300,6 +14775,8 @@ export namespace Prisma {
 
   export type GLAccountMinOrderByAggregateInput = {
     id?: SortOrder
+    userId?: SortOrder
+    seed?: SortOrder
     code?: SortOrder
     name?: SortOrder
     type?: SortOrder
@@ -14347,6 +14824,8 @@ export namespace Prisma {
 
   export type BillCountOrderByAggregateInput = {
     id?: SortOrder
+    userId?: SortOrder
+    seed?: SortOrder
     vendorId?: SortOrder
     invoiceNumber?: SortOrder
     invoiceDate?: SortOrder
@@ -14364,6 +14843,8 @@ export namespace Prisma {
 
   export type BillMaxOrderByAggregateInput = {
     id?: SortOrder
+    userId?: SortOrder
+    seed?: SortOrder
     vendorId?: SortOrder
     invoiceNumber?: SortOrder
     invoiceDate?: SortOrder
@@ -14381,6 +14862,8 @@ export namespace Prisma {
 
   export type BillMinOrderByAggregateInput = {
     id?: SortOrder
+    userId?: SortOrder
+    seed?: SortOrder
     vendorId?: SortOrder
     invoiceNumber?: SortOrder
     invoiceDate?: SortOrder
@@ -14440,6 +14923,7 @@ export namespace Prisma {
   export type BillLineItemCountOrderByAggregateInput = {
     id?: SortOrder
     billId?: SortOrder
+    seed?: SortOrder
     description?: SortOrder
     quantity?: SortOrder
     unitPrice?: SortOrder
@@ -14457,6 +14941,7 @@ export namespace Prisma {
   export type BillLineItemMaxOrderByAggregateInput = {
     id?: SortOrder
     billId?: SortOrder
+    seed?: SortOrder
     description?: SortOrder
     quantity?: SortOrder
     unitPrice?: SortOrder
@@ -14468,6 +14953,7 @@ export namespace Prisma {
   export type BillLineItemMinOrderByAggregateInput = {
     id?: SortOrder
     billId?: SortOrder
+    seed?: SortOrder
     description?: SortOrder
     quantity?: SortOrder
     unitPrice?: SortOrder
@@ -14508,6 +14994,7 @@ export namespace Prisma {
   export type PaymentCountOrderByAggregateInput = {
     id?: SortOrder
     billId?: SortOrder
+    seed?: SortOrder
     amount?: SortOrder
     method?: SortOrder
     status?: SortOrder
@@ -14526,6 +15013,7 @@ export namespace Prisma {
   export type PaymentMaxOrderByAggregateInput = {
     id?: SortOrder
     billId?: SortOrder
+    seed?: SortOrder
     amount?: SortOrder
     method?: SortOrder
     status?: SortOrder
@@ -14540,6 +15028,7 @@ export namespace Prisma {
   export type PaymentMinOrderByAggregateInput = {
     id?: SortOrder
     billId?: SortOrder
+    seed?: SortOrder
     amount?: SortOrder
     method?: SortOrder
     status?: SortOrder
@@ -14579,6 +15068,27 @@ export namespace Prisma {
     connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
   }
 
+  export type VendorCreateNestedManyWithoutUserInput = {
+    create?: XOR<VendorCreateWithoutUserInput, VendorUncheckedCreateWithoutUserInput> | VendorCreateWithoutUserInput[] | VendorUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: VendorCreateOrConnectWithoutUserInput | VendorCreateOrConnectWithoutUserInput[]
+    createMany?: VendorCreateManyUserInputEnvelope
+    connect?: VendorWhereUniqueInput | VendorWhereUniqueInput[]
+  }
+
+  export type BillCreateNestedManyWithoutUserInput = {
+    create?: XOR<BillCreateWithoutUserInput, BillUncheckedCreateWithoutUserInput> | BillCreateWithoutUserInput[] | BillUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: BillCreateOrConnectWithoutUserInput | BillCreateOrConnectWithoutUserInput[]
+    createMany?: BillCreateManyUserInputEnvelope
+    connect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+  }
+
+  export type GLAccountCreateNestedManyWithoutUserInput = {
+    create?: XOR<GLAccountCreateWithoutUserInput, GLAccountUncheckedCreateWithoutUserInput> | GLAccountCreateWithoutUserInput[] | GLAccountUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GLAccountCreateOrConnectWithoutUserInput | GLAccountCreateOrConnectWithoutUserInput[]
+    createMany?: GLAccountCreateManyUserInputEnvelope
+    connect?: GLAccountWhereUniqueInput | GLAccountWhereUniqueInput[]
+  }
+
   export type AccountUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -14593,6 +15103,27 @@ export namespace Prisma {
     connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
   }
 
+  export type VendorUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<VendorCreateWithoutUserInput, VendorUncheckedCreateWithoutUserInput> | VendorCreateWithoutUserInput[] | VendorUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: VendorCreateOrConnectWithoutUserInput | VendorCreateOrConnectWithoutUserInput[]
+    createMany?: VendorCreateManyUserInputEnvelope
+    connect?: VendorWhereUniqueInput | VendorWhereUniqueInput[]
+  }
+
+  export type BillUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<BillCreateWithoutUserInput, BillUncheckedCreateWithoutUserInput> | BillCreateWithoutUserInput[] | BillUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: BillCreateOrConnectWithoutUserInput | BillCreateOrConnectWithoutUserInput[]
+    createMany?: BillCreateManyUserInputEnvelope
+    connect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+  }
+
+  export type GLAccountUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<GLAccountCreateWithoutUserInput, GLAccountUncheckedCreateWithoutUserInput> | GLAccountCreateWithoutUserInput[] | GLAccountUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GLAccountCreateOrConnectWithoutUserInput | GLAccountCreateOrConnectWithoutUserInput[]
+    createMany?: GLAccountCreateManyUserInputEnvelope
+    connect?: GLAccountWhereUniqueInput | GLAccountWhereUniqueInput[]
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
@@ -14603,6 +15134,10 @@ export namespace Prisma {
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
@@ -14637,6 +15172,48 @@ export namespace Prisma {
     deleteMany?: SessionScalarWhereInput | SessionScalarWhereInput[]
   }
 
+  export type VendorUpdateManyWithoutUserNestedInput = {
+    create?: XOR<VendorCreateWithoutUserInput, VendorUncheckedCreateWithoutUserInput> | VendorCreateWithoutUserInput[] | VendorUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: VendorCreateOrConnectWithoutUserInput | VendorCreateOrConnectWithoutUserInput[]
+    upsert?: VendorUpsertWithWhereUniqueWithoutUserInput | VendorUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: VendorCreateManyUserInputEnvelope
+    set?: VendorWhereUniqueInput | VendorWhereUniqueInput[]
+    disconnect?: VendorWhereUniqueInput | VendorWhereUniqueInput[]
+    delete?: VendorWhereUniqueInput | VendorWhereUniqueInput[]
+    connect?: VendorWhereUniqueInput | VendorWhereUniqueInput[]
+    update?: VendorUpdateWithWhereUniqueWithoutUserInput | VendorUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: VendorUpdateManyWithWhereWithoutUserInput | VendorUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: VendorScalarWhereInput | VendorScalarWhereInput[]
+  }
+
+  export type BillUpdateManyWithoutUserNestedInput = {
+    create?: XOR<BillCreateWithoutUserInput, BillUncheckedCreateWithoutUserInput> | BillCreateWithoutUserInput[] | BillUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: BillCreateOrConnectWithoutUserInput | BillCreateOrConnectWithoutUserInput[]
+    upsert?: BillUpsertWithWhereUniqueWithoutUserInput | BillUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: BillCreateManyUserInputEnvelope
+    set?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    disconnect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    delete?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    connect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    update?: BillUpdateWithWhereUniqueWithoutUserInput | BillUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: BillUpdateManyWithWhereWithoutUserInput | BillUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: BillScalarWhereInput | BillScalarWhereInput[]
+  }
+
+  export type GLAccountUpdateManyWithoutUserNestedInput = {
+    create?: XOR<GLAccountCreateWithoutUserInput, GLAccountUncheckedCreateWithoutUserInput> | GLAccountCreateWithoutUserInput[] | GLAccountUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GLAccountCreateOrConnectWithoutUserInput | GLAccountCreateOrConnectWithoutUserInput[]
+    upsert?: GLAccountUpsertWithWhereUniqueWithoutUserInput | GLAccountUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: GLAccountCreateManyUserInputEnvelope
+    set?: GLAccountWhereUniqueInput | GLAccountWhereUniqueInput[]
+    disconnect?: GLAccountWhereUniqueInput | GLAccountWhereUniqueInput[]
+    delete?: GLAccountWhereUniqueInput | GLAccountWhereUniqueInput[]
+    connect?: GLAccountWhereUniqueInput | GLAccountWhereUniqueInput[]
+    update?: GLAccountUpdateWithWhereUniqueWithoutUserInput | GLAccountUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: GLAccountUpdateManyWithWhereWithoutUserInput | GLAccountUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: GLAccountScalarWhereInput | GLAccountScalarWhereInput[]
+  }
+
   export type AccountUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -14663,6 +15240,48 @@ export namespace Prisma {
     update?: SessionUpdateWithWhereUniqueWithoutUserInput | SessionUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: SessionUpdateManyWithWhereWithoutUserInput | SessionUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: SessionScalarWhereInput | SessionScalarWhereInput[]
+  }
+
+  export type VendorUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<VendorCreateWithoutUserInput, VendorUncheckedCreateWithoutUserInput> | VendorCreateWithoutUserInput[] | VendorUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: VendorCreateOrConnectWithoutUserInput | VendorCreateOrConnectWithoutUserInput[]
+    upsert?: VendorUpsertWithWhereUniqueWithoutUserInput | VendorUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: VendorCreateManyUserInputEnvelope
+    set?: VendorWhereUniqueInput | VendorWhereUniqueInput[]
+    disconnect?: VendorWhereUniqueInput | VendorWhereUniqueInput[]
+    delete?: VendorWhereUniqueInput | VendorWhereUniqueInput[]
+    connect?: VendorWhereUniqueInput | VendorWhereUniqueInput[]
+    update?: VendorUpdateWithWhereUniqueWithoutUserInput | VendorUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: VendorUpdateManyWithWhereWithoutUserInput | VendorUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: VendorScalarWhereInput | VendorScalarWhereInput[]
+  }
+
+  export type BillUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<BillCreateWithoutUserInput, BillUncheckedCreateWithoutUserInput> | BillCreateWithoutUserInput[] | BillUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: BillCreateOrConnectWithoutUserInput | BillCreateOrConnectWithoutUserInput[]
+    upsert?: BillUpsertWithWhereUniqueWithoutUserInput | BillUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: BillCreateManyUserInputEnvelope
+    set?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    disconnect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    delete?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    connect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    update?: BillUpdateWithWhereUniqueWithoutUserInput | BillUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: BillUpdateManyWithWhereWithoutUserInput | BillUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: BillScalarWhereInput | BillScalarWhereInput[]
+  }
+
+  export type GLAccountUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<GLAccountCreateWithoutUserInput, GLAccountUncheckedCreateWithoutUserInput> | GLAccountCreateWithoutUserInput[] | GLAccountUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: GLAccountCreateOrConnectWithoutUserInput | GLAccountCreateOrConnectWithoutUserInput[]
+    upsert?: GLAccountUpsertWithWhereUniqueWithoutUserInput | GLAccountUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: GLAccountCreateManyUserInputEnvelope
+    set?: GLAccountWhereUniqueInput | GLAccountWhereUniqueInput[]
+    disconnect?: GLAccountWhereUniqueInput | GLAccountWhereUniqueInput[]
+    delete?: GLAccountWhereUniqueInput | GLAccountWhereUniqueInput[]
+    connect?: GLAccountWhereUniqueInput | GLAccountWhereUniqueInput[]
+    update?: GLAccountUpdateWithWhereUniqueWithoutUserInput | GLAccountUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: GLAccountUpdateManyWithWhereWithoutUserInput | GLAccountUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: GLAccountScalarWhereInput | GLAccountScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutAccountsInput = {
@@ -14701,6 +15320,12 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSessionsInput, UserUpdateWithoutSessionsInput>, UserUncheckedUpdateWithoutSessionsInput>
   }
 
+  export type UserCreateNestedOneWithoutVendorsInput = {
+    create?: XOR<UserCreateWithoutVendorsInput, UserUncheckedCreateWithoutVendorsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutVendorsInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type BillCreateNestedManyWithoutVendorInput = {
     create?: XOR<BillCreateWithoutVendorInput, BillUncheckedCreateWithoutVendorInput> | BillCreateWithoutVendorInput[] | BillUncheckedCreateWithoutVendorInput[]
     connectOrCreate?: BillCreateOrConnectWithoutVendorInput | BillCreateOrConnectWithoutVendorInput[]
@@ -14721,6 +15346,14 @@ export namespace Prisma {
 
   export type EnumVendorStatusFieldUpdateOperationsInput = {
     set?: $Enums.VendorStatus
+  }
+
+  export type UserUpdateOneRequiredWithoutVendorsNestedInput = {
+    create?: XOR<UserCreateWithoutVendorsInput, UserUncheckedCreateWithoutVendorsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutVendorsInput
+    upsert?: UserUpsertWithoutVendorsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutVendorsInput, UserUpdateWithoutVendorsInput>, UserUncheckedUpdateWithoutVendorsInput>
   }
 
   export type BillUpdateManyWithoutVendorNestedInput = {
@@ -14751,6 +15384,12 @@ export namespace Prisma {
     deleteMany?: BillScalarWhereInput | BillScalarWhereInput[]
   }
 
+  export type UserCreateNestedOneWithoutGlAccountsInput = {
+    create?: XOR<UserCreateWithoutGlAccountsInput, UserUncheckedCreateWithoutGlAccountsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutGlAccountsInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type BillLineItemCreateNestedManyWithoutGlAccountInput = {
     create?: XOR<BillLineItemCreateWithoutGlAccountInput, BillLineItemUncheckedCreateWithoutGlAccountInput> | BillLineItemCreateWithoutGlAccountInput[] | BillLineItemUncheckedCreateWithoutGlAccountInput[]
     connectOrCreate?: BillLineItemCreateOrConnectWithoutGlAccountInput | BillLineItemCreateOrConnectWithoutGlAccountInput[]
@@ -14767,6 +15406,14 @@ export namespace Prisma {
 
   export type EnumGLAccountTypeFieldUpdateOperationsInput = {
     set?: $Enums.GLAccountType
+  }
+
+  export type UserUpdateOneRequiredWithoutGlAccountsNestedInput = {
+    create?: XOR<UserCreateWithoutGlAccountsInput, UserUncheckedCreateWithoutGlAccountsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutGlAccountsInput
+    upsert?: UserUpsertWithoutGlAccountsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutGlAccountsInput, UserUpdateWithoutGlAccountsInput>, UserUncheckedUpdateWithoutGlAccountsInput>
   }
 
   export type BillLineItemUpdateManyWithoutGlAccountNestedInput = {
@@ -14795,6 +15442,12 @@ export namespace Prisma {
     update?: BillLineItemUpdateWithWhereUniqueWithoutGlAccountInput | BillLineItemUpdateWithWhereUniqueWithoutGlAccountInput[]
     updateMany?: BillLineItemUpdateManyWithWhereWithoutGlAccountInput | BillLineItemUpdateManyWithWhereWithoutGlAccountInput[]
     deleteMany?: BillLineItemScalarWhereInput | BillLineItemScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutBillsInput = {
+    create?: XOR<UserCreateWithoutBillsInput, UserUncheckedCreateWithoutBillsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBillsInput
+    connect?: UserWhereUniqueInput
   }
 
   export type VendorCreateNestedOneWithoutBillsInput = {
@@ -14837,6 +15490,14 @@ export namespace Prisma {
 
   export type NullableEnumPaymentMethodFieldUpdateOperationsInput = {
     set?: $Enums.PaymentMethod | null
+  }
+
+  export type UserUpdateOneRequiredWithoutBillsNestedInput = {
+    create?: XOR<UserCreateWithoutBillsInput, UserUncheckedCreateWithoutBillsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutBillsInput
+    upsert?: UserUpsertWithoutBillsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutBillsInput, UserUpdateWithoutBillsInput>, UserUncheckedUpdateWithoutBillsInput>
   }
 
   export type VendorUpdateOneRequiredWithoutBillsNestedInput = {
@@ -14998,6 +15659,11 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -15077,6 +15743,14 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -15311,6 +15985,144 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type VendorCreateWithoutUserInput = {
+    id?: string
+    seed?: boolean
+    name: string
+    email?: string | null
+    phone?: string | null
+    website?: string | null
+    addressLine1?: string | null
+    addressLine2?: string | null
+    city?: string | null
+    state?: string | null
+    zip?: string | null
+    country?: string
+    defaultPaymentMethod?: $Enums.PaymentMethod
+    bankName?: string | null
+    bankRoutingNumber?: string | null
+    bankAccountNumber?: string | null
+    taxId?: string | null
+    status?: $Enums.VendorStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    bills?: BillCreateNestedManyWithoutVendorInput
+  }
+
+  export type VendorUncheckedCreateWithoutUserInput = {
+    id?: string
+    seed?: boolean
+    name: string
+    email?: string | null
+    phone?: string | null
+    website?: string | null
+    addressLine1?: string | null
+    addressLine2?: string | null
+    city?: string | null
+    state?: string | null
+    zip?: string | null
+    country?: string
+    defaultPaymentMethod?: $Enums.PaymentMethod
+    bankName?: string | null
+    bankRoutingNumber?: string | null
+    bankAccountNumber?: string | null
+    taxId?: string | null
+    status?: $Enums.VendorStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    bills?: BillUncheckedCreateNestedManyWithoutVendorInput
+  }
+
+  export type VendorCreateOrConnectWithoutUserInput = {
+    where: VendorWhereUniqueInput
+    create: XOR<VendorCreateWithoutUserInput, VendorUncheckedCreateWithoutUserInput>
+  }
+
+  export type VendorCreateManyUserInputEnvelope = {
+    data: VendorCreateManyUserInput | VendorCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BillCreateWithoutUserInput = {
+    id?: string
+    seed?: boolean
+    invoiceNumber?: string | null
+    invoiceDate: Date | string
+    dueDate: Date | string
+    status?: $Enums.BillStatus
+    memo?: string | null
+    paymentMethod?: $Enums.PaymentMethod | null
+    rejectionReason?: string | null
+    submittedAt?: Date | string | null
+    approvedAt?: Date | string | null
+    paidAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    vendor: VendorCreateNestedOneWithoutBillsInput
+    lineItems?: BillLineItemCreateNestedManyWithoutBillInput
+    payments?: PaymentCreateNestedManyWithoutBillInput
+  }
+
+  export type BillUncheckedCreateWithoutUserInput = {
+    id?: string
+    seed?: boolean
+    vendorId: string
+    invoiceNumber?: string | null
+    invoiceDate: Date | string
+    dueDate: Date | string
+    status?: $Enums.BillStatus
+    memo?: string | null
+    paymentMethod?: $Enums.PaymentMethod | null
+    rejectionReason?: string | null
+    submittedAt?: Date | string | null
+    approvedAt?: Date | string | null
+    paidAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lineItems?: BillLineItemUncheckedCreateNestedManyWithoutBillInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutBillInput
+  }
+
+  export type BillCreateOrConnectWithoutUserInput = {
+    where: BillWhereUniqueInput
+    create: XOR<BillCreateWithoutUserInput, BillUncheckedCreateWithoutUserInput>
+  }
+
+  export type BillCreateManyUserInputEnvelope = {
+    data: BillCreateManyUserInput | BillCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type GLAccountCreateWithoutUserInput = {
+    id?: string
+    seed?: boolean
+    code: string
+    name: string
+    type: $Enums.GLAccountType
+    createdAt?: Date | string
+    lineItems?: BillLineItemCreateNestedManyWithoutGlAccountInput
+  }
+
+  export type GLAccountUncheckedCreateWithoutUserInput = {
+    id?: string
+    seed?: boolean
+    code: string
+    name: string
+    type: $Enums.GLAccountType
+    createdAt?: Date | string
+    lineItems?: BillLineItemUncheckedCreateNestedManyWithoutGlAccountInput
+  }
+
+  export type GLAccountCreateOrConnectWithoutUserInput = {
+    where: GLAccountWhereUniqueInput
+    create: XOR<GLAccountCreateWithoutUserInput, GLAccountUncheckedCreateWithoutUserInput>
+  }
+
+  export type GLAccountCreateManyUserInputEnvelope = {
+    data: GLAccountCreateManyUserInput | GLAccountCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type AccountUpsertWithWhereUniqueWithoutUserInput = {
     where: AccountWhereUniqueInput
     update: XOR<AccountUpdateWithoutUserInput, AccountUncheckedUpdateWithoutUserInput>
@@ -15372,15 +16184,129 @@ export namespace Prisma {
     expires?: DateTimeFilter<"Session"> | Date | string
   }
 
+  export type VendorUpsertWithWhereUniqueWithoutUserInput = {
+    where: VendorWhereUniqueInput
+    update: XOR<VendorUpdateWithoutUserInput, VendorUncheckedUpdateWithoutUserInput>
+    create: XOR<VendorCreateWithoutUserInput, VendorUncheckedCreateWithoutUserInput>
+  }
+
+  export type VendorUpdateWithWhereUniqueWithoutUserInput = {
+    where: VendorWhereUniqueInput
+    data: XOR<VendorUpdateWithoutUserInput, VendorUncheckedUpdateWithoutUserInput>
+  }
+
+  export type VendorUpdateManyWithWhereWithoutUserInput = {
+    where: VendorScalarWhereInput
+    data: XOR<VendorUpdateManyMutationInput, VendorUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type VendorScalarWhereInput = {
+    AND?: VendorScalarWhereInput | VendorScalarWhereInput[]
+    OR?: VendorScalarWhereInput[]
+    NOT?: VendorScalarWhereInput | VendorScalarWhereInput[]
+    id?: StringFilter<"Vendor"> | string
+    userId?: StringFilter<"Vendor"> | string
+    seed?: BoolFilter<"Vendor"> | boolean
+    name?: StringFilter<"Vendor"> | string
+    email?: StringNullableFilter<"Vendor"> | string | null
+    phone?: StringNullableFilter<"Vendor"> | string | null
+    website?: StringNullableFilter<"Vendor"> | string | null
+    addressLine1?: StringNullableFilter<"Vendor"> | string | null
+    addressLine2?: StringNullableFilter<"Vendor"> | string | null
+    city?: StringNullableFilter<"Vendor"> | string | null
+    state?: StringNullableFilter<"Vendor"> | string | null
+    zip?: StringNullableFilter<"Vendor"> | string | null
+    country?: StringFilter<"Vendor"> | string
+    defaultPaymentMethod?: EnumPaymentMethodFilter<"Vendor"> | $Enums.PaymentMethod
+    bankName?: StringNullableFilter<"Vendor"> | string | null
+    bankRoutingNumber?: StringNullableFilter<"Vendor"> | string | null
+    bankAccountNumber?: StringNullableFilter<"Vendor"> | string | null
+    taxId?: StringNullableFilter<"Vendor"> | string | null
+    status?: EnumVendorStatusFilter<"Vendor"> | $Enums.VendorStatus
+    createdAt?: DateTimeFilter<"Vendor"> | Date | string
+    updatedAt?: DateTimeFilter<"Vendor"> | Date | string
+  }
+
+  export type BillUpsertWithWhereUniqueWithoutUserInput = {
+    where: BillWhereUniqueInput
+    update: XOR<BillUpdateWithoutUserInput, BillUncheckedUpdateWithoutUserInput>
+    create: XOR<BillCreateWithoutUserInput, BillUncheckedCreateWithoutUserInput>
+  }
+
+  export type BillUpdateWithWhereUniqueWithoutUserInput = {
+    where: BillWhereUniqueInput
+    data: XOR<BillUpdateWithoutUserInput, BillUncheckedUpdateWithoutUserInput>
+  }
+
+  export type BillUpdateManyWithWhereWithoutUserInput = {
+    where: BillScalarWhereInput
+    data: XOR<BillUpdateManyMutationInput, BillUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type BillScalarWhereInput = {
+    AND?: BillScalarWhereInput | BillScalarWhereInput[]
+    OR?: BillScalarWhereInput[]
+    NOT?: BillScalarWhereInput | BillScalarWhereInput[]
+    id?: StringFilter<"Bill"> | string
+    userId?: StringFilter<"Bill"> | string
+    seed?: BoolFilter<"Bill"> | boolean
+    vendorId?: StringFilter<"Bill"> | string
+    invoiceNumber?: StringNullableFilter<"Bill"> | string | null
+    invoiceDate?: DateTimeFilter<"Bill"> | Date | string
+    dueDate?: DateTimeFilter<"Bill"> | Date | string
+    status?: EnumBillStatusFilter<"Bill"> | $Enums.BillStatus
+    memo?: StringNullableFilter<"Bill"> | string | null
+    paymentMethod?: EnumPaymentMethodNullableFilter<"Bill"> | $Enums.PaymentMethod | null
+    rejectionReason?: StringNullableFilter<"Bill"> | string | null
+    submittedAt?: DateTimeNullableFilter<"Bill"> | Date | string | null
+    approvedAt?: DateTimeNullableFilter<"Bill"> | Date | string | null
+    paidAt?: DateTimeNullableFilter<"Bill"> | Date | string | null
+    createdAt?: DateTimeFilter<"Bill"> | Date | string
+    updatedAt?: DateTimeFilter<"Bill"> | Date | string
+  }
+
+  export type GLAccountUpsertWithWhereUniqueWithoutUserInput = {
+    where: GLAccountWhereUniqueInput
+    update: XOR<GLAccountUpdateWithoutUserInput, GLAccountUncheckedUpdateWithoutUserInput>
+    create: XOR<GLAccountCreateWithoutUserInput, GLAccountUncheckedCreateWithoutUserInput>
+  }
+
+  export type GLAccountUpdateWithWhereUniqueWithoutUserInput = {
+    where: GLAccountWhereUniqueInput
+    data: XOR<GLAccountUpdateWithoutUserInput, GLAccountUncheckedUpdateWithoutUserInput>
+  }
+
+  export type GLAccountUpdateManyWithWhereWithoutUserInput = {
+    where: GLAccountScalarWhereInput
+    data: XOR<GLAccountUpdateManyMutationInput, GLAccountUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type GLAccountScalarWhereInput = {
+    AND?: GLAccountScalarWhereInput | GLAccountScalarWhereInput[]
+    OR?: GLAccountScalarWhereInput[]
+    NOT?: GLAccountScalarWhereInput | GLAccountScalarWhereInput[]
+    id?: StringFilter<"GLAccount"> | string
+    userId?: StringFilter<"GLAccount"> | string
+    seed?: BoolFilter<"GLAccount"> | boolean
+    code?: StringFilter<"GLAccount"> | string
+    name?: StringFilter<"GLAccount"> | string
+    type?: EnumGLAccountTypeFilter<"GLAccount"> | $Enums.GLAccountType
+    createdAt?: DateTimeFilter<"GLAccount"> | Date | string
+  }
+
   export type UserCreateWithoutAccountsInput = {
     id?: string
     name?: string | null
     email?: string | null
     emailVerified?: Date | string | null
     image?: string | null
+    hideSeed?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
+    vendors?: VendorCreateNestedManyWithoutUserInput
+    bills?: BillCreateNestedManyWithoutUserInput
+    glAccounts?: GLAccountCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -15389,9 +16315,13 @@ export namespace Prisma {
     email?: string | null
     emailVerified?: Date | string | null
     image?: string | null
+    hideSeed?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    vendors?: VendorUncheckedCreateNestedManyWithoutUserInput
+    bills?: BillUncheckedCreateNestedManyWithoutUserInput
+    glAccounts?: GLAccountUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -15416,9 +16346,13 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    hideSeed?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    vendors?: VendorUpdateManyWithoutUserNestedInput
+    bills?: BillUpdateManyWithoutUserNestedInput
+    glAccounts?: GLAccountUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -15427,9 +16361,13 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    hideSeed?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    vendors?: VendorUncheckedUpdateManyWithoutUserNestedInput
+    bills?: BillUncheckedUpdateManyWithoutUserNestedInput
+    glAccounts?: GLAccountUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutSessionsInput = {
@@ -15438,9 +16376,13 @@ export namespace Prisma {
     email?: string | null
     emailVerified?: Date | string | null
     image?: string | null
+    hideSeed?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountCreateNestedManyWithoutUserInput
+    vendors?: VendorCreateNestedManyWithoutUserInput
+    bills?: BillCreateNestedManyWithoutUserInput
+    glAccounts?: GLAccountCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -15449,9 +16391,13 @@ export namespace Prisma {
     email?: string | null
     emailVerified?: Date | string | null
     image?: string | null
+    hideSeed?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    vendors?: VendorUncheckedCreateNestedManyWithoutUserInput
+    bills?: BillUncheckedCreateNestedManyWithoutUserInput
+    glAccounts?: GLAccountUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -15476,9 +16422,13 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    hideSeed?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUpdateManyWithoutUserNestedInput
+    vendors?: VendorUpdateManyWithoutUserNestedInput
+    bills?: BillUpdateManyWithoutUserNestedInput
+    glAccounts?: GLAccountUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -15487,13 +16437,53 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    hideSeed?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    vendors?: VendorUncheckedUpdateManyWithoutUserNestedInput
+    bills?: BillUncheckedUpdateManyWithoutUserNestedInput
+    glAccounts?: GLAccountUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutVendorsInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    image?: string | null
+    hideSeed?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    bills?: BillCreateNestedManyWithoutUserInput
+    glAccounts?: GLAccountCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutVendorsInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    image?: string | null
+    hideSeed?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    bills?: BillUncheckedCreateNestedManyWithoutUserInput
+    glAccounts?: GLAccountUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutVendorsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutVendorsInput, UserUncheckedCreateWithoutVendorsInput>
   }
 
   export type BillCreateWithoutVendorInput = {
     id?: string
+    seed?: boolean
     invoiceNumber?: string | null
     invoiceDate: Date | string
     dueDate: Date | string
@@ -15506,12 +16496,15 @@ export namespace Prisma {
     paidAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutBillsInput
     lineItems?: BillLineItemCreateNestedManyWithoutBillInput
     payments?: PaymentCreateNestedManyWithoutBillInput
   }
 
   export type BillUncheckedCreateWithoutVendorInput = {
     id?: string
+    userId: string
+    seed?: boolean
     invoiceNumber?: string | null
     invoiceDate: Date | string
     dueDate: Date | string
@@ -15538,6 +16531,47 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type UserUpsertWithoutVendorsInput = {
+    update: XOR<UserUpdateWithoutVendorsInput, UserUncheckedUpdateWithoutVendorsInput>
+    create: XOR<UserCreateWithoutVendorsInput, UserUncheckedCreateWithoutVendorsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutVendorsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutVendorsInput, UserUncheckedUpdateWithoutVendorsInput>
+  }
+
+  export type UserUpdateWithoutVendorsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    hideSeed?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    bills?: BillUpdateManyWithoutUserNestedInput
+    glAccounts?: GLAccountUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutVendorsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    hideSeed?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    bills?: BillUncheckedUpdateManyWithoutUserNestedInput
+    glAccounts?: GLAccountUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type BillUpsertWithWhereUniqueWithoutVendorInput = {
     where: BillWhereUniqueInput
     update: XOR<BillUpdateWithoutVendorInput, BillUncheckedUpdateWithoutVendorInput>
@@ -15554,28 +16588,44 @@ export namespace Prisma {
     data: XOR<BillUpdateManyMutationInput, BillUncheckedUpdateManyWithoutVendorInput>
   }
 
-  export type BillScalarWhereInput = {
-    AND?: BillScalarWhereInput | BillScalarWhereInput[]
-    OR?: BillScalarWhereInput[]
-    NOT?: BillScalarWhereInput | BillScalarWhereInput[]
-    id?: StringFilter<"Bill"> | string
-    vendorId?: StringFilter<"Bill"> | string
-    invoiceNumber?: StringNullableFilter<"Bill"> | string | null
-    invoiceDate?: DateTimeFilter<"Bill"> | Date | string
-    dueDate?: DateTimeFilter<"Bill"> | Date | string
-    status?: EnumBillStatusFilter<"Bill"> | $Enums.BillStatus
-    memo?: StringNullableFilter<"Bill"> | string | null
-    paymentMethod?: EnumPaymentMethodNullableFilter<"Bill"> | $Enums.PaymentMethod | null
-    rejectionReason?: StringNullableFilter<"Bill"> | string | null
-    submittedAt?: DateTimeNullableFilter<"Bill"> | Date | string | null
-    approvedAt?: DateTimeNullableFilter<"Bill"> | Date | string | null
-    paidAt?: DateTimeNullableFilter<"Bill"> | Date | string | null
-    createdAt?: DateTimeFilter<"Bill"> | Date | string
-    updatedAt?: DateTimeFilter<"Bill"> | Date | string
+  export type UserCreateWithoutGlAccountsInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    image?: string | null
+    hideSeed?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    vendors?: VendorCreateNestedManyWithoutUserInput
+    bills?: BillCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutGlAccountsInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    image?: string | null
+    hideSeed?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    vendors?: VendorUncheckedCreateNestedManyWithoutUserInput
+    bills?: BillUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutGlAccountsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutGlAccountsInput, UserUncheckedCreateWithoutGlAccountsInput>
   }
 
   export type BillLineItemCreateWithoutGlAccountInput = {
     id?: string
+    seed?: boolean
     description: string
     quantity?: number
     unitPrice: number
@@ -15587,6 +16637,7 @@ export namespace Prisma {
   export type BillLineItemUncheckedCreateWithoutGlAccountInput = {
     id?: string
     billId: string
+    seed?: boolean
     description: string
     quantity?: number
     unitPrice: number
@@ -15602,6 +16653,47 @@ export namespace Prisma {
   export type BillLineItemCreateManyGlAccountInputEnvelope = {
     data: BillLineItemCreateManyGlAccountInput | BillLineItemCreateManyGlAccountInput[]
     skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutGlAccountsInput = {
+    update: XOR<UserUpdateWithoutGlAccountsInput, UserUncheckedUpdateWithoutGlAccountsInput>
+    create: XOR<UserCreateWithoutGlAccountsInput, UserUncheckedCreateWithoutGlAccountsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutGlAccountsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutGlAccountsInput, UserUncheckedUpdateWithoutGlAccountsInput>
+  }
+
+  export type UserUpdateWithoutGlAccountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    hideSeed?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    vendors?: VendorUpdateManyWithoutUserNestedInput
+    bills?: BillUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutGlAccountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    hideSeed?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    vendors?: VendorUncheckedUpdateManyWithoutUserNestedInput
+    bills?: BillUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type BillLineItemUpsertWithWhereUniqueWithoutGlAccountInput = {
@@ -15626,6 +16718,7 @@ export namespace Prisma {
     NOT?: BillLineItemScalarWhereInput | BillLineItemScalarWhereInput[]
     id?: StringFilter<"BillLineItem"> | string
     billId?: StringFilter<"BillLineItem"> | string
+    seed?: BoolFilter<"BillLineItem"> | boolean
     description?: StringFilter<"BillLineItem"> | string
     quantity?: FloatFilter<"BillLineItem"> | number
     unitPrice?: FloatFilter<"BillLineItem"> | number
@@ -15634,8 +16727,44 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"BillLineItem"> | Date | string
   }
 
+  export type UserCreateWithoutBillsInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    image?: string | null
+    hideSeed?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    vendors?: VendorCreateNestedManyWithoutUserInput
+    glAccounts?: GLAccountCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutBillsInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    image?: string | null
+    hideSeed?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    vendors?: VendorUncheckedCreateNestedManyWithoutUserInput
+    glAccounts?: GLAccountUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutBillsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutBillsInput, UserUncheckedCreateWithoutBillsInput>
+  }
+
   export type VendorCreateWithoutBillsInput = {
     id?: string
+    seed?: boolean
     name: string
     email?: string | null
     phone?: string | null
@@ -15654,10 +16783,13 @@ export namespace Prisma {
     status?: $Enums.VendorStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutVendorsInput
   }
 
   export type VendorUncheckedCreateWithoutBillsInput = {
     id?: string
+    userId: string
+    seed?: boolean
     name: string
     email?: string | null
     phone?: string | null
@@ -15685,6 +16817,7 @@ export namespace Prisma {
 
   export type BillLineItemCreateWithoutBillInput = {
     id?: string
+    seed?: boolean
     description: string
     quantity?: number
     unitPrice: number
@@ -15695,6 +16828,7 @@ export namespace Prisma {
 
   export type BillLineItemUncheckedCreateWithoutBillInput = {
     id?: string
+    seed?: boolean
     description: string
     quantity?: number
     unitPrice: number
@@ -15715,6 +16849,7 @@ export namespace Prisma {
 
   export type PaymentCreateWithoutBillInput = {
     id?: string
+    seed?: boolean
     amount: number
     method: $Enums.PaymentMethod
     status?: $Enums.PaymentStatus
@@ -15728,6 +16863,7 @@ export namespace Prisma {
 
   export type PaymentUncheckedCreateWithoutBillInput = {
     id?: string
+    seed?: boolean
     amount: number
     method: $Enums.PaymentMethod
     status?: $Enums.PaymentStatus
@@ -15749,6 +16885,47 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type UserUpsertWithoutBillsInput = {
+    update: XOR<UserUpdateWithoutBillsInput, UserUncheckedUpdateWithoutBillsInput>
+    create: XOR<UserCreateWithoutBillsInput, UserUncheckedCreateWithoutBillsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutBillsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutBillsInput, UserUncheckedUpdateWithoutBillsInput>
+  }
+
+  export type UserUpdateWithoutBillsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    hideSeed?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    vendors?: VendorUpdateManyWithoutUserNestedInput
+    glAccounts?: GLAccountUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutBillsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    hideSeed?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    vendors?: VendorUncheckedUpdateManyWithoutUserNestedInput
+    glAccounts?: GLAccountUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type VendorUpsertWithoutBillsInput = {
     update: XOR<VendorUpdateWithoutBillsInput, VendorUncheckedUpdateWithoutBillsInput>
     create: XOR<VendorCreateWithoutBillsInput, VendorUncheckedCreateWithoutBillsInput>
@@ -15762,6 +16939,7 @@ export namespace Prisma {
 
   export type VendorUpdateWithoutBillsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15780,10 +16958,13 @@ export namespace Prisma {
     status?: EnumVendorStatusFieldUpdateOperationsInput | $Enums.VendorStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutVendorsNestedInput
   }
 
   export type VendorUncheckedUpdateWithoutBillsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15842,6 +17023,7 @@ export namespace Prisma {
     NOT?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
     id?: StringFilter<"Payment"> | string
     billId?: StringFilter<"Payment"> | string
+    seed?: BoolFilter<"Payment"> | boolean
     amount?: FloatFilter<"Payment"> | number
     method?: EnumPaymentMethodFilter<"Payment"> | $Enums.PaymentMethod
     status?: EnumPaymentStatusFilter<"Payment"> | $Enums.PaymentStatus
@@ -15855,6 +17037,7 @@ export namespace Prisma {
 
   export type BillCreateWithoutLineItemsInput = {
     id?: string
+    seed?: boolean
     invoiceNumber?: string | null
     invoiceDate: Date | string
     dueDate: Date | string
@@ -15867,12 +17050,15 @@ export namespace Prisma {
     paidAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutBillsInput
     vendor: VendorCreateNestedOneWithoutBillsInput
     payments?: PaymentCreateNestedManyWithoutBillInput
   }
 
   export type BillUncheckedCreateWithoutLineItemsInput = {
     id?: string
+    userId: string
+    seed?: boolean
     vendorId: string
     invoiceNumber?: string | null
     invoiceDate: Date | string
@@ -15896,14 +17082,18 @@ export namespace Prisma {
 
   export type GLAccountCreateWithoutLineItemsInput = {
     id?: string
+    seed?: boolean
     code: string
     name: string
     type: $Enums.GLAccountType
     createdAt?: Date | string
+    user: UserCreateNestedOneWithoutGlAccountsInput
   }
 
   export type GLAccountUncheckedCreateWithoutLineItemsInput = {
     id?: string
+    userId: string
+    seed?: boolean
     code: string
     name: string
     type: $Enums.GLAccountType
@@ -15928,6 +17118,7 @@ export namespace Prisma {
 
   export type BillUpdateWithoutLineItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15940,12 +17131,15 @@ export namespace Prisma {
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutBillsNestedInput
     vendor?: VendorUpdateOneRequiredWithoutBillsNestedInput
     payments?: PaymentUpdateManyWithoutBillNestedInput
   }
 
   export type BillUncheckedUpdateWithoutLineItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     vendorId?: StringFieldUpdateOperationsInput | string
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15975,14 +17169,18 @@ export namespace Prisma {
 
   export type GLAccountUpdateWithoutLineItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     code?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumGLAccountTypeFieldUpdateOperationsInput | $Enums.GLAccountType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutGlAccountsNestedInput
   }
 
   export type GLAccountUncheckedUpdateWithoutLineItemsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     code?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumGLAccountTypeFieldUpdateOperationsInput | $Enums.GLAccountType
@@ -15991,6 +17189,7 @@ export namespace Prisma {
 
   export type BillCreateWithoutPaymentsInput = {
     id?: string
+    seed?: boolean
     invoiceNumber?: string | null
     invoiceDate: Date | string
     dueDate: Date | string
@@ -16003,12 +17202,15 @@ export namespace Prisma {
     paidAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutBillsInput
     vendor: VendorCreateNestedOneWithoutBillsInput
     lineItems?: BillLineItemCreateNestedManyWithoutBillInput
   }
 
   export type BillUncheckedCreateWithoutPaymentsInput = {
     id?: string
+    userId: string
+    seed?: boolean
     vendorId: string
     invoiceNumber?: string | null
     invoiceDate: Date | string
@@ -16043,6 +17245,7 @@ export namespace Prisma {
 
   export type BillUpdateWithoutPaymentsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16055,12 +17258,15 @@ export namespace Prisma {
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutBillsNestedInput
     vendor?: VendorUpdateOneRequiredWithoutBillsNestedInput
     lineItems?: BillLineItemUpdateManyWithoutBillNestedInput
   }
 
   export type BillUncheckedUpdateWithoutPaymentsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     vendorId?: StringFieldUpdateOperationsInput | string
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16096,6 +17302,56 @@ export namespace Prisma {
     id?: string
     sessionToken: string
     expires: Date | string
+  }
+
+  export type VendorCreateManyUserInput = {
+    id?: string
+    seed?: boolean
+    name: string
+    email?: string | null
+    phone?: string | null
+    website?: string | null
+    addressLine1?: string | null
+    addressLine2?: string | null
+    city?: string | null
+    state?: string | null
+    zip?: string | null
+    country?: string
+    defaultPaymentMethod?: $Enums.PaymentMethod
+    bankName?: string | null
+    bankRoutingNumber?: string | null
+    bankAccountNumber?: string | null
+    taxId?: string | null
+    status?: $Enums.VendorStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BillCreateManyUserInput = {
+    id?: string
+    seed?: boolean
+    vendorId: string
+    invoiceNumber?: string | null
+    invoiceDate: Date | string
+    dueDate: Date | string
+    status?: $Enums.BillStatus
+    memo?: string | null
+    paymentMethod?: $Enums.PaymentMethod | null
+    rejectionReason?: string | null
+    submittedAt?: Date | string | null
+    approvedAt?: Date | string | null
+    paidAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GLAccountCreateManyUserInput = {
+    id?: string
+    seed?: boolean
+    code: string
+    name: string
+    type: $Enums.GLAccountType
+    createdAt?: Date | string
   }
 
   export type AccountUpdateWithoutUserInput = {
@@ -16161,8 +17417,168 @@ export namespace Prisma {
     expires?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type VendorUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    addressLine1?: NullableStringFieldUpdateOperationsInput | string | null
+    addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: StringFieldUpdateOperationsInput | string
+    defaultPaymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    bankRoutingNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    taxId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumVendorStatusFieldUpdateOperationsInput | $Enums.VendorStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bills?: BillUpdateManyWithoutVendorNestedInput
+  }
+
+  export type VendorUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    addressLine1?: NullableStringFieldUpdateOperationsInput | string | null
+    addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: StringFieldUpdateOperationsInput | string
+    defaultPaymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    bankRoutingNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    taxId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumVendorStatusFieldUpdateOperationsInput | $Enums.VendorStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bills?: BillUncheckedUpdateManyWithoutVendorNestedInput
+  }
+
+  export type VendorUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
+    name?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    addressLine1?: NullableStringFieldUpdateOperationsInput | string | null
+    addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    zip?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: StringFieldUpdateOperationsInput | string
+    defaultPaymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    bankName?: NullableStringFieldUpdateOperationsInput | string | null
+    bankRoutingNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    taxId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumVendorStatusFieldUpdateOperationsInput | $Enums.VendorStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BillUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
+    invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentMethod?: NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    vendor?: VendorUpdateOneRequiredWithoutBillsNestedInput
+    lineItems?: BillLineItemUpdateManyWithoutBillNestedInput
+    payments?: PaymentUpdateManyWithoutBillNestedInput
+  }
+
+  export type BillUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
+    vendorId?: StringFieldUpdateOperationsInput | string
+    invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentMethod?: NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lineItems?: BillLineItemUncheckedUpdateManyWithoutBillNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutBillNestedInput
+  }
+
+  export type BillUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
+    vendorId?: StringFieldUpdateOperationsInput | string
+    invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
+    memo?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentMethod?: NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+    rejectionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    submittedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GLAccountUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumGLAccountTypeFieldUpdateOperationsInput | $Enums.GLAccountType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lineItems?: BillLineItemUpdateManyWithoutGlAccountNestedInput
+  }
+
+  export type GLAccountUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumGLAccountTypeFieldUpdateOperationsInput | $Enums.GLAccountType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lineItems?: BillLineItemUncheckedUpdateManyWithoutGlAccountNestedInput
+  }
+
+  export type GLAccountUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumGLAccountTypeFieldUpdateOperationsInput | $Enums.GLAccountType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type BillCreateManyVendorInput = {
     id?: string
+    userId: string
+    seed?: boolean
     invoiceNumber?: string | null
     invoiceDate: Date | string
     dueDate: Date | string
@@ -16179,6 +17595,7 @@ export namespace Prisma {
 
   export type BillUpdateWithoutVendorInput = {
     id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16191,12 +17608,15 @@ export namespace Prisma {
     paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutBillsNestedInput
     lineItems?: BillLineItemUpdateManyWithoutBillNestedInput
     payments?: PaymentUpdateManyWithoutBillNestedInput
   }
 
   export type BillUncheckedUpdateWithoutVendorInput = {
     id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16215,6 +17635,8 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateManyWithoutVendorInput = {
     id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     invoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16232,6 +17654,7 @@ export namespace Prisma {
   export type BillLineItemCreateManyGlAccountInput = {
     id?: string
     billId: string
+    seed?: boolean
     description: string
     quantity?: number
     unitPrice: number
@@ -16241,6 +17664,7 @@ export namespace Prisma {
 
   export type BillLineItemUpdateWithoutGlAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     description?: StringFieldUpdateOperationsInput | string
     quantity?: FloatFieldUpdateOperationsInput | number
     unitPrice?: FloatFieldUpdateOperationsInput | number
@@ -16252,6 +17676,7 @@ export namespace Prisma {
   export type BillLineItemUncheckedUpdateWithoutGlAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
     billId?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     description?: StringFieldUpdateOperationsInput | string
     quantity?: FloatFieldUpdateOperationsInput | number
     unitPrice?: FloatFieldUpdateOperationsInput | number
@@ -16262,6 +17687,7 @@ export namespace Prisma {
   export type BillLineItemUncheckedUpdateManyWithoutGlAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
     billId?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     description?: StringFieldUpdateOperationsInput | string
     quantity?: FloatFieldUpdateOperationsInput | number
     unitPrice?: FloatFieldUpdateOperationsInput | number
@@ -16271,6 +17697,7 @@ export namespace Prisma {
 
   export type BillLineItemCreateManyBillInput = {
     id?: string
+    seed?: boolean
     description: string
     quantity?: number
     unitPrice: number
@@ -16281,6 +17708,7 @@ export namespace Prisma {
 
   export type PaymentCreateManyBillInput = {
     id?: string
+    seed?: boolean
     amount: number
     method: $Enums.PaymentMethod
     status?: $Enums.PaymentStatus
@@ -16294,6 +17722,7 @@ export namespace Prisma {
 
   export type BillLineItemUpdateWithoutBillInput = {
     id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     description?: StringFieldUpdateOperationsInput | string
     quantity?: FloatFieldUpdateOperationsInput | number
     unitPrice?: FloatFieldUpdateOperationsInput | number
@@ -16304,6 +17733,7 @@ export namespace Prisma {
 
   export type BillLineItemUncheckedUpdateWithoutBillInput = {
     id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     description?: StringFieldUpdateOperationsInput | string
     quantity?: FloatFieldUpdateOperationsInput | number
     unitPrice?: FloatFieldUpdateOperationsInput | number
@@ -16314,6 +17744,7 @@ export namespace Prisma {
 
   export type BillLineItemUncheckedUpdateManyWithoutBillInput = {
     id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     description?: StringFieldUpdateOperationsInput | string
     quantity?: FloatFieldUpdateOperationsInput | number
     unitPrice?: FloatFieldUpdateOperationsInput | number
@@ -16324,6 +17755,7 @@ export namespace Prisma {
 
   export type PaymentUpdateWithoutBillInput = {
     id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     amount?: FloatFieldUpdateOperationsInput | number
     method?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
@@ -16337,6 +17769,7 @@ export namespace Prisma {
 
   export type PaymentUncheckedUpdateWithoutBillInput = {
     id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     amount?: FloatFieldUpdateOperationsInput | number
     method?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
@@ -16350,6 +17783,7 @@ export namespace Prisma {
 
   export type PaymentUncheckedUpdateManyWithoutBillInput = {
     id?: StringFieldUpdateOperationsInput | string
+    seed?: BoolFieldUpdateOperationsInput | boolean
     amount?: FloatFieldUpdateOperationsInput | number
     method?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
     status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus

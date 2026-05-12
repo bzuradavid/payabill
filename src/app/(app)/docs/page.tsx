@@ -1,7 +1,6 @@
 export const dynamic = "force-dynamic";
 
 import { type Metadata } from "next";
-import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Documentation — Payables",
@@ -10,6 +9,8 @@ export const metadata: Metadata = {
 
 const sections = [
   { id: "overview", label: "Overview" },
+  { id: "auth", label: "Auth & User Scoping" },
+  { id: "seed-data", label: "Seed Data & Toggle" },
   { id: "architecture", label: "Architecture" },
   { id: "data-model", label: "Data Model" },
   { id: "bill-lifecycle", label: "Bill Lifecycle" },
@@ -218,12 +219,138 @@ export default function DocsPage() {
             ["Framework", "Next.js 15.2 (App Router, React 19)"],
             ["Language", "TypeScript 5.8 (strict)"],
             ["Database", "PostgreSQL via Prisma 6.6"],
-            ["Auth", "NextAuth v5-beta · Google OAuth · PrismaAdapter"],
+            ["Auth", "NextAuth v5-beta · Google OAuth · PrismaAdapter (database sessions)"],
             ["Styling", "Tailwind CSS 4.0 (PostCSS)"],
             ["Validation", "Zod"],
             ["Font", "Geist Sans (Google Fonts)"],
           ]}
         />
+
+        {/* ── Auth & User Scoping ── */}
+        <SectionHeading id="auth">Auth &amp; User Scoping</SectionHeading>
+        <Prose>
+          Payables is a multi-tenant single-user-per-tenant product: every user
+          gets their own private workspace. The application surfaces are split
+          into two route groups:
+        </Prose>
+        <Table
+          headers={["Group", "Layout", "Auth", "Routes"]}
+          rows={[
+            [
+              "(marketing)",
+              "src/app/(marketing)/layout.tsx",
+              "Public",
+              "/ (landing), /login",
+            ],
+            [
+              "(app)",
+              "src/app/(app)/layout.tsx",
+              "Required — redirects to /login",
+              "/dashboard, /bills/*, /vendors/*, /docs",
+            ],
+          ]}
+        />
+
+        <SubHeading>Sign-in flow</SubHeading>
+        <Prose>
+          A single &quot;Continue with Google&quot; button on{" "}
+          <Code>/login</Code> handles both sign-up and sign-in. The
+          PrismaAdapter creates a new <Code>User</Code> row the first time a
+          Google account is seen.
+        </Prose>
+        <CodeBlock>{`/  →  /login  →  Google OAuth  →  /api/auth/callback/google
+                                          ↓
+                          PrismaAdapter creates User (first time)
+                                          ↓
+                          events.createUser → seedUserData(db, user.id)
+                                          ↓
+                                      /dashboard`}</CodeBlock>
+
+        <SubHeading>Per-request user context</SubHeading>
+        <Prose>
+          Every authenticated request resolves a <Code>UserContext</Code>{" "}
+          (<Code>userId</Code> + <Code>hideSeed</Code> preference) via{" "}
+          <Code>requireUserContext()</Code> in{" "}
+          <Code>src/server/get-user.ts</Code>. Services are instantiated
+          per-request through <Code>getServices()</Code> in{" "}
+          <Code>src/server/container.ts</Code>; they baked the user&apos;s id
+          into every query.
+        </Prose>
+        <CodeBlock>{`// Every service method filters by userId automatically
+// (and by seed: false when hideSeed is on)
+private scope() {
+  return {
+    userId: this.ctx.userId,
+    ...(this.ctx.hideSeed ? { seed: false } : {}),
+  };
+}`}</CodeBlock>
+
+        <SubHeading>User-scoped models</SubHeading>
+        <Prose>
+          <Code>Vendor</Code>, <Code>Bill</Code>, and <Code>GLAccount</Code>{" "}
+          each carry a required <Code>userId</Code> FK (cascade-delete with
+          User). <Code>BillLineItem</Code> and <Code>Payment</Code> inherit
+          their owner via their parent bill.
+        </Prose>
+
+        {/* ── Seed Data & Toggle ── */}
+        <SectionHeading id="seed-data">Seed Data &amp; Toggle</SectionHeading>
+        <Prose>
+          Every new workspace ships pre-loaded with a realistic demo dataset
+          (6 vendors, 8 GL accounts, ~20 bills across every status) so that
+          users can explore the app immediately.
+        </Prose>
+
+        <SubHeading>How seeding works</SubHeading>
+        <Prose>
+          When the PrismaAdapter creates a User row, the NextAuth{" "}
+          <Code>events.createUser</Code> hook calls{" "}
+          <Code>seedUserData(db, user.id)</Code> from{" "}
+          <Code>src/server/seed-user.ts</Code>. This runs once per user and
+          inserts a personal copy of the demo dataset attached to their{" "}
+          <Code>userId</Code>, with every row marked <Code>seed: true</Code>.
+        </Prose>
+        <Prose>
+          Because seeding is per-user, edits never leak between accounts —
+          each user owns their own demo rows and can modify or delete them
+          freely.
+        </Prose>
+
+        <SubHeading>The seed field</SubHeading>
+        <Table
+          headers={["Model", "Field", "Default"]}
+          rows={[
+            ["Vendor", "seed: Boolean", "false"],
+            ["Bill", "seed: Boolean", "false"],
+            ["BillLineItem", "seed: Boolean", "false"],
+            ["Payment", "seed: Boolean", "false"],
+            ["GLAccount", "seed: Boolean", "false"],
+          ]}
+        />
+        <Prose>
+          New rows the user creates default to <Code>seed: false</Code>, so
+          they are never hidden by the toggle.
+        </Prose>
+
+        <SubHeading>The toggle</SubHeading>
+        <Prose>
+          The dashboard header includes a &quot;Hide demo data&quot; switch
+          (
+          <Code>src/components/dashboard/HideSeedToggle.tsx</Code>) that
+          flips <Code>User.hideSeed</Code> via the{" "}
+          <Code>setHideSeed()</Code> server action. When enabled, every
+          service method appends <Code>seed: false</Code> to its where-clause,
+          so seeded rows are filtered out of every page —{" "}
+          <em>dashboards, lists, detail pages, and aggregates alike</em>.
+        </Prose>
+        <CodeBlock>{`// src/actions/preferences.ts
+export async function setHideSeed(hideSeed: boolean) {
+  const { userId } = await requireUserContext();
+  await db.user.update({ where: { id: userId }, data: { hideSeed } });
+  revalidatePath("/dashboard");
+  revalidatePath("/bills");
+  revalidatePath("/vendors");
+}`}</CodeBlock>
 
         {/* ── Architecture ── */}
         <SectionHeading id="architecture">Architecture</SectionHeading>
@@ -233,22 +360,35 @@ export default function DocsPage() {
         </Prose>
         <CodeBlock>{`src/
 ├── app/              Next.js pages (Server Components by default)
-│   ├── page.tsx      Dashboard
-│   ├── bills/        Bills inbox + create + detail
-│   ├── vendors/      Vendor directory + create + edit + detail
-│   ├── docs/         This documentation
+│   ├── (marketing)/  Public surfaces — no AppShell, no auth
+│   │   ├── page.tsx          Landing
+│   │   └── login/page.tsx    Sign in / sign up
+│   ├── (app)/        Authenticated surfaces — AppShell + auth guard
+│   │   ├── layout.tsx        Calls auth() → redirect("/login") if unauthed
+│   │   ├── dashboard/        Live stats + "Hide demo data" toggle
+│   │   ├── bills/            Bills inbox + create + detail
+│   │   ├── vendors/          Vendor directory + create + edit + detail
+│   │   └── docs/             This documentation
+│   ├── layout.tsx    Root: html/body + Geist font (no AppShell)
 │   └── api/
 │       ├── auth/     NextAuth route handler
 │       └── docs/     Machine-readable JSON documentation
 ├── actions/          Server Actions ("use server") — mutations only
+│   ├── bills.ts      Bill lifecycle
+│   ├── vendors.ts    Vendor CRUD
+│   ├── auth.ts       signInWithGoogle, signOutAction
+│   └── preferences.ts setHideSeed
 ├── server/
-│   ├── auth.ts       NextAuth config
+│   ├── auth.ts       NextAuth config + events.createUser → seedUserData
 │   ├── db.ts         Prisma singleton
-│   ├── container.ts  DI container — exports service singletons
-│   └── services/     Business logic classes (BillService, VendorService, …)
+│   ├── get-user.ts   requireUserContext() — { userId, hideSeed }
+│   ├── container.ts  Per-request service factory: getServices()
+│   ├── seed-user.ts  Per-user demo seeding (seed: true on every row)
+│   └── services/     Business logic classes — all user-scoped
 ├── components/
-│   ├── ui/           Primitive components (Button, Card, Badge, …)
-│   ├── layout/       AppShell, Sidebar
+│   ├── ui/           Primitive components (Button, Card, Switch, …)
+│   ├── layout/       AppShell, Sidebar (with UserMenu + sign out)
+│   ├── dashboard/    HideSeedToggle
 │   ├── bills/        Bill-specific components
 │   └── vendors/      Vendor-specific components
 └── lib/utils.ts      cn(), formatCurrency(), formatDate(), …`}</CodeBlock>
@@ -258,6 +398,14 @@ export default function DocsPage() {
           headers={["Pattern", "Implementation"]}
           rows={[
             [
+              "Route groups",
+              "(marketing) for public surfaces, (app) for the authenticated workspace",
+            ],
+            [
+              "Auth gate",
+              "(app)/layout.tsx calls auth() and redirects unauthenticated users to /login",
+            ],
+            [
               "Server Components",
               "Pages are async RSCs that call services directly — no API round-trips",
             ],
@@ -266,8 +414,12 @@ export default function DocsPage() {
               "All mutations live in src/actions/, return ActionResult<T>",
             ],
             [
-              "Dependency Injection",
-              "Services receive db via constructor; singletons exported from container.ts",
+              "Per-request DI",
+              "getServices() returns user-scoped service instances; every query filters by userId",
+            ],
+            [
+              "Seed flag",
+              "Every domain row carries a seed:Boolean. Services append seed:false when User.hideSeed is on",
             ],
             [
               "Cache invalidation",
@@ -306,6 +458,8 @@ export default function DocsPage() {
           headers={["Field", "Type", "Notes"]}
           rows={[
             ["id", "String (cuid)", "Primary key"],
+            ["userId", "String", "FK → User (workspace owner, cascade delete)"],
+            ["seed", "Boolean", "true for demo rows; hidden when User.hideSeed = true"],
             ["vendorId", "String", "FK → Vendor"],
             ["invoiceNumber", "String?", "Vendor's invoice reference"],
             ["invoiceDate", "DateTime?", ""],
@@ -324,6 +478,7 @@ export default function DocsPage() {
           rows={[
             ["id", "String (cuid)", ""],
             ["billId", "String", "FK → Bill (cascade delete)"],
+            ["seed", "Boolean", "Inherits from parent bill at seed time"],
             ["description", "String", ""],
             ["quantity", "Decimal", ""],
             ["unitPrice", "Decimal", ""],
@@ -337,6 +492,8 @@ export default function DocsPage() {
           headers={["Field", "Type", "Notes"]}
           rows={[
             ["id", "String (cuid)", ""],
+            ["userId", "String", "FK → User (cascade delete)"],
+            ["seed", "Boolean", "true for demo rows"],
             ["name", "String", "Indexed"],
             ["email / phone / website", "String?", ""],
             ["address.*", "String?", "line1, line2, city, state, zip, country"],
@@ -352,7 +509,9 @@ export default function DocsPage() {
           headers={["Field", "Type", "Notes"]}
           rows={[
             ["id", "String (cuid)", ""],
-            ["code", "String", "Unique chart-of-accounts code"],
+            ["userId", "String", "FK → User (cascade delete)"],
+            ["seed", "Boolean", "true for demo rows"],
+            ["code", "String", "Unique per user (@@unique([userId, code]))"],
             ["name", "String", ""],
             ["type", "GLAccountType", "EXPENSE · LIABILITY · ASSET"],
           ]}
@@ -364,6 +523,7 @@ export default function DocsPage() {
           rows={[
             ["id", "String (cuid)", ""],
             ["billId", "String", "FK → Bill"],
+            ["seed", "Boolean", "Inherits from parent bill at seed time"],
             ["amount", "Decimal", ""],
             ["method", "PaymentMethod", "ACH · CHECK · WIRE"],
             ["status", "PaymentStatus", "PENDING · PROCESSING · COMPLETED · FAILED"],
@@ -373,11 +533,29 @@ export default function DocsPage() {
           ]}
         />
 
-        <SubHeading>Auth models</SubHeading>
+        <SubHeading>User</SubHeading>
         <Prose>
-          <Code>User</Code>, <Code>Account</Code>, <Code>Session</Code>, and{" "}
+          Workspace owner. NextAuth PrismaAdapter creates one row per Google
+          account on first sign-in. Triggers <Code>seedUserData()</Code> via{" "}
+          <Code>events.createUser</Code>.
+        </Prose>
+        <Table
+          headers={["Field", "Type", "Notes"]}
+          rows={[
+            ["id", "String (cuid)", "Primary key"],
+            ["name / email / image", "String?", "From Google profile"],
+            ["hideSeed", "Boolean", "When true, services filter out seed:true rows"],
+            ["accounts / sessions", "[]", "NextAuth"],
+            ["vendors / bills / glAccounts", "[]", "Cascade-delete on user delete"],
+          ]}
+        />
+
+        <SubHeading>NextAuth models</SubHeading>
+        <Prose>
+          <Code>Account</Code>, <Code>Session</Code>, and{" "}
           <Code>VerificationToken</Code> are standard NextAuth Prisma adapter
-          models and are not part of the AP domain.
+          models. The PrismaAdapter manages them — no application code
+          touches them directly.
         </Prose>
 
         {/* ── Bill Lifecycle ── */}
@@ -452,19 +630,21 @@ export default function DocsPage() {
           extracted into <Code>&quot;use client&quot;</Code> components.
         </Prose>
         <Table
-          headers={["Route", "File", "Purpose"]}
+          headers={["Route", "Group", "File", "Purpose"]}
           rows={[
-            ["/", "app/page.tsx", "Dashboard — live stats + recent bills"],
-            ["/bills", "app/bills/page.tsx", "Bills inbox with status filter + search"],
-            ["/bills/new", "app/bills/new/page.tsx", "Create bill with line items"],
-            ["/bills/[id]", "app/bills/[id]/page.tsx", "Bill detail + state-machine actions"],
-            ["/vendors", "app/vendors/page.tsx", "Vendor directory with search"],
-            ["/vendors/new", "app/vendors/new/page.tsx", "Create vendor"],
-            ["/vendors/[id]", "app/vendors/[id]/page.tsx", "Vendor detail + bill history"],
-            ["/vendors/[id]/edit", "app/vendors/[id]/edit/page.tsx", "Edit vendor"],
-            ["/docs", "app/docs/page.tsx", "This page"],
-            ["/api/auth/[...nextauth]", "app/api/auth/[...nextauth]/route.ts", "NextAuth handler (signin, callback, signout, session)"],
-            ["/api/docs", "app/api/docs/route.ts", "Machine-readable JSON documentation"],
+            ["/", "(marketing)", "app/(marketing)/page.tsx", "Landing page. Redirects to /dashboard when signed in."],
+            ["/login", "(marketing)", "app/(marketing)/login/page.tsx", "Sign-in / sign-up via Google."],
+            ["/dashboard", "(app)", "app/(app)/dashboard/page.tsx", "Live stats + recent bills + Hide-demo-data toggle"],
+            ["/bills", "(app)", "app/(app)/bills/page.tsx", "Bills inbox with status filter + search"],
+            ["/bills/new", "(app)", "app/(app)/bills/new/page.tsx", "Create bill with line items"],
+            ["/bills/[id]", "(app)", "app/(app)/bills/[id]/page.tsx", "Bill detail + state-machine actions"],
+            ["/vendors", "(app)", "app/(app)/vendors/page.tsx", "Vendor directory with search"],
+            ["/vendors/new", "(app)", "app/(app)/vendors/new/page.tsx", "Create vendor"],
+            ["/vendors/[id]", "(app)", "app/(app)/vendors/[id]/page.tsx", "Vendor detail + bill history"],
+            ["/vendors/[id]/edit", "(app)", "app/(app)/vendors/[id]/edit/page.tsx", "Edit vendor"],
+            ["/docs", "(app)", "app/(app)/docs/page.tsx", "This page"],
+            ["/api/auth/[...nextauth]", "—", "app/api/auth/[...nextauth]/route.ts", "NextAuth handler (signin, callback, signout, session)"],
+            ["/api/docs", "—", "app/api/docs/route.ts", "Machine-readable JSON documentation"],
           ]}
         />
 
@@ -500,13 +680,39 @@ export default function DocsPage() {
           ]}
         />
 
+        <SubHeading>Auth — src/actions/auth.ts</SubHeading>
+        <Table
+          headers={["Function", "Behavior"]}
+          rows={[
+            ["signInWithGoogle()", "Calls NextAuth signIn('google'); redirects to /dashboard on success"],
+            ["signOutAction()", "Calls NextAuth signOut(); redirects to / (landing)"],
+          ]}
+        />
+
+        <SubHeading>Preferences — src/actions/preferences.ts</SubHeading>
+        <Table
+          headers={["Function", "Input", "Returns"]}
+          rows={[
+            ["setHideSeed(hideSeed)", "boolean", "ActionResult<{ hideSeed }>; updates User.hideSeed; revalidates /dashboard, /bills, /vendors"],
+          ]}
+        />
+
         {/* ── Services ── */}
         <SectionHeading id="services">Service Layer</SectionHeading>
         <Prose>
-          Services encapsulate all business logic and database access.
-          Singletons are wired in <Code>src/server/container.ts</Code> and
-          consumed by both pages (RSC reads) and actions (mutations).
+          Services encapsulate all business logic and database access. Each
+          service takes the Prisma client and a <Code>UserContext</Code> (
+          <Code>userId</Code> + <Code>hideSeed</Code>) in its constructor and
+          appends both filters to every query. Instances are returned by{" "}
+          <Code>getServices()</Code> in <Code>src/server/container.ts</Code> —
+          a per-request factory consumed by both pages (RSC reads) and
+          actions (mutations).
         </Prose>
+        <CodeBlock>{`// In any RSC or server action
+const { billService, vendorService, glAccountService, ctx } =
+  await getServices();
+// Throws/redirects to /login if unauthenticated.
+// All subsequent service calls are scoped to ctx.userId.`}</CodeBlock>
 
         <SubHeading>BillService</SubHeading>
         <Table
@@ -544,7 +750,9 @@ export default function DocsPage() {
         <SectionHeading id="environment">Environment</SectionHeading>
         <Prose>
           Variables are validated at startup via <Code>src/env.js</Code> (t3-env
-          pattern). Missing required variables throw at build time.
+          pattern). Missing required variables throw at build time. Google
+          OAuth credentials are mandatory now that authentication is required
+          for the workspace.
         </Prose>
         <Table
           headers={["Variable", "Required", "Purpose"]}

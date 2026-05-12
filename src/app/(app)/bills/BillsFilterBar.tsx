@@ -2,7 +2,7 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import { useCallback, useTransition } from "react";
-import { type BillStatus } from "../../../generated/prisma";
+import { type BillStatus } from "../../../../generated/prisma";
 import { cn } from "~/lib/utils";
 
 interface Tab {

@@ -1,14 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { Sidebar } from "./Sidebar";
+import { Sidebar, type SidebarUser } from "./Sidebar";
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({
+  children,
+  user,
+}: {
+  children: React.ReactNode;
+  user: SidebarUser;
+}) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#F6F7FB]">
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar user={user} open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Mobile backdrop */}
       {sidebarOpen && (

@@ -4,6 +4,7 @@ import {
   type PaymentMethod,
   BillStatus,
 } from "../../../generated/prisma";
+import { type UserContext } from "~/server/get-user";
 
 export interface CreateVendorInput {
   name: string;
@@ -31,11 +32,22 @@ export interface VendorListFilters {
 }
 
 export class VendorService {
-  constructor(private db: PrismaClient) {}
+  constructor(
+    private db: PrismaClient,
+    private ctx: UserContext,
+  ) {}
+
+  private scope() {
+    return {
+      userId: this.ctx.userId,
+      ...(this.ctx.hideSeed ? { seed: false } : {}),
+    };
+  }
 
   async list(filters: VendorListFilters = {}) {
     const vendors = await this.db.vendor.findMany({
       where: {
+        ...this.scope(),
         status: filters.status,
         ...(filters.search
           ? {
@@ -51,6 +63,7 @@ export class VendorService {
           select: {
             bills: {
               where: {
+                ...(this.ctx.hideSeed ? { seed: false } : {}),
                 status: {
                   notIn: [BillStatus.VOID, BillStatus.REJECTED],
                 },
@@ -59,7 +72,10 @@ export class VendorService {
           },
         },
         bills: {
-          where: { status: BillStatus.PAID },
+          where: {
+            ...(this.ctx.hideSeed ? { seed: false } : {}),
+            status: BillStatus.PAID,
+          },
           include: { lineItems: true },
         },
       },
@@ -88,10 +104,11 @@ export class VendorService {
   }
 
   async getById(id: string) {
-    return this.db.vendor.findUnique({
-      where: { id },
+    return this.db.vendor.findFirst({
+      where: { id, userId: this.ctx.userId },
       include: {
         bills: {
+          where: this.ctx.hideSeed ? { seed: false } : undefined,
           include: {
             lineItems: true,
           },
@@ -102,14 +119,26 @@ export class VendorService {
   }
 
   create(data: CreateVendorInput) {
-    return this.db.vendor.create({ data });
+    return this.db.vendor.create({
+      data: { ...data, userId: this.ctx.userId },
+    });
   }
 
-  update(id: string, data: UpdateVendorInput) {
+  async update(id: string, data: UpdateVendorInput) {
+    const vendor = await this.db.vendor.findFirst({
+      where: { id, userId: this.ctx.userId },
+      select: { id: true },
+    });
+    if (!vendor) throw new Error("Vendor not found");
     return this.db.vendor.update({ where: { id }, data });
   }
 
-  deactivate(id: string) {
+  async deactivate(id: string) {
+    const vendor = await this.db.vendor.findFirst({
+      where: { id, userId: this.ctx.userId },
+      select: { id: true },
+    });
+    if (!vendor) throw new Error("Vendor not found");
     return this.db.vendor.update({
       where: { id },
       data: { status: "INACTIVE" },
