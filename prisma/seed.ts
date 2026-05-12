@@ -12,7 +12,7 @@ async function main() {
   // we also delete the test-user rows explicitly by email.
   await db.organization.deleteMany({ where: { name: "Payable Demo Co" } });
   await db.user.deleteMany({
-    where: { email: { in: ["manager@payable.com", "staff@payable.com"] } },
+    where: { email: { in: ["manager@payabill.com", "staff@payabill.com"] } },
   });
 
   const passwordHash = await bcrypt.hash("pass1234", 10);
@@ -24,7 +24,7 @@ async function main() {
   const manager = await db.user.create({
     data: {
       name: "Demo Manager",
-      email: "manager@payable.com",
+      email: "manager@payabill.com",
       passwordHash,
       organizationId: org.id,
       role: "MANAGER",
@@ -34,7 +34,7 @@ async function main() {
   const staff = await db.user.create({
     data: {
       name: "Demo Staff",
-      email: "staff@payable.com",
+      email: "staff@payabill.com",
       passwordHash,
       organizationId: org.id,
       role: "STAFF",
@@ -44,8 +44,8 @@ async function main() {
   await seedOrganization(db, org.id, manager.id, staff.id);
 
   console.log("[seed] Demo org seeded:");
-  console.log("       manager@payable.com / pass1234");
-  console.log("       staff@payable.com / pass1234");
+  console.log("       manager@payabill.com / pass1234");
+  console.log("       staff@payabill.com / pass1234");
 }
 
 main()

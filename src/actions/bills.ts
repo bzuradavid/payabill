@@ -55,7 +55,7 @@ export async function createBill(
     if (!vendorId && data.inlineVendor) {
       const created = await vendorService.createInline({
         name: data.inlineVendor.name,
-        email: data.inlineVendor.email || undefined,
+        email: data.inlineVendor.email ?? undefined,
         defaultPaymentMethod: data.inlineVendor.defaultPaymentMethod,
       });
       vendorId = created.id;

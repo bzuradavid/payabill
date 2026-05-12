@@ -29,7 +29,12 @@ export default async function LandingPage() {
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#312D97] shadow-lg shadow-[#312D97]/30">
-              <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg
+                className="h-5 w-5 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -72,9 +77,9 @@ export default async function LandingPage() {
       </header>
 
       {/* Hero */}
-      <section className="relative z-10 mx-auto max-w-6xl px-6 pb-20 pt-12 lg:px-8 lg:pt-20">
+      <section className="relative z-10 mx-auto max-w-6xl px-6 pt-12 pb-20 lg:px-8 lg:pt-20">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#ecebff] bg-brand-50 px-4 py-1.5 text-xs font-semibold text-[#312D97]">
+          <div className="bg-brand-50 mb-6 inline-flex items-center gap-2 rounded-full border border-[#ecebff] px-4 py-1.5 text-xs font-semibold text-[#312D97]">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#10A6CC]" />
             Accounts payable, on autopilot
           </div>
@@ -95,8 +100,18 @@ export default async function LandingPage() {
               className="inline-flex items-center gap-2 rounded-full bg-[#312D97] px-7 py-3 text-base font-semibold text-white shadow-xl shadow-[#312D97]/30 transition-all hover:-translate-y-0.5 hover:bg-[#1d175a]"
             >
               Get started — it&apos;s free
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
               </svg>
             </Link>
             <a
@@ -114,34 +129,48 @@ export default async function LandingPage() {
 
         {/* Hero "screenshot" mock */}
         <div className="mx-auto mt-16 max-w-5xl">
-          <div className="rounded-3xl border border-[#ecebff] bg-gradient-to-b from-white to-brand-50 p-3 shadow-2xl shadow-[#312D97]/10">
+          <div className="to-brand-50 rounded-3xl border border-[#ecebff] bg-gradient-to-b from-white p-3 shadow-2xl shadow-[#312D97]/10">
             <div className="overflow-hidden rounded-2xl border border-[#ecebff] bg-white">
-              <div className="flex items-center justify-between border-b border-[#ecebff] bg-brand-50 px-5 py-3">
+              <div className="bg-brand-50 flex items-center justify-between border-b border-[#ecebff] px-5 py-3">
                 <div className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-full bg-red-300" />
                   <span className="h-2.5 w-2.5 rounded-full bg-amber-300" />
                   <span className="h-2.5 w-2.5 rounded-full bg-emerald-300" />
                 </div>
-                <span className="text-xs font-mono text-slate-400">
-                  payables.app/dashboard
+                <span className="font-mono text-xs text-slate-400">
+                  payabill.app/dashboard
                 </span>
                 <span className="w-12" />
               </div>
               <div className="grid grid-cols-2 gap-3 px-4 py-4 sm:grid-cols-4 sm:gap-4 sm:px-6 sm:py-6">
                 {[
-                  { label: "Outstanding", value: "$48,210", tone: "text-[#1a174f]" },
-                  { label: "Due this week", value: "$21,750", tone: "text-amber-600" },
+                  {
+                    label: "Outstanding",
+                    value: "$48,210",
+                    tone: "text-[#1a174f]",
+                  },
+                  {
+                    label: "Due this week",
+                    value: "$21,750",
+                    tone: "text-amber-600",
+                  },
                   { label: "Overdue", value: "$0", tone: "text-emerald-600" },
-                  { label: "Paid this month", value: "$31,074", tone: "text-emerald-700" },
+                  {
+                    label: "Paid this month",
+                    value: "$31,074",
+                    tone: "text-emerald-700",
+                  },
                 ].map((s) => (
                   <div
                     key={s.label}
                     className="rounded-2xl border border-[#ecebff] bg-white px-3 py-3 shadow-sm sm:px-4 sm:py-4"
                   >
-                    <p className="text-[0.65rem] font-medium uppercase tracking-wide text-slate-400 sm:text-[0.7rem]">
+                    <p className="text-[0.65rem] font-medium tracking-wide text-slate-400 uppercase sm:text-[0.7rem]">
                       {s.label}
                     </p>
-                    <p className={`mt-1 text-lg font-bold sm:text-xl ${s.tone}`}>
+                    <p
+                      className={`mt-1 text-lg font-bold sm:text-xl ${s.tone}`}
+                    >
                       {s.value}
                     </p>
                   </div>
@@ -149,33 +178,63 @@ export default async function LandingPage() {
               </div>
               <div className="px-4 pb-4 sm:px-6 sm:pb-6">
                 <div className="overflow-hidden rounded-2xl border border-[#ecebff]">
-                  <div className="hidden grid-cols-[2fr_1fr_1fr_1fr] gap-4 border-b border-[#ecebff] bg-brand-50 px-5 py-2.5 text-[0.65rem] font-semibold uppercase tracking-wider text-slate-500 sm:grid">
+                  <div className="bg-brand-50 hidden grid-cols-[2fr_1fr_1fr_1fr] gap-4 border-b border-[#ecebff] px-5 py-2.5 text-[0.65rem] font-semibold tracking-wider text-slate-500 uppercase sm:grid">
                     <span>Vendor</span>
                     <span>Due</span>
                     <span className="text-right">Amount</span>
                     <span>Status</span>
                   </div>
                   {[
-                    { name: "WeWork Companies LLC", due: "in 3d", amt: "$20,750.00", status: "Scheduled", color: "bg-purple-100 text-purple-700" },
-                    { name: "Amazon Web Services", due: "in 7d", amt: "$4,930.00", status: "Approved", color: "bg-indigo-100 text-indigo-700" },
-                    { name: "Stripe, Inc.", due: "in 12d", amt: "$2,810.00", status: "Pending", color: "bg-amber-100 text-amber-700" },
+                    {
+                      name: "WeWork Companies LLC",
+                      due: "in 3d",
+                      amt: "$20,750.00",
+                      status: "Scheduled",
+                      color: "bg-purple-100 text-purple-700",
+                    },
+                    {
+                      name: "Amazon Web Services",
+                      due: "in 7d",
+                      amt: "$4,930.00",
+                      status: "Approved",
+                      color: "bg-indigo-100 text-indigo-700",
+                    },
+                    {
+                      name: "Stripe, Inc.",
+                      due: "in 12d",
+                      amt: "$2,810.00",
+                      status: "Pending",
+                      color: "bg-amber-100 text-amber-700",
+                    },
                   ].map((b) => (
                     <div
                       key={b.name}
                       className="flex items-center justify-between gap-3 border-b border-[#ecebff] px-3 py-3 last:border-0 sm:grid sm:grid-cols-[2fr_1fr_1fr_1fr] sm:gap-4 sm:px-5 sm:text-sm"
                     >
                       <div className="min-w-0 flex-1 sm:flex-none">
-                        <p className="truncate text-sm font-medium text-[#1a174f]">{b.name}</p>
-                        <p className="mt-0.5 text-[0.7rem] text-slate-500 sm:hidden">Due {b.due}</p>
+                        <p className="truncate text-sm font-medium text-[#1a174f]">
+                          {b.name}
+                        </p>
+                        <p className="mt-0.5 text-[0.7rem] text-slate-500 sm:hidden">
+                          Due {b.due}
+                        </p>
                       </div>
-                      <span className="hidden text-slate-500 sm:inline">Due {b.due}</span>
-                      <span className="whitespace-nowrap text-right text-sm font-medium text-slate-900">{b.amt}</span>
+                      <span className="hidden text-slate-500 sm:inline">
+                        Due {b.due}
+                      </span>
+                      <span className="text-right text-sm font-medium whitespace-nowrap text-slate-900">
+                        {b.amt}
+                      </span>
                       <span className="hidden sm:inline">
-                        <span className={`whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold ${b.color}`}>
+                        <span
+                          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap ${b.color}`}
+                        >
                           {b.status}
                         </span>
                       </span>
-                      <span className={`whitespace-nowrap rounded-full px-2 py-0.5 text-[0.65rem] font-semibold sm:hidden ${b.color}`}>
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[0.65rem] font-semibold whitespace-nowrap sm:hidden ${b.color}`}
+                      >
                         {b.status}
                       </span>
                     </div>
@@ -188,10 +247,10 @@ export default async function LandingPage() {
       </section>
 
       {/* Features */}
-      <section id="features" className="relative z-10 bg-brand-50/50 py-24">
+      <section id="features" className="bg-brand-50/50 relative z-10 py-24">
         <div className="mx-auto max-w-6xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-xs font-semibold uppercase tracking-widest text-[#312D97]">
+            <h2 className="text-xs font-semibold tracking-widest text-[#312D97] uppercase">
               Everything you need
             </h2>
             <p className="mt-3 text-3xl font-bold tracking-tight text-[#1a174f] sm:text-4xl">
@@ -209,48 +268,72 @@ export default async function LandingPage() {
                 title: "Bills inbox",
                 body: "One inbox for every invoice. Filter by status, search across vendors and invoice numbers, and never lose a bill again.",
                 icon: (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.75}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
                 ),
               },
               {
                 title: "Vendor directory",
                 body: "Store contact details, payment preferences, bank info, and 1099 tax IDs in one place — with a full payment history per vendor.",
                 icon: (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
-                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.75}
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                  />
                 ),
               },
               {
                 title: "Approval workflow",
                 body: "Draft → Pending → Approved → Scheduled → Paid. A clean state machine with full audit trails on every transition.",
                 icon: (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
-                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.75}
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                  />
                 ),
               },
               {
                 title: "Payment scheduling",
                 body: "Schedule ACH, wire, or check payments ahead of due dates. Every payment is tracked with reference numbers and processed dates.",
                 icon: (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.75}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
                 ),
               },
               {
                 title: "Live dashboard",
                 body: "Real-time totals for outstanding, due soon, overdue, and paid-this-month — so you always know what's coming.",
                 icon: (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
-                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.75}
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
                 ),
               },
               {
                 title: "Roles built in",
                 body: "Staff submit bills (including to brand-new vendors). Managers approve, schedule, and invite teammates. Everyone sees only what they should.",
                 icon: (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
-                    d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-5.13a4 4 0 11-8 0 4 4 0 018 0zm6 0a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.75}
+                    d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-5.13a4 4 0 11-8 0 4 4 0 018 0zm6 0a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
                 ),
               },
             ].map((f) => (
@@ -258,15 +341,22 @@ export default async function LandingPage() {
                 key={f.title}
                 className="group rounded-2xl border border-[#ecebff] bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-[#312D97]/10"
               >
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-[#312D97] transition-colors group-hover:bg-[#312D97] group-hover:text-white">
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="bg-brand-50 flex h-11 w-11 items-center justify-center rounded-xl text-[#312D97] transition-colors group-hover:bg-[#312D97] group-hover:text-white">
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
                     {f.icon}
                   </svg>
                 </div>
                 <h3 className="mt-5 text-base font-semibold text-[#1a174f]">
                   {f.title}
                 </h3>
-                <p className="mt-2 text-sm leading-6 text-slate-600">{f.body}</p>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  {f.body}
+                </p>
               </div>
             ))}
           </div>
@@ -277,7 +367,7 @@ export default async function LandingPage() {
       <section id="workflow" className="relative z-10 py-24">
         <div className="mx-auto max-w-6xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-xs font-semibold uppercase tracking-widest text-[#312D97]">
+            <h2 className="text-xs font-semibold tracking-widest text-[#312D97] uppercase">
               How it works
             </h2>
             <p className="mt-3 text-3xl font-bold tracking-tight text-[#1a174f] sm:text-4xl">
@@ -287,22 +377,40 @@ export default async function LandingPage() {
 
           <ol className="mx-auto mt-16 grid max-w-4xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { n: "01", title: "Capture", body: "Add bills with vendor, line items, GL accounts, and due dates." },
-              { n: "02", title: "Approve", body: "Submit for review. Reject with a reason, or move to approved." },
-              { n: "03", title: "Schedule", body: "Pick a payment date and method — ACH, wire, or check." },
-              { n: "04", title: "Pay", body: "Mark as paid when funds clear. Full audit trail saved." },
+              {
+                n: "01",
+                title: "Capture",
+                body: "Add bills with vendor, line items, GL accounts, and due dates.",
+              },
+              {
+                n: "02",
+                title: "Approve",
+                body: "Submit for review. Reject with a reason, or move to approved.",
+              },
+              {
+                n: "03",
+                title: "Schedule",
+                body: "Pick a payment date and method — ACH, wire, or check.",
+              },
+              {
+                n: "04",
+                title: "Pay",
+                body: "Mark as paid when funds clear. Full audit trail saved.",
+              },
             ].map((s) => (
               <li
                 key={s.n}
                 className="relative rounded-2xl border border-[#ecebff] bg-white p-6 shadow-sm"
               >
-                <span className="text-xs font-mono font-bold text-[#10A6CC]">
+                <span className="font-mono text-xs font-bold text-[#10A6CC]">
                   {s.n}
                 </span>
                 <h3 className="mt-2 text-base font-semibold text-[#1a174f]">
                   {s.title}
                 </h3>
-                <p className="mt-2 text-sm leading-6 text-slate-600">{s.body}</p>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  {s.body}
+                </p>
               </li>
             ))}
           </ol>
@@ -331,11 +439,21 @@ export default async function LandingPage() {
             <div className="relative mt-8 flex items-center justify-center">
               <Link
                 href="/login"
-                className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-base font-semibold text-[#312D97] shadow-xl transition-all hover:-translate-y-0.5 hover:bg-brand-50"
+                className="hover:bg-brand-50 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-base font-semibold text-[#312D97] shadow-xl transition-all hover:-translate-y-0.5"
               >
                 Continue with Google
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 7l5 5m0 0l-5 5m5-5H6"
+                  />
                 </svg>
               </Link>
             </div>

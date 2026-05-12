@@ -7,7 +7,7 @@ export default function NewVendorLoading() {
       <div>
         <h1 className="text-xl font-semibold text-slate-900">New Vendor</h1>
         <p className="mt-0.5 text-sm text-slate-500">
-          Add a new vendor to your payables directory
+          Add a new vendor to your payabill directory
         </p>
       </div>
 

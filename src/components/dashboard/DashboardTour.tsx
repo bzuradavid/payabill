@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 
-const STORAGE_KEY = "payables:dashboard-tour-seen";
+const STORAGE_KEY = "payabill:dashboard-tour-seen";
 
 type Placement = "top" | "bottom" | "left" | "right";
 
@@ -107,7 +107,7 @@ export function DashboardTour() {
         type="button"
         aria-label="Skip tour"
         onClick={finish}
-        className="fixed inset-0 z-[100] cursor-default bg-brand-900/55 backdrop-blur-[2px]"
+        className="bg-brand-900/55 fixed inset-0 z-[100] cursor-default backdrop-blur-[2px]"
       />
 
       {/* Spotlight outline on the target */}
@@ -166,8 +166,10 @@ function TourCard({
   const gap = 16;
 
   // Fallback to center if we couldn't measure.
-  let top = typeof window !== "undefined" ? window.innerHeight / 2 - cardH / 2 : 200;
-  let left = typeof window !== "undefined" ? window.innerWidth / 2 - cardW / 2 : 200;
+  let top =
+    typeof window !== "undefined" ? window.innerHeight / 2 - cardH / 2 : 200;
+  let left =
+    typeof window !== "undefined" ? window.innerWidth / 2 - cardW / 2 : 200;
 
   if (rect) {
     switch (step.placement) {
@@ -206,7 +208,7 @@ function TourCard({
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1">
-          <p className="text-[0.7rem] font-medium uppercase tracking-widest text-[#10A6CC]">
+          <p className="text-[0.7rem] font-medium tracking-widest text-[#10A6CC] uppercase">
             Step {stepIndex + 1} of {total}
           </p>
           <p
@@ -225,8 +227,18 @@ function TourCard({
           className="-mt-1 -mr-1 rounded-md p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
           aria-label="Skip tour"
         >
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
@@ -244,7 +256,7 @@ function TourCard({
             <button
               type="button"
               onClick={onBack}
-              className="rounded-full border border-[#ecebff] bg-white px-3 py-1.5 text-xs font-semibold text-[#312D97] transition-colors hover:bg-brand-50"
+              className="hover:bg-brand-50 rounded-full border border-[#ecebff] bg-white px-3 py-1.5 text-xs font-semibold text-[#312D97] transition-colors"
             >
               Back
             </button>

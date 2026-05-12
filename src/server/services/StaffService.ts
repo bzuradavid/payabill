@@ -33,7 +33,7 @@ export class StaffService {
   async inviteStaff(rawEmail: string) {
     this.requireManager();
     const email = rawEmail.toLowerCase().trim();
-    if (!email || !email.includes("@")) {
+    if (!email?.includes("@")) {
       throw new Error("Enter a valid email");
     }
 

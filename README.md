@@ -19,17 +19,22 @@ The product has three primary surfaces:
 ## Workflows Prioritized
 
 ### 1. Bill creation
+
 Create a bill by selecting a vendor, entering invoice metadata (number, dates, payment method), and adding line items with GL coding. Bills start as **Draft** and can be saved or immediately submitted.
 
 ### 2. Approval workflow
+
 Submitted bills enter **Pending Approval**. An approver can:
+
 - **Approve** — moves to Approved, ready to schedule payment
 - **Reject** — moves to Rejected with a required reason surfaced back to the submitter
 
 ### 3. Payment scheduling and execution
+
 Approved bills can be **scheduled** for a specific payment date (creating a Payment record with PENDING status), then **marked paid** to close the loop (completing the payment and recording `paidAt`).
 
 ### 4. Bill status machine
+
 ```
 DRAFT → PENDING_APPROVAL → APPROVED → SCHEDULED → PAID
                         ↘ REJECTED
@@ -40,47 +45,53 @@ DRAFT → PENDING_APPROVAL → APPROVED → SCHEDULED → PAID
 
 ## What Was Left Out (and Why)
 
-| Feature | Reason |
-|---|---|
-| Real ACH/wire execution | Requires banking infrastructure (Stripe Treasury, Plaid); payment scheduling is the right MVP boundary |
-| OCR / invoice parsing | Useful but product-agnostic; doesn't test AP-specific thinking |
-| ERP integrations (QuickBooks, NetSuite) | Integration layer belongs after core product is proven |
-| Recurring bills | Adds scheduling complexity; correct v2 feature |
-| Multi-entity / multi-company | Fundamentally changes the data model; single-org is the right MVP scope |
-| 1099 tracking | Separate tax compliance concern |
-| Multi-level approval chains | Single-step approval covers the core workflow; routing rules are v2 |
-| Authentication | Removed to reduce demo friction; all routes are unauthenticated |
+| Feature                                 | Reason                                                                                                 |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Real ACH/wire execution                 | Requires banking infrastructure (Stripe Treasury, Plaid); payment scheduling is the right MVP boundary |
+| OCR / invoice parsing                   | Useful but product-agnostic; doesn't test AP-specific thinking                                         |
+| ERP integrations (QuickBooks, NetSuite) | Integration layer belongs after core product is proven                                                 |
+| Recurring bills                         | Adds scheduling complexity; correct v2 feature                                                         |
+| Multi-entity / multi-company            | Fundamentally changes the data model; single-org is the right MVP scope                                |
+| 1099 tracking                           | Separate tax compliance concern                                                                        |
+| Multi-level approval chains             | Single-step approval covers the core workflow; routing rules are v2                                    |
+| Authentication                          | Removed to reduce demo friction; all routes are unauthenticated                                        |
 
 ---
 
 ## Setup Instructions
 
 ### Prerequisites
+
 - Node.js 20+
 - PostgreSQL database
 - npm 10+
 
 ### 1. Install dependencies
+
 ```bash
 npm install
 ```
 
 ### 2. Configure environment
+
 ```bash
 cp .env.example .env
 ```
 
 Edit `.env` and set your `DATABASE_URL`:
+
 ```
-DATABASE_URL="postgresql://user:password@localhost:5432/payables"
+DATABASE_URL="postgresql://user:password@localhost:5432/payabill"
 ```
 
 ### 3. Apply schema and generate client
+
 ```bash
 npm run db:push
 ```
 
 ### 4. Seed demo data
+
 ```bash
 npm run db:seed
 ```
@@ -88,6 +99,7 @@ npm run db:seed
 This creates 6 vendors (Stripe, AWS, Notion, WeWork, Gusto, HubSpot), 8 GL accounts, and ~20 bills spanning all statuses with realistic amounts and dates.
 
 ### 5. Start the dev server
+
 ```bash
 npm run dev
 ```
@@ -99,9 +111,11 @@ Open [http://localhost:3000](http://localhost:3000).
 ## Key Architecture Decisions
 
 ### Server Actions + RSC (no tRPC)
+
 The original T3 scaffold used tRPC. We replaced it with Next.js 15 Server Actions and React Server Components — the native React 19 pattern for this stack. Reads happen directly in RSC (no round-trip), mutations are `"use server"` functions that call services and call `revalidatePath` to bust the RSC cache. This removes the client-side tRPC setup entirely and simplifies the mental model.
 
 ### Service Layer with Manual DI
+
 Business logic lives in plain classes (`BillService`, `VendorService`, `GLAccountService`) rather than route handlers. A `container.ts` file wires them together with constructor injection — no decorator framework needed. This makes the logic testable in isolation (pass a mock `db` to the constructor) and keeps actions thin.
 
 ```
@@ -127,6 +141,7 @@ Payment         — payment record: scheduled date, method, status, reference
 The `Bill` model is the center of the product. All workflow transitions (submit, approve, reject, schedule, pay, void) are mutations on `Bill.status` with corresponding timestamp fields (`submittedAt`, `approvedAt`, `paidAt`). The `Payment` model records the actual payment intent — created when a bill is scheduled, updated to COMPLETED when marked paid.
 
 ### No Auth
+
 The product runs without authentication. For a production system you'd gate the approval actions behind roles (AP Clerk, AP Manager), but for an MVP demo the friction of login adds no product signal.
 
 ---

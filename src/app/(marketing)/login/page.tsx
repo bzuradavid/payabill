@@ -37,9 +37,17 @@ export default async function LoginPage() {
       </div>
 
       <div className="w-full max-w-md">
-        <Link href="/" className="mb-8 flex items-center justify-center gap-2.5">
+        <Link
+          href="/"
+          className="mb-8 flex items-center justify-center gap-2.5"
+        >
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#312D97] shadow-lg shadow-[#312D97]/30">
-            <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg
+              className="h-5 w-5 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -66,7 +74,7 @@ export default async function LoginPage() {
           <form action={signInWithGoogle} className="mt-6">
             <button
               type="submit"
-              className="group flex w-full items-center justify-center gap-3 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-[#1a174f] shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#312D97] hover:shadow-lg hover:shadow-[#312D97]/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#312D97] focus-visible:ring-offset-2"
+              className="group flex w-full items-center justify-center gap-3 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-[#1a174f] shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#312D97] hover:shadow-lg hover:shadow-[#312D97]/10 focus-visible:ring-2 focus-visible:ring-[#312D97] focus-visible:ring-offset-2 focus-visible:outline-none"
             >
               <GoogleIcon />
               Continue with Google
@@ -75,7 +83,7 @@ export default async function LoginPage() {
 
           <div className="mt-5 flex items-center gap-4">
             <div className="h-px flex-1 bg-slate-100" />
-            <span className="text-[0.7rem] font-medium uppercase tracking-widest text-slate-400">
+            <span className="text-[0.7rem] font-medium tracking-widest text-slate-400 uppercase">
               Or with email
             </span>
             <div className="h-px flex-1 bg-slate-100" />
@@ -87,8 +95,9 @@ export default async function LoginPage() {
         </div>
 
         <p className="mt-6 text-center text-xs text-slate-400">
-          Try the demo: <span className="font-medium">manager@payable.com</span>{" "}
-          or <span className="font-medium">staff@payable.com</span> with password{" "}
+          Try the demo:{" "}
+          <span className="font-medium">manager@payabill.com</span> or{" "}
+          <span className="font-medium">staff@payabill.com</span> with password{" "}
           <span className="font-medium">pass1234</span>.
         </p>
       </div>
