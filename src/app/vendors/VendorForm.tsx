@@ -86,7 +86,7 @@ export function VendorForm({ vendor }: VendorFormProps) {
             Vendor Information
           </h2>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-4">
+        <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="col-span-2">
             <Input
               name="name"
@@ -134,7 +134,7 @@ export function VendorForm({ vendor }: VendorFormProps) {
         <CardHeader>
           <h2 className="text-sm font-semibold text-slate-900">Address</h2>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-4">
+        <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="col-span-2">
             <Input
               name="addressLine1"
@@ -184,7 +184,7 @@ export function VendorForm({ vendor }: VendorFormProps) {
             Payment Details
           </h2>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-4">
+        <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="col-span-2">
             <Select
               name="defaultPaymentMethod"
@@ -226,7 +226,7 @@ export function VendorForm({ vendor }: VendorFormProps) {
       </Card>
 
       {/* Actions */}
-      <div className="flex items-center justify-end gap-3">
+      <div className="flex flex-wrap items-center justify-end gap-3">
         <Button
           type="button"
           variant="secondary"

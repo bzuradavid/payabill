@@ -20,7 +20,7 @@ export default async function BillDetailPage({ params }: BillDetailPageProps) {
   const totalAmount = bill.totalAmount;
 
   return (
-    <div className="flex flex-col gap-6 p-8">
+    <div className="flex flex-col gap-6 p-4 sm:p-6 lg:p-8">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-slate-500">
         <Link href="/bills" className="hover:text-slate-900">
@@ -55,9 +55,9 @@ export default async function BillDetailPage({ params }: BillDetailPageProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Left column: details + line items */}
-        <div className="col-span-2 flex flex-col gap-6">
+        <div className="flex flex-col gap-6 lg:col-span-2">
           {/* Rejection reason banner */}
           {bill.status === "REJECTED" && bill.rejectionReason && (
             <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3">
@@ -81,6 +81,7 @@ export default async function BillDetailPage({ params }: BillDetailPageProps) {
               </span>
             </CardHeader>
             <CardContent className="p-0">
+              <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
@@ -135,6 +136,7 @@ export default async function BillDetailPage({ params }: BillDetailPageProps) {
                   </tr>
                 </tfoot>
               </table>
+              </div>
             </CardContent>
           </Card>
 
@@ -147,6 +149,7 @@ export default async function BillDetailPage({ params }: BillDetailPageProps) {
                 </h2>
               </CardHeader>
               <CardContent className="p-0">
+                <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
@@ -201,6 +204,7 @@ export default async function BillDetailPage({ params }: BillDetailPageProps) {
                     ))}
                   </tbody>
                 </table>
+                </div>
               </CardContent>
             </Card>
           )}

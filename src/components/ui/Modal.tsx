@@ -34,7 +34,7 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
       />
       <div
         className={cn(
-          "relative z-10 w-full max-w-md rounded-xl bg-white shadow-xl",
+          "relative z-10 mx-4 w-full max-w-md rounded-xl bg-white shadow-xl",
           className,
         )}
       >

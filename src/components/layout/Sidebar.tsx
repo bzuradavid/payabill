@@ -47,7 +47,12 @@ const navItems = [
   },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  open?: boolean;
+  onClose?: () => void;
+}
+
+export function Sidebar({ open = false, onClose }: SidebarProps) {
   const pathname = usePathname();
 
   const isActive = (href: string) => {
@@ -56,7 +61,16 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="flex h-screen w-56 shrink-0 flex-col bg-slate-900">
+    <aside
+      className={cn(
+        "flex h-screen flex-col bg-slate-900",
+        // Mobile: fixed overlay, slides in from left
+        "fixed inset-y-0 left-0 z-40 w-64 transition-transform duration-200 ease-in-out",
+        open ? "translate-x-0" : "-translate-x-full",
+        // Desktop: in-flow, always visible
+        "md:relative md:w-56 md:shrink-0 md:translate-x-0",
+      )}
+    >
       {/* Logo */}
       <div className="flex h-16 items-center gap-2.5 border-b border-slate-800 px-5">
         <div className="flex h-7 w-7 items-center justify-center rounded-md bg-indigo-500">
@@ -76,6 +90,7 @@ export function Sidebar() {
           <Link
             key={item.href}
             href={item.href}
+            onClick={onClose}
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
               isActive(item.href)

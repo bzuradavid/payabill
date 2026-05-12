@@ -98,7 +98,7 @@ export function NewBillForm({ vendors, glAccounts }: NewBillFormProps) {
         <CardHeader>
           <h2 className="text-sm font-semibold text-slate-900">Bill Details</h2>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-4">
+        <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="col-span-2">
             <Select
               name="vendorId"
@@ -167,7 +167,7 @@ export function NewBillForm({ vendors, glAccounts }: NewBillFormProps) {
       </Card>
 
       {/* Actions */}
-      <div className="flex items-center justify-end gap-3">
+      <div className="flex flex-wrap items-center justify-end gap-3">
         <Button
           type="button"
           variant="secondary"

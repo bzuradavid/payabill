@@ -39,9 +39,9 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
   });
 
   return (
-    <div className="flex flex-col gap-6 p-8">
+    <div className="flex flex-col gap-6 p-4 sm:p-6 lg:p-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-semibold text-slate-900">Bills</h1>
           <p className="mt-0.5 text-sm text-slate-500">
@@ -87,6 +87,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
             }
           />
         ) : (
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
@@ -146,6 +147,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
               })}
             </tbody>
           </table>
+          </div>
         )}
       </div>
     </div>

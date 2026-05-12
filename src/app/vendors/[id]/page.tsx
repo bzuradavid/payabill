@@ -31,7 +31,7 @@ export default async function VendorDetailPage({ params }: VendorDetailPageProps
   );
 
   return (
-    <div className="flex flex-col gap-6 p-8">
+    <div className="flex flex-col gap-6 p-4 sm:p-6 lg:p-8">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-slate-500">
         <Link href="/vendors" className="hover:text-slate-900">
@@ -63,9 +63,9 @@ export default async function VendorDetailPage({ params }: VendorDetailPageProps
         </Link>
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Bills list */}
-        <div className="col-span-2">
+        <div className="lg:col-span-2">
           <Card>
             <CardHeader>
               <h2 className="text-sm font-semibold text-slate-900">
@@ -83,6 +83,7 @@ export default async function VendorDetailPage({ params }: VendorDetailPageProps
                   No bills for this vendor.
                 </div>
               ) : (
+                <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
@@ -135,6 +136,7 @@ export default async function VendorDetailPage({ params }: VendorDetailPageProps
                     })}
                   </tbody>
                 </table>
+                </div>
               )}
             </CardContent>
           </Card>
