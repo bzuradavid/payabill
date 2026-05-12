@@ -20,7 +20,7 @@ export default async function DashboardPage() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">Dashboard</h1>
+          <h1 className="text-xl font-bold text-[#1a174f]">Dashboard</h1>
           <p className="mt-0.5 text-sm text-slate-500">
             Overview of your accounts payable
           </p>
@@ -65,10 +65,10 @@ export default async function DashboardPage() {
       {/* Recent bills */}
       <Card>
         <CardHeader>
-          <h2 className="text-sm font-semibold text-slate-900">Recent Bills</h2>
+          <h2 className="text-sm font-semibold text-[#1a174f]">Recent Bills</h2>
           <Link
             href="/bills"
-            className="text-sm font-medium text-indigo-600 hover:text-indigo-700"
+            className="text-sm font-semibold text-[#10A6CC] hover:text-[#0d8faf]"
           >
             View all
           </Link>
@@ -77,7 +77,7 @@ export default async function DashboardPage() {
           {recentBills.length === 0 ? (
             <div className="px-6 py-12 text-center text-sm text-slate-500">
               No bills yet.{" "}
-              <Link href="/bills/new" className="text-indigo-600 hover:underline">
+              <Link href="/bills/new" className="text-[#312D97] hover:underline">
                 Create your first bill
               </Link>
             </div>
@@ -85,7 +85,7 @@ export default async function DashboardPage() {
             <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-100 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
+                <tr className="border-b border-[#ecebff] bg-brand-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
                   <th className="px-6 py-3">Vendor</th>
                   <th className="px-6 py-3">Invoice #</th>
                   <th className="px-6 py-3">Due Date</th>
@@ -99,12 +99,12 @@ export default async function DashboardPage() {
                   return (
                     <tr
                       key={bill.id}
-                      className="border-b border-slate-50 last:border-0 transition-colors hover:bg-slate-50"
+                      className="border-b border-[#ecebff] last:border-0 transition-colors hover:bg-brand-50"
                     >
                       <td className="px-6 py-3.5 font-medium text-slate-900">
                         <Link
                           href={`/bills/${bill.id}`}
-                          className="hover:text-indigo-600"
+                          className="hover:text-[#312D97]"
                         >
                           {bill.vendor.name}
                         </Link>

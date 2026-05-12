@@ -43,7 +43,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">Bills</h1>
+          <h1 className="text-xl font-bold text-[#1a174f]">Bills</h1>
           <p className="mt-0.5 text-sm text-slate-500">
             {bills.length} bill{bills.length !== 1 ? "s" : ""}
             {activeStatus !== "ALL" ? ` · ${activeStatus.toLowerCase().replace("_", " ")}` : ""}
@@ -63,7 +63,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
       <BillsFilterBar tabs={STATUS_TABS} activeStatus={activeStatus} search={search} />
 
       {/* Table */}
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-[#ecebff] bg-white shadow-lg shadow-[#d3d1ff]/40">
         {bills.length === 0 ? (
           <EmptyState
             title="No bills found"
@@ -90,7 +90,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
           <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
+              <tr className="border-b border-[#ecebff] bg-brand-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
                 <th className="px-6 py-3">Vendor</th>
                 <th className="px-6 py-3">Invoice #</th>
                 <th className="px-6 py-3">Invoice Date</th>
@@ -106,14 +106,14 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
                   <tr
                     key={bill.id}
                     className={cn(
-                      "border-b border-slate-50 last:border-0 transition-colors hover:bg-slate-50",
+                      "border-b border-[#ecebff] last:border-0 transition-colors hover:bg-brand-50",
                       overdue && "bg-red-50/40 hover:bg-red-50",
                     )}
                   >
                     <td className="px-6 py-3.5 font-medium text-slate-900">
                       <Link
                         href={`/bills/${bill.id}`}
-                        className="hover:text-indigo-600"
+                        className="hover:text-[#312D97]"
                       >
                         {bill.vendor.name}
                       </Link>

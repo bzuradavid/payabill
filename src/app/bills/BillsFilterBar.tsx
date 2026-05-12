@@ -38,16 +38,16 @@ export function BillsFilterBar({ tabs, activeStatus, search }: BillsFilterBarPro
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       {/* Tabs */}
       <div className="overflow-x-auto">
-        <div className="flex gap-1 rounded-lg border border-slate-200 bg-white p-1 shadow-sm w-max">
+        <div className="flex gap-1 rounded-2xl border border-[#ecebff] bg-white p-1 shadow-sm shadow-[#d3d1ff]/30 w-max">
           {tabs.map((tab) => (
             <button
               key={tab.value}
               onClick={() => navigate(tab.value, search)}
               className={cn(
-                "rounded-md px-3 py-1.5 text-sm font-medium transition-colors whitespace-nowrap",
+                "rounded-xl px-3 py-1.5 text-sm font-medium transition-colors whitespace-nowrap",
                 activeStatus === tab.value
-                  ? "bg-slate-900 text-white"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
+                  ? "bg-[#312D97] text-white shadow-sm"
+                  : "text-slate-500 hover:bg-brand-50 hover:text-[#312D97]",
               )}
             >
               {tab.label}
@@ -76,7 +76,7 @@ export function BillsFilterBar({ tabs, activeStatus, search }: BillsFilterBarPro
           defaultValue={search}
           placeholder="Search vendor or invoice #"
           onChange={(e) => navigate(activeStatus, e.target.value)}
-          className="w-full rounded-lg border border-slate-200 bg-white py-2 pr-3 pl-9 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none sm:w-64"
+          className="w-full rounded-xl border border-[#ecebff] bg-white py-2 pr-3 pl-9 text-sm text-[#1a174f] placeholder:text-slate-400 transition-colors focus:border-[#312D97] focus:ring-1 focus:ring-[#312D97] focus:outline-none sm:w-64"
         />
       </div>
     </div>

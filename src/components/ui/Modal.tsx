@@ -34,15 +34,15 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
       />
       <div
         className={cn(
-          "relative z-10 mx-4 w-full max-w-md rounded-xl bg-white shadow-xl",
+          "relative z-10 mx-4 w-full max-w-md rounded-2xl bg-white shadow-xl shadow-[#d3d1ff]/40",
           className,
         )}
       >
-        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-          <h2 className="text-base font-semibold text-slate-900">{title}</h2>
+        <div className="flex items-center justify-between border-b border-[#ecebff] px-6 py-4">
+          <h2 className="text-base font-semibold text-[#1a174f]">{title}</h2>
           <button
             onClick={onClose}
-            className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+            className="rounded-lg p-1 text-slate-400 hover:bg-brand-50 hover:text-[#312D97]"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

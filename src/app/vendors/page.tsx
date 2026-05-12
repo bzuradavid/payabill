@@ -15,7 +15,7 @@ export default async function VendorsPage() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">Vendors</h1>
+          <h1 className="text-xl font-bold text-[#1a174f]">Vendors</h1>
           <p className="mt-0.5 text-sm text-slate-500">
             {vendors.length} vendor{vendors.length !== 1 ? "s" : ""}
           </p>
@@ -31,7 +31,7 @@ export default async function VendorsPage() {
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-[#ecebff] bg-white shadow-lg shadow-[#d3d1ff]/40">
         {vendors.length === 0 ? (
           <EmptyState
             title="No vendors yet"
@@ -52,7 +52,7 @@ export default async function VendorsPage() {
           <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
+              <tr className="border-b border-[#ecebff] bg-brand-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
                 <th className="px-6 py-3">Vendor</th>
                 <th className="px-6 py-3">Contact</th>
                 <th className="px-6 py-3">Payment Method</th>
@@ -65,12 +65,12 @@ export default async function VendorsPage() {
               {vendors.map((vendor) => (
                 <tr
                   key={vendor.id}
-                  className="border-b border-slate-50 last:border-0 transition-colors hover:bg-slate-50"
+                  className="border-b border-[#ecebff] last:border-0 transition-colors hover:bg-brand-50"
                 >
                   <td className="px-6 py-3.5">
                     <Link
                       href={`/vendors/${vendor.id}`}
-                      className="font-medium text-slate-900 hover:text-indigo-600"
+                      className="font-medium text-[#1a174f] hover:text-[#312D97]"
                     >
                       {vendor.name}
                     </Link>
