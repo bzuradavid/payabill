@@ -20,4 +20,26 @@
 
   --shadow-card: 0 4px 24px 0 rgba(211, 209, 255, 0.4);
   --shadow-card-hover: 0 8px 32px 0 rgba(211, 209, 255, 0.6);
+
+  --animate-fade-in: fade-in 0.25s ease-out both;
+  --animate-breathe: breathe 2s ease-in-out infinite;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
 }

@@ -9,6 +9,7 @@ import {
 } from "~/actions/auth";
 import { Button } from "~/components/ui/Button";
 import { Input } from "~/components/ui/Input";
+import { LogoOverlay } from "~/components/ui/LogoOverlay";
 
 type Mode = "sign-in" | "sign-up";
 
@@ -19,6 +20,7 @@ export function CredentialsForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [isNavigating, setIsNavigating] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   function onSubmit(e: React.FormEvent) {
@@ -33,13 +35,16 @@ export function CredentialsForm() {
         setError(result.error);
         return;
       }
+      setIsNavigating(true);
       router.push("/dashboard");
       router.refresh();
     });
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <>
+      {isNavigating && <LogoOverlay />}
+      <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-1 rounded-full border border-[#ecebff] bg-brand-50/60 p-1 text-sm">
         <button
           type="button"
@@ -116,5 +121,6 @@ export function CredentialsForm() {
         </p>
       )}
     </div>
+    </>
   );
 }
