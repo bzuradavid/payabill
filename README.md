@@ -219,7 +219,7 @@ Sign-in supports Google OAuth (for real workspaces) and email/password credentia
 
 All domain data belongs to an `Organization`, not directly to a `User`. A user belongs to exactly one organization and has a role (`MANAGER` or `STAFF`). This is the authorization boundary — services scope every query by `organizationId`, and the bill service additionally filters by `createdById` for STAFF users.
 
-### Server Actions + RSC (no tRPC)
+### Server Actions + RSC
 
 Reads happen directly in RSC (no round-trip), mutations are `"use server"` functions that call services and call `revalidatePath` to bust the RSC cache.
 
