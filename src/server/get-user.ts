@@ -6,7 +6,7 @@ import { db } from "~/server/db";
 
 export interface UserContext {
   userId: string;
-  hideSeed: boolean;
+  showSeed: boolean;
 }
 
 export async function getUserContext(): Promise<UserContext | null> {
@@ -14,10 +14,10 @@ export async function getUserContext(): Promise<UserContext | null> {
   if (!session?.user?.id) return null;
   const user = await db.user.findUnique({
     where: { id: session.user.id },
-    select: { id: true, hideSeed: true },
+    select: { id: true, showSeed: true },
   });
   if (!user) return null;
-  return { userId: user.id, hideSeed: user.hideSeed };
+  return { userId: user.id, showSeed: user.showSeed };
 }
 
 export async function requireUserContext(): Promise<UserContext> {

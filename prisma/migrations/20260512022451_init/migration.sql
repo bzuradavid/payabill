@@ -20,6 +20,8 @@ CREATE TABLE "User" (
     "email" TEXT,
     "emailVerified" TIMESTAMP(3),
     "image" TEXT,
+    "showSeed" BOOLEAN NOT NULL DEFAULT false,
+    "seededAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -65,6 +67,8 @@ CREATE TABLE "VerificationToken" (
 -- CreateTable
 CREATE TABLE "Vendor" (
     "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "seed" BOOLEAN NOT NULL DEFAULT false,
     "name" TEXT NOT NULL,
     "email" TEXT,
     "phone" TEXT,
@@ -90,6 +94,8 @@ CREATE TABLE "Vendor" (
 -- CreateTable
 CREATE TABLE "GLAccount" (
     "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "seed" BOOLEAN NOT NULL DEFAULT false,
     "code" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "type" "GLAccountType" NOT NULL,
@@ -101,6 +107,8 @@ CREATE TABLE "GLAccount" (
 -- CreateTable
 CREATE TABLE "Bill" (
     "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "seed" BOOLEAN NOT NULL DEFAULT false,
     "vendorId" TEXT NOT NULL,
     "invoiceNumber" TEXT,
     "invoiceDate" TIMESTAMP(3) NOT NULL,
@@ -122,6 +130,7 @@ CREATE TABLE "Bill" (
 CREATE TABLE "BillLineItem" (
     "id" TEXT NOT NULL,
     "billId" TEXT NOT NULL,
+    "seed" BOOLEAN NOT NULL DEFAULT false,
     "description" TEXT NOT NULL,
     "quantity" DOUBLE PRECISION NOT NULL DEFAULT 1,
     "unitPrice" DOUBLE PRECISION NOT NULL,
@@ -136,6 +145,7 @@ CREATE TABLE "BillLineItem" (
 CREATE TABLE "Payment" (
     "id" TEXT NOT NULL,
     "billId" TEXT NOT NULL,
+    "seed" BOOLEAN NOT NULL DEFAULT false,
     "amount" DOUBLE PRECISION NOT NULL,
     "method" "PaymentMethod" NOT NULL,
     "status" "PaymentStatus" NOT NULL DEFAULT 'PENDING',
@@ -165,16 +175,25 @@ CREATE UNIQUE INDEX "VerificationToken_token_key" ON "VerificationToken"("token"
 CREATE UNIQUE INDEX "VerificationToken_identifier_token_key" ON "VerificationToken"("identifier", "token");
 
 -- CreateIndex
+CREATE INDEX "Vendor_userId_idx" ON "Vendor"("userId");
+
+-- CreateIndex
 CREATE INDEX "Vendor_name_idx" ON "Vendor"("name");
 
 -- CreateIndex
 CREATE INDEX "Vendor_status_idx" ON "Vendor"("status");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "GLAccount_code_key" ON "GLAccount"("code");
+CREATE INDEX "GLAccount_userId_idx" ON "GLAccount"("userId");
 
 -- CreateIndex
 CREATE INDEX "GLAccount_type_idx" ON "GLAccount"("type");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "GLAccount_userId_code_key" ON "GLAccount"("userId", "code");
+
+-- CreateIndex
+CREATE INDEX "Bill_userId_idx" ON "Bill"("userId");
 
 -- CreateIndex
 CREATE INDEX "Bill_status_idx" ON "Bill"("status");
@@ -190,6 +209,15 @@ ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId"
 
 -- AddForeignKey
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Vendor" ADD CONSTRAINT "Vendor_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "GLAccount" ADD CONSTRAINT "GLAccount_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Bill" ADD CONSTRAINT "Bill_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Bill" ADD CONSTRAINT "Bill_vendorId_fkey" FOREIGN KEY ("vendorId") REFERENCES "Vendor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

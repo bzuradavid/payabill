@@ -4,7 +4,6 @@ import Google from "next-auth/providers/google";
 
 import { env } from "~/env.js";
 import { db } from "~/server/db";
-import { seedUserData } from "~/server/seed-user";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(db),
@@ -25,17 +24,5 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         id: user.id,
       },
     }),
-  },
-  events: {
-    // Fires once per user, the first time the PrismaAdapter creates their User row.
-    // We use it to seed a personal copy of the demo dataset (all rows marked seed:true).
-    createUser: async ({ user }) => {
-      if (!user.id) return;
-      try {
-        await seedUserData(db, user.id);
-      } catch (e) {
-        console.error("[auth] Failed to seed demo data for new user", user.id, e);
-      }
-    },
   },
 });

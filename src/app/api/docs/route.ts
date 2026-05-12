@@ -60,16 +60,18 @@ const docs = {
 
   seedData: {
     description:
-      "Every new workspace is pre-loaded with a realistic demo dataset (6 vendors, 8 GL accounts, ~20 bills across all statuses). Demo rows are marked seed:true so they can be hidden via a dashboard toggle.",
-    seededOn: "events.createUser (NextAuth) — runs once on first sign-in",
+      "New workspaces start empty. Users can opt into a realistic demo dataset (6 vendors, 8 GL accounts, ~20 bills across all statuses) by flipping the Show-demo-data switch on the dashboard. Demo rows are marked seed:true.",
+    seededOn:
+      "First time setShowSeed(true) is called for a user (gated by User.seededAt being null) — never on first sign-in",
     seedRoutine: "src/server/seed-user.ts → seedUserData(db, userId)",
     seededModels: ["Vendor", "Bill", "BillLineItem", "Payment", "GLAccount"],
     toggle: {
-      ui: "src/components/dashboard/HideSeedToggle.tsx",
-      preferenceField: "User.hideSeed (Boolean, default false)",
-      action: "setHideSeed(hideSeed) in src/actions/preferences.ts",
+      ui: "src/components/dashboard/ShowSeedToggle.tsx",
+      preferenceField: "User.showSeed (Boolean, default false)",
+      seedGuard: "User.seededAt (DateTime?) — null means demo data has never been seeded for this user",
+      action: "setShowSeed(showSeed) in src/actions/preferences.ts",
       effect:
-        "When hideSeed = true, every service appends `seed: false` to its where-clause, hiding demo rows from lists, detail pages, and aggregates.",
+        "When showSeed = false (default), every service appends `seed: false` to its where-clause, hiding demo rows from lists, detail pages, and aggregates.",
     },
   },
 
@@ -101,7 +103,7 @@ const docs = {
       group: "(app)",
       auth: "required",
       description:
-        "Dashboard with live AP stats (total payable, overdue, due soon, paid this month), recent bills, and the 'Hide demo data' toggle.",
+        "Dashboard with live AP stats (total payable, overdue, due soon, paid this month), recent bills, and the 'Show demo data' toggle.",
       file: "src/app/(app)/dashboard/page.tsx",
     },
     {
@@ -205,14 +207,15 @@ const docs = {
     {
       name: "User",
       description:
-        "Workspace owner. PrismaAdapter creates one row per Google account on first sign-in. Triggers seedUserData() via events.createUser.",
+        "Workspace owner. PrismaAdapter creates one row per Google account on first sign-in. New workspaces start empty; seedUserData() runs only when the user first enables 'Show demo data'.",
       file: "prisma/schema.prisma",
       fields: [
         { name: "id", type: "String (cuid)", required: true, description: "Primary key" },
         { name: "name", type: "String", required: false, description: "From Google profile" },
         { name: "email", type: "String", required: false, description: "Unique" },
         { name: "image", type: "String", required: false, description: "Avatar URL from Google" },
-        { name: "hideSeed", type: "Boolean", required: true, description: "Default false. When true, services filter out seed:true rows" },
+        { name: "showSeed", type: "Boolean", required: true, description: "Default false. When false, services filter out seed:true rows" },
+        { name: "seededAt", type: "DateTime", required: false, description: "Stamped on first showSeed=true; null means demo dataset has never been seeded" },
       ],
       relations: [
         { field: "vendors", model: "Vendor", type: "one-to-many", onDelete: "cascade" },
@@ -384,7 +387,7 @@ const docs = {
       name: "Preferences",
       file: "src/actions/preferences.ts",
       actions: [
-        { name: "setHideSeed", input: "hideSeed: boolean", returns: "ActionResult<{ hideSeed }>", description: "Updates User.hideSeed and revalidates /dashboard, /bills, /vendors." },
+        { name: "setShowSeed", input: "showSeed: boolean", returns: "ActionResult<{ showSeed }>", description: "Updates User.showSeed. On the first showSeed=true call (User.seededAt is null), seeds the demo dataset and stamps seededAt. Revalidates /dashboard, /bills, /vendors." },
       ],
     },
   ],
@@ -394,14 +397,14 @@ const docs = {
       name: "BillService",
       file: "src/server/services/BillService.ts",
       factory: "src/server/container.ts → getServices()",
-      scoping: "Constructor takes (db, ctx: { userId, hideSeed }). Every query filters by userId; optionally adds seed:false.",
+      scoping: "Constructor takes (db, ctx: { userId, showSeed }). Every query filters by userId; adds seed:false unless showSeed is true.",
       methods: [
         { name: "list(filters?)", description: "User-scoped. Filter by status[], search over vendor name/invoiceNumber, sort." },
         { name: "getById(id)", description: "User-scoped. Returns null if the bill belongs to another user." },
         { name: "create(data)", description: "Validates vendor belongs to user. Creates bill in DRAFT with nested line items." },
         { name: "update(id, data)", description: "User-scoped. Only allowed when status === DRAFT." },
         { name: "submit / approve / reject / schedulePayment / markPaid / void", description: "State transitions with pre-condition checks. All user-scoped." },
-        { name: "getDashboardStats()", description: "Aggregates for the current user only (and excludes seed rows when hideSeed=true)." },
+        { name: "getDashboardStats()", description: "Aggregates for the current user only (and excludes seed rows unless showSeed=true)." },
         { name: "getRecentBills(limit)", description: "Most recent N bills owned by the current user." },
       ],
     },
@@ -409,7 +412,7 @@ const docs = {
       name: "VendorService",
       file: "src/server/services/VendorService.ts",
       factory: "src/server/container.ts → getServices()",
-      scoping: "Constructor takes (db, ctx). Filters by userId; honors hideSeed on the vendor itself and on aggregated bills.",
+      scoping: "Constructor takes (db, ctx). Filters by userId; honors showSeed on the vendor itself and on aggregated bills.",
       methods: [
         { name: "list(filters?)", description: "User-scoped. Search by name/email; includes _count.bills and totalPaid." },
         { name: "getById(id)", description: "User-scoped. Returns null if vendor belongs to another user." },
@@ -444,7 +447,7 @@ const docs = {
       { name: "Server Actions", description: "All mutations in src/actions/. Return ActionResult<T> discriminated union" },
       { name: "Per-request DI", description: "getServices() builds user-scoped service instances each request" },
       { name: "User scoping", description: "Every Vendor/Bill/GLAccount query filters by userId" },
-      { name: "Seed flag", description: "Domain models carry seed:Boolean. Services append seed:false when User.hideSeed is true" },
+      { name: "Seed flag", description: "Domain models carry seed:Boolean. Services append seed:false unless User.showSeed is true" },
       { name: "Cache invalidation", description: "revalidatePath() called after every mutation" },
       { name: "State machine", description: "Bill status transitions validated in BillService before every write" },
       { name: "Validation", description: "Zod schemas at action entry points only" },

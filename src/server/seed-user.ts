@@ -24,10 +24,11 @@ const daysFromNow = (n: number) => {
 
 /**
  * Seed a complete demo dataset for one user. All rows are marked `seed: true`
- * so they can be hidden via the "Hide demo data" toggle on the dashboard.
+ * so they remain hidden unless the user enables the "Show demo data" toggle.
  *
- * Idempotent on the user's chart-of-accounts via the (userId, code) unique
- * constraint; bills are not deduped because invoiceNumber isn't unique.
+ * Callers MUST guard with `User.seededAt` to ensure this runs at most once
+ * per user — bills are not deduped (invoiceNumber isn't unique), so a second
+ * call would create duplicates.
  */
 export async function seedUserData(db: PrismaClient, userId: string) {
   // GL accounts (chart of accounts)

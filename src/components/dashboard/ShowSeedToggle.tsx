@@ -2,23 +2,23 @@
 
 import { useState, useTransition } from "react";
 import { Switch } from "~/components/ui/Switch";
-import { setHideSeed } from "~/actions/preferences";
+import { setShowSeed } from "~/actions/preferences";
 
-interface HideSeedToggleProps {
-  initialHideSeed: boolean;
+interface ShowSeedToggleProps {
+  initialShowSeed: boolean;
 }
 
-export function HideSeedToggle({ initialHideSeed }: HideSeedToggleProps) {
-  const [hideSeed, setHideSeedState] = useState(initialHideSeed);
+export function ShowSeedToggle({ initialShowSeed }: ShowSeedToggleProps) {
+  const [showSeed, setShowSeedState] = useState(initialShowSeed);
   const [isPending, startTransition] = useTransition();
 
   const handleChange = (next: boolean) => {
-    setHideSeedState(next);
+    setShowSeedState(next);
     startTransition(async () => {
-      const result = await setHideSeed(next);
+      const result = await setShowSeed(next);
       if (!result.success) {
         // Revert on failure
-        setHideSeedState(!next);
+        setShowSeedState(!next);
       }
     });
   };
@@ -27,24 +27,24 @@ export function HideSeedToggle({ initialHideSeed }: HideSeedToggleProps) {
     <>
       <div className="flex items-center gap-3 rounded-2xl border border-[#ecebff] bg-white px-4 py-2.5 shadow-sm">
         <Switch
-          checked={hideSeed}
+          checked={showSeed}
           onChange={handleChange}
           disabled={isPending}
           size="sm"
-          label="Hide demo data"
+          label="Show demo data"
           description={
-            hideSeed
-              ? "Showing only your data"
-              : "Showing demo + your data"
+            showSeed
+              ? "Showing demo + your data"
+              : "Showing only your data"
           }
         />
       </div>
-      {isPending && <DemoDataOverlay hideSeed={hideSeed} />}
+      {isPending && <DemoDataOverlay showSeed={showSeed} />}
     </>
   );
 }
 
-function DemoDataOverlay({ hideSeed }: { hideSeed: boolean }) {
+function DemoDataOverlay({ showSeed }: { showSeed: boolean }) {
   return (
     <div
       role="status"
@@ -71,7 +71,7 @@ function DemoDataOverlay({ hideSeed }: { hideSeed: boolean }) {
         </div>
         <div className="flex flex-col items-center gap-1">
           <p className="text-sm font-semibold text-white">
-            {hideSeed ? "Hiding demo data…" : "Restoring demo data…"}
+            {showSeed ? "Loading demo data…" : "Hiding demo data…"}
           </p>
           <p className="text-xs text-white/70">Refreshing your workspace</p>
         </div>

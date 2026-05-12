@@ -11,7 +11,7 @@ export class GLAccountService {
     return this.db.gLAccount.findMany({
       where: {
         userId: this.ctx.userId,
-        ...(this.ctx.hideSeed ? { seed: false } : {}),
+        ...(this.ctx.showSeed ? {} : { seed: false }),
       },
       orderBy: [{ type: "asc" }, { code: "asc" }],
     });

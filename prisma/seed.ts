@@ -1,15 +1,13 @@
-// Demo data is no longer seeded globally.
+// Demo data is no longer seeded globally or on first sign-in.
 //
-// Every authenticated user receives their own copy of the demo dataset
-// (vendors, GL accounts, bills, payments) the first time they sign in via
-// Google OAuth. The seeding routine lives in `src/server/seed-user.ts` and
-// is invoked from the `events.createUser` callback in `src/server/auth.ts`.
-//
-// All seeded rows are marked `seed: true` so users can hide them via the
-// "Hide demo data" toggle on the dashboard.
+// Every authenticated user starts with an empty workspace. Demo data
+// (vendors, GL accounts, bills, payments) is seeded per-user the first
+// time they flip on the "Show demo data" switch on the dashboard. That
+// flow lives in `src/actions/preferences.ts` → `setShowSeed()`, gated
+// by `User.seededAt` so seeding only ever runs once per user.
 //
 // This file is kept as a no-op so `npm run db:seed` still exits cleanly.
 
 console.log(
-  "[seed] Demo data is seeded per-user on first sign-in. See src/server/seed-user.ts.",
+  "[seed] Demo data is seeded per-user on first 'Show demo data' toggle. See src/actions/preferences.ts.",
 );

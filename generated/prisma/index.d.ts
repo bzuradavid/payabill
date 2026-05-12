@@ -1847,7 +1847,8 @@ export namespace Prisma {
     email: string | null
     emailVerified: Date | null
     image: string | null
-    hideSeed: boolean | null
+    showSeed: boolean | null
+    seededAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1858,7 +1859,8 @@ export namespace Prisma {
     email: string | null
     emailVerified: Date | null
     image: string | null
-    hideSeed: boolean | null
+    showSeed: boolean | null
+    seededAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1869,7 +1871,8 @@ export namespace Prisma {
     email: number
     emailVerified: number
     image: number
-    hideSeed: number
+    showSeed: number
+    seededAt: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -1882,7 +1885,8 @@ export namespace Prisma {
     email?: true
     emailVerified?: true
     image?: true
-    hideSeed?: true
+    showSeed?: true
+    seededAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1893,7 +1897,8 @@ export namespace Prisma {
     email?: true
     emailVerified?: true
     image?: true
-    hideSeed?: true
+    showSeed?: true
+    seededAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1904,7 +1909,8 @@ export namespace Prisma {
     email?: true
     emailVerified?: true
     image?: true
-    hideSeed?: true
+    showSeed?: true
+    seededAt?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -1988,7 +1994,8 @@ export namespace Prisma {
     email: string | null
     emailVerified: Date | null
     image: string | null
-    hideSeed: boolean
+    showSeed: boolean
+    seededAt: Date | null
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
@@ -2016,7 +2023,8 @@ export namespace Prisma {
     email?: boolean
     emailVerified?: boolean
     image?: boolean
-    hideSeed?: boolean
+    showSeed?: boolean
+    seededAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     accounts?: boolean | User$accountsArgs<ExtArgs>
@@ -2033,7 +2041,8 @@ export namespace Prisma {
     email?: boolean
     emailVerified?: boolean
     image?: boolean
-    hideSeed?: boolean
+    showSeed?: boolean
+    seededAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -2044,7 +2053,8 @@ export namespace Prisma {
     email?: boolean
     emailVerified?: boolean
     image?: boolean
-    hideSeed?: boolean
+    showSeed?: boolean
+    seededAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -2055,12 +2065,13 @@ export namespace Prisma {
     email?: boolean
     emailVerified?: boolean
     image?: boolean
-    hideSeed?: boolean
+    showSeed?: boolean
+    seededAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "hideSeed" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "showSeed" | "seededAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     accounts?: boolean | User$accountsArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
@@ -2087,7 +2098,8 @@ export namespace Prisma {
       email: string | null
       emailVerified: Date | null
       image: string | null
-      hideSeed: boolean
+      showSeed: boolean
+      seededAt: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["user"]>
@@ -2523,7 +2535,8 @@ export namespace Prisma {
     readonly email: FieldRef<"User", 'String'>
     readonly emailVerified: FieldRef<"User", 'DateTime'>
     readonly image: FieldRef<"User", 'String'>
-    readonly hideSeed: FieldRef<"User", 'Boolean'>
+    readonly showSeed: FieldRef<"User", 'Boolean'>
+    readonly seededAt: FieldRef<"User", 'DateTime'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
@@ -12325,7 +12338,8 @@ export namespace Prisma {
     email: 'email',
     emailVerified: 'emailVerified',
     image: 'image',
-    hideSeed: 'hideSeed',
+    showSeed: 'showSeed',
+    seededAt: 'seededAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -12640,7 +12654,8 @@ export namespace Prisma {
     email?: StringNullableFilter<"User"> | string | null
     emailVerified?: DateTimeNullableFilter<"User"> | Date | string | null
     image?: StringNullableFilter<"User"> | string | null
-    hideSeed?: BoolFilter<"User"> | boolean
+    showSeed?: BoolFilter<"User"> | boolean
+    seededAt?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     accounts?: AccountListRelationFilter
@@ -12656,7 +12671,8 @@ export namespace Prisma {
     email?: SortOrderInput | SortOrder
     emailVerified?: SortOrderInput | SortOrder
     image?: SortOrderInput | SortOrder
-    hideSeed?: SortOrder
+    showSeed?: SortOrder
+    seededAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     accounts?: AccountOrderByRelationAggregateInput
@@ -12675,7 +12691,8 @@ export namespace Prisma {
     name?: StringNullableFilter<"User"> | string | null
     emailVerified?: DateTimeNullableFilter<"User"> | Date | string | null
     image?: StringNullableFilter<"User"> | string | null
-    hideSeed?: BoolFilter<"User"> | boolean
+    showSeed?: BoolFilter<"User"> | boolean
+    seededAt?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     accounts?: AccountListRelationFilter
@@ -12691,7 +12708,8 @@ export namespace Prisma {
     email?: SortOrderInput | SortOrder
     emailVerified?: SortOrderInput | SortOrder
     image?: SortOrderInput | SortOrder
-    hideSeed?: SortOrder
+    showSeed?: SortOrder
+    seededAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -12708,7 +12726,8 @@ export namespace Prisma {
     email?: StringNullableWithAggregatesFilter<"User"> | string | null
     emailVerified?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     image?: StringNullableWithAggregatesFilter<"User"> | string | null
-    hideSeed?: BoolWithAggregatesFilter<"User"> | boolean
+    showSeed?: BoolWithAggregatesFilter<"User"> | boolean
+    seededAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
@@ -13408,7 +13427,8 @@ export namespace Prisma {
     email?: string | null
     emailVerified?: Date | string | null
     image?: string | null
-    hideSeed?: boolean
+    showSeed?: boolean
+    seededAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountCreateNestedManyWithoutUserInput
@@ -13424,7 +13444,8 @@ export namespace Prisma {
     email?: string | null
     emailVerified?: Date | string | null
     image?: string | null
-    hideSeed?: boolean
+    showSeed?: boolean
+    seededAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
@@ -13440,7 +13461,8 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    hideSeed?: BoolFieldUpdateOperationsInput | boolean
+    showSeed?: BoolFieldUpdateOperationsInput | boolean
+    seededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUpdateManyWithoutUserNestedInput
@@ -13456,7 +13478,8 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    hideSeed?: BoolFieldUpdateOperationsInput | boolean
+    showSeed?: BoolFieldUpdateOperationsInput | boolean
+    seededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -13472,7 +13495,8 @@ export namespace Prisma {
     email?: string | null
     emailVerified?: Date | string | null
     image?: string | null
-    hideSeed?: boolean
+    showSeed?: boolean
+    seededAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -13483,7 +13507,8 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    hideSeed?: BoolFieldUpdateOperationsInput | boolean
+    showSeed?: BoolFieldUpdateOperationsInput | boolean
+    seededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -13494,7 +13519,8 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    hideSeed?: BoolFieldUpdateOperationsInput | boolean
+    showSeed?: BoolFieldUpdateOperationsInput | boolean
+    seededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14387,7 +14413,8 @@ export namespace Prisma {
     email?: SortOrder
     emailVerified?: SortOrder
     image?: SortOrder
-    hideSeed?: SortOrder
+    showSeed?: SortOrder
+    seededAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14398,7 +14425,8 @@ export namespace Prisma {
     email?: SortOrder
     emailVerified?: SortOrder
     image?: SortOrder
-    hideSeed?: SortOrder
+    showSeed?: SortOrder
+    seededAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14409,7 +14437,8 @@ export namespace Prisma {
     email?: SortOrder
     emailVerified?: SortOrder
     image?: SortOrder
-    hideSeed?: SortOrder
+    showSeed?: SortOrder
+    seededAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -16300,7 +16329,8 @@ export namespace Prisma {
     email?: string | null
     emailVerified?: Date | string | null
     image?: string | null
-    hideSeed?: boolean
+    showSeed?: boolean
+    seededAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -16315,7 +16345,8 @@ export namespace Prisma {
     email?: string | null
     emailVerified?: Date | string | null
     image?: string | null
-    hideSeed?: boolean
+    showSeed?: boolean
+    seededAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -16346,7 +16377,8 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    hideSeed?: BoolFieldUpdateOperationsInput | boolean
+    showSeed?: BoolFieldUpdateOperationsInput | boolean
+    seededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -16361,7 +16393,8 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    hideSeed?: BoolFieldUpdateOperationsInput | boolean
+    showSeed?: BoolFieldUpdateOperationsInput | boolean
+    seededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -16376,7 +16409,8 @@ export namespace Prisma {
     email?: string | null
     emailVerified?: Date | string | null
     image?: string | null
-    hideSeed?: boolean
+    showSeed?: boolean
+    seededAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountCreateNestedManyWithoutUserInput
@@ -16391,7 +16425,8 @@ export namespace Prisma {
     email?: string | null
     emailVerified?: Date | string | null
     image?: string | null
-    hideSeed?: boolean
+    showSeed?: boolean
+    seededAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
@@ -16422,7 +16457,8 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    hideSeed?: BoolFieldUpdateOperationsInput | boolean
+    showSeed?: BoolFieldUpdateOperationsInput | boolean
+    seededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUpdateManyWithoutUserNestedInput
@@ -16437,7 +16473,8 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    hideSeed?: BoolFieldUpdateOperationsInput | boolean
+    showSeed?: BoolFieldUpdateOperationsInput | boolean
+    seededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -16452,7 +16489,8 @@ export namespace Prisma {
     email?: string | null
     emailVerified?: Date | string | null
     image?: string | null
-    hideSeed?: boolean
+    showSeed?: boolean
+    seededAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountCreateNestedManyWithoutUserInput
@@ -16467,7 +16505,8 @@ export namespace Prisma {
     email?: string | null
     emailVerified?: Date | string | null
     image?: string | null
-    hideSeed?: boolean
+    showSeed?: boolean
+    seededAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
@@ -16548,7 +16587,8 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    hideSeed?: BoolFieldUpdateOperationsInput | boolean
+    showSeed?: BoolFieldUpdateOperationsInput | boolean
+    seededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUpdateManyWithoutUserNestedInput
@@ -16563,7 +16603,8 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    hideSeed?: BoolFieldUpdateOperationsInput | boolean
+    showSeed?: BoolFieldUpdateOperationsInput | boolean
+    seededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -16594,7 +16635,8 @@ export namespace Prisma {
     email?: string | null
     emailVerified?: Date | string | null
     image?: string | null
-    hideSeed?: boolean
+    showSeed?: boolean
+    seededAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountCreateNestedManyWithoutUserInput
@@ -16609,7 +16651,8 @@ export namespace Prisma {
     email?: string | null
     emailVerified?: Date | string | null
     image?: string | null
-    hideSeed?: boolean
+    showSeed?: boolean
+    seededAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
@@ -16672,7 +16715,8 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    hideSeed?: BoolFieldUpdateOperationsInput | boolean
+    showSeed?: BoolFieldUpdateOperationsInput | boolean
+    seededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUpdateManyWithoutUserNestedInput
@@ -16687,7 +16731,8 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    hideSeed?: BoolFieldUpdateOperationsInput | boolean
+    showSeed?: BoolFieldUpdateOperationsInput | boolean
+    seededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -16733,7 +16778,8 @@ export namespace Prisma {
     email?: string | null
     emailVerified?: Date | string | null
     image?: string | null
-    hideSeed?: boolean
+    showSeed?: boolean
+    seededAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountCreateNestedManyWithoutUserInput
@@ -16748,7 +16794,8 @@ export namespace Prisma {
     email?: string | null
     emailVerified?: Date | string | null
     image?: string | null
-    hideSeed?: boolean
+    showSeed?: boolean
+    seededAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
@@ -16902,7 +16949,8 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    hideSeed?: BoolFieldUpdateOperationsInput | boolean
+    showSeed?: BoolFieldUpdateOperationsInput | boolean
+    seededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUpdateManyWithoutUserNestedInput
@@ -16917,7 +16965,8 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     image?: NullableStringFieldUpdateOperationsInput | string | null
-    hideSeed?: BoolFieldUpdateOperationsInput | boolean
+    showSeed?: BoolFieldUpdateOperationsInput | boolean
+    seededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput

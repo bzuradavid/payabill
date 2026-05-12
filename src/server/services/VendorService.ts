@@ -40,7 +40,7 @@ export class VendorService {
   private scope() {
     return {
       userId: this.ctx.userId,
-      ...(this.ctx.hideSeed ? { seed: false } : {}),
+      ...(this.ctx.showSeed ? {} : { seed: false }),
     };
   }
 
@@ -63,7 +63,7 @@ export class VendorService {
           select: {
             bills: {
               where: {
-                ...(this.ctx.hideSeed ? { seed: false } : {}),
+                ...(this.ctx.showSeed ? {} : { seed: false }),
                 status: {
                   notIn: [BillStatus.VOID, BillStatus.REJECTED],
                 },
@@ -73,7 +73,7 @@ export class VendorService {
         },
         bills: {
           where: {
-            ...(this.ctx.hideSeed ? { seed: false } : {}),
+            ...(this.ctx.showSeed ? {} : { seed: false }),
             status: BillStatus.PAID,
           },
           include: { lineItems: true },
@@ -108,7 +108,7 @@ export class VendorService {
       where: { id, userId: this.ctx.userId },
       include: {
         bills: {
-          where: this.ctx.hideSeed ? { seed: false } : undefined,
+          where: this.ctx.showSeed ? undefined : { seed: false },
           include: {
             lineItems: true,
           },

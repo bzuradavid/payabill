@@ -82,13 +82,13 @@ export default async function LoginPage() {
             />
             <Step
               n={2}
-              title="A ready-to-use demo workspace"
-              body="Vendors, bills, GL accounts, and payments are pre-populated so you can explore the product immediately."
+              title="A clean, empty workspace"
+              body="You start with nothing — no fake data cluttering your view. Add real vendors and bills as you go."
             />
             <Step
               n={3}
-              title="Hide demo data when you're ready"
-              body="A toggle on the dashboard removes the demo dataset from view so only your real data is shown."
+              title="Flip on demo data anytime"
+              body='Toggle "Show demo data" on the dashboard to load a realistic demo dataset (vendors, bills, GL accounts, payments) so you can explore the product.'
             />
           </ul>
         </div>

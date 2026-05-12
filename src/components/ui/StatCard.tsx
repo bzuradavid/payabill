@@ -6,21 +6,23 @@ interface StatCardProps {
   sub?: string;
   trend?: "up" | "down" | "neutral";
   className?: string;
-  accent?: "default" | "red" | "amber" | "emerald";
+  accent?: "default" | "indigo" | "red" | "amber" | "emerald";
 }
 
 const accentClasses: Record<NonNullable<StatCardProps["accent"]>, string> = {
   default: "",
-  red: "border-l-4 border-l-red-500",
-  amber: "border-l-4 border-l-amber-400",
-  emerald: "border-l-4 border-l-emerald-500",
+  indigo: "border-l-2 border-l-indigo-300 bg-gradient-to-r from-indigo-50/30 via-white to-white",
+  red: "border-l-2 border-l-red-200 bg-gradient-to-r from-red-50/25 via-white to-white",
+  amber: "border-l-2 border-l-amber-200 bg-gradient-to-r from-amber-50/25 via-white to-white",
+  emerald: "border-l-2 border-l-emerald-200 bg-gradient-to-r from-emerald-50/25 via-white to-white",
 };
 
 const accentValueClasses: Record<NonNullable<StatCardProps["accent"]>, string> = {
   default: "text-[#1a174f]",
-  red: "text-red-600",
-  amber: "text-amber-600",
-  emerald: "text-emerald-600",
+  indigo: "text-indigo-800",
+  red: "text-red-700",
+  amber: "text-amber-700",
+  emerald: "text-emerald-700",
 };
 
 export function StatCard({
@@ -39,7 +41,7 @@ export function StatCard({
       )}
     >
       <p className="text-sm font-medium text-slate-500">{label}</p>
-      <p className={cn("mt-1 text-2xl font-bold tracking-tight", accentValueClasses[accent])}>
+      <p className={cn("mt-1 text-2xl font-semibold tracking-tight", accentValueClasses[accent])}>
         {value}
       </p>
       {sub && <p className="mt-1 text-xs text-slate-400">{sub}</p>}

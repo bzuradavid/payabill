@@ -50,11 +50,11 @@ export class BillService {
     private ctx: UserContext,
   ) {}
 
-  /** Base where-clause scoping every query to the current user and honoring hideSeed. */
+  /** Base where-clause scoping every query to the current user and honoring showSeed. */
   private scope() {
     return {
       userId: this.ctx.userId,
-      ...(this.ctx.hideSeed ? { seed: false } : {}),
+      ...(this.ctx.showSeed ? {} : { seed: false }),
     };
   }
 

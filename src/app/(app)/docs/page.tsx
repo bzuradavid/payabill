@@ -262,14 +262,12 @@ export default function DocsPage() {
                                           ↓
                           PrismaAdapter creates User (first time)
                                           ↓
-                          events.createUser → seedUserData(db, user.id)
-                                          ↓
                                       /dashboard`}</CodeBlock>
 
         <SubHeading>Per-request user context</SubHeading>
         <Prose>
           Every authenticated request resolves a <Code>UserContext</Code>{" "}
-          (<Code>userId</Code> + <Code>hideSeed</Code> preference) via{" "}
+          (<Code>userId</Code> + <Code>showSeed</Code> preference) via{" "}
           <Code>requireUserContext()</Code> in{" "}
           <Code>src/server/get-user.ts</Code>. Services are instantiated
           per-request through <Code>getServices()</Code> in{" "}
@@ -277,11 +275,11 @@ export default function DocsPage() {
           into every query.
         </Prose>
         <CodeBlock>{`// Every service method filters by userId automatically
-// (and by seed: false when hideSeed is on)
+// (and by seed: false when showSeed is off)
 private scope() {
   return {
     userId: this.ctx.userId,
-    ...(this.ctx.hideSeed ? { seed: false } : {}),
+    ...(this.ctx.showSeed ? {} : { seed: false }),
   };
 }`}</CodeBlock>
 
@@ -296,19 +294,21 @@ private scope() {
         {/* ── Seed Data & Toggle ── */}
         <SectionHeading id="seed-data">Seed Data &amp; Toggle</SectionHeading>
         <Prose>
-          Every new workspace ships pre-loaded with a realistic demo dataset
-          (6 vendors, 8 GL accounts, ~20 bills across every status) so that
-          users can explore the app immediately.
+          New workspaces start empty. Users can opt into a realistic demo
+          dataset (6 vendors, 8 GL accounts, ~20 bills across every status)
+          by flipping the &quot;Show demo data&quot; switch on the dashboard.
         </Prose>
 
         <SubHeading>How seeding works</SubHeading>
         <Prose>
-          When the PrismaAdapter creates a User row, the NextAuth{" "}
-          <Code>events.createUser</Code> hook calls{" "}
+          The first time a user turns on &quot;Show demo data&quot;,{" "}
+          <Code>setShowSeed(true)</Code> calls{" "}
           <Code>seedUserData(db, user.id)</Code> from{" "}
-          <Code>src/server/seed-user.ts</Code>. This runs once per user and
-          inserts a personal copy of the demo dataset attached to their{" "}
-          <Code>userId</Code>, with every row marked <Code>seed: true</Code>.
+          <Code>src/server/seed-user.ts</Code>, inserts a personal copy of
+          the demo dataset (all rows marked <Code>seed: true</Code>), and
+          stamps <Code>User.seededAt</Code>. The <Code>seededAt</Code>{" "}
+          guard makes seeding one-shot: toggling off-then-on again won&apos;t
+          duplicate rows.
         </Prose>
         <Prose>
           Because seeding is per-user, edits never leak between accounts —
@@ -329,24 +329,41 @@ private scope() {
         />
         <Prose>
           New rows the user creates default to <Code>seed: false</Code>, so
-          they are never hidden by the toggle.
+          they remain visible regardless of the toggle.
         </Prose>
 
         <SubHeading>The toggle</SubHeading>
         <Prose>
-          The dashboard header includes a &quot;Hide demo data&quot; switch
+          The dashboard header includes a &quot;Show demo data&quot; switch
           (
-          <Code>src/components/dashboard/HideSeedToggle.tsx</Code>) that
-          flips <Code>User.hideSeed</Code> via the{" "}
-          <Code>setHideSeed()</Code> server action. When enabled, every
+          <Code>src/components/dashboard/ShowSeedToggle.tsx</Code>) that
+          flips <Code>User.showSeed</Code> via the{" "}
+          <Code>setShowSeed()</Code> server action. When disabled, every
           service method appends <Code>seed: false</Code> to its where-clause,
           so seeded rows are filtered out of every page —{" "}
           <em>dashboards, lists, detail pages, and aggregates alike</em>.
         </Prose>
         <CodeBlock>{`// src/actions/preferences.ts
-export async function setHideSeed(hideSeed: boolean) {
+export async function setShowSeed(showSeed: boolean) {
   const { userId } = await requireUserContext();
-  await db.user.update({ where: { id: userId }, data: { hideSeed } });
+  if (showSeed) {
+    // First-time enable seeds the demo dataset; subsequent toggles just flip the flag.
+    const user = await db.user.findUniqueOrThrow({
+      where: { id: userId },
+      select: { seededAt: true },
+    });
+    if (!user.seededAt) {
+      await seedUserData(db, userId);
+      await db.user.update({
+        where: { id: userId },
+        data: { showSeed: true, seededAt: new Date() },
+      });
+    } else {
+      await db.user.update({ where: { id: userId }, data: { showSeed: true } });
+    }
+  } else {
+    await db.user.update({ where: { id: userId }, data: { showSeed: false } });
+  }
   revalidatePath("/dashboard");
   revalidatePath("/bills");
   revalidatePath("/vendors");
@@ -365,7 +382,7 @@ export async function setHideSeed(hideSeed: boolean) {
 │   │   └── login/page.tsx    Sign in / sign up
 │   ├── (app)/        Authenticated surfaces — AppShell + auth guard
 │   │   ├── layout.tsx        Calls auth() → redirect("/login") if unauthed
-│   │   ├── dashboard/        Live stats + "Hide demo data" toggle
+│   │   ├── dashboard/        Live stats + "Show demo data" toggle
 │   │   ├── bills/            Bills inbox + create + detail
 │   │   ├── vendors/          Vendor directory + create + edit + detail
 │   │   └── docs/             This documentation
@@ -377,18 +394,18 @@ export async function setHideSeed(hideSeed: boolean) {
 │   ├── bills.ts      Bill lifecycle
 │   ├── vendors.ts    Vendor CRUD
 │   ├── auth.ts       signInWithGoogle, signOutAction
-│   └── preferences.ts setHideSeed
+│   └── preferences.ts setShowSeed (one-shot seeds on first enable)
 ├── server/
-│   ├── auth.ts       NextAuth config + events.createUser → seedUserData
+│   ├── auth.ts       NextAuth config
 │   ├── db.ts         Prisma singleton
-│   ├── get-user.ts   requireUserContext() — { userId, hideSeed }
+│   ├── get-user.ts   requireUserContext() — { userId, showSeed }
 │   ├── container.ts  Per-request service factory: getServices()
 │   ├── seed-user.ts  Per-user demo seeding (seed: true on every row)
 │   └── services/     Business logic classes — all user-scoped
 ├── components/
 │   ├── ui/           Primitive components (Button, Card, Switch, …)
 │   ├── layout/       AppShell, Sidebar (with UserMenu + sign out)
-│   ├── dashboard/    HideSeedToggle
+│   ├── dashboard/    ShowSeedToggle
 │   ├── bills/        Bill-specific components
 │   └── vendors/      Vendor-specific components
 └── lib/utils.ts      cn(), formatCurrency(), formatDate(), …`}</CodeBlock>
@@ -419,7 +436,7 @@ export async function setHideSeed(hideSeed: boolean) {
             ],
             [
               "Seed flag",
-              "Every domain row carries a seed:Boolean. Services append seed:false when User.hideSeed is on",
+              "Every domain row carries a seed:Boolean. Services append seed:false unless User.showSeed is on",
             ],
             [
               "Cache invalidation",
@@ -459,7 +476,7 @@ export async function setHideSeed(hideSeed: boolean) {
           rows={[
             ["id", "String (cuid)", "Primary key"],
             ["userId", "String", "FK → User (workspace owner, cascade delete)"],
-            ["seed", "Boolean", "true for demo rows; hidden when User.hideSeed = true"],
+            ["seed", "Boolean", "true for demo rows; hidden unless User.showSeed = true"],
             ["vendorId", "String", "FK → Vendor"],
             ["invoiceNumber", "String?", "Vendor's invoice reference"],
             ["invoiceDate", "DateTime?", ""],
@@ -536,15 +553,17 @@ export async function setHideSeed(hideSeed: boolean) {
         <SubHeading>User</SubHeading>
         <Prose>
           Workspace owner. NextAuth PrismaAdapter creates one row per Google
-          account on first sign-in. Triggers <Code>seedUserData()</Code> via{" "}
-          <Code>events.createUser</Code>.
+          account on first sign-in. New workspaces start empty;{" "}
+          <Code>seedUserData()</Code> only runs when the user first turns on
+          &quot;Show demo data&quot;.
         </Prose>
         <Table
           headers={["Field", "Type", "Notes"]}
           rows={[
             ["id", "String (cuid)", "Primary key"],
             ["name / email / image", "String?", "From Google profile"],
-            ["hideSeed", "Boolean", "When true, services filter out seed:true rows"],
+            ["showSeed", "Boolean", "When false (default), services filter out seed:true rows"],
+            ["seededAt", "DateTime?", "Stamped on first showSeed=true; gates one-shot seeding"],
             ["accounts / sessions", "[]", "NextAuth"],
             ["vendors / bills / glAccounts", "[]", "Cascade-delete on user delete"],
           ]}
@@ -634,7 +653,7 @@ export async function setHideSeed(hideSeed: boolean) {
           rows={[
             ["/", "(marketing)", "app/(marketing)/page.tsx", "Landing page. Redirects to /dashboard when signed in."],
             ["/login", "(marketing)", "app/(marketing)/login/page.tsx", "Sign-in / sign-up via Google."],
-            ["/dashboard", "(app)", "app/(app)/dashboard/page.tsx", "Live stats + recent bills + Hide-demo-data toggle"],
+            ["/dashboard", "(app)", "app/(app)/dashboard/page.tsx", "Live stats + recent bills + Show-demo-data toggle"],
             ["/bills", "(app)", "app/(app)/bills/page.tsx", "Bills inbox with status filter + search"],
             ["/bills/new", "(app)", "app/(app)/bills/new/page.tsx", "Create bill with line items"],
             ["/bills/[id]", "(app)", "app/(app)/bills/[id]/page.tsx", "Bill detail + state-machine actions"],
@@ -693,7 +712,7 @@ export async function setHideSeed(hideSeed: boolean) {
         <Table
           headers={["Function", "Input", "Returns"]}
           rows={[
-            ["setHideSeed(hideSeed)", "boolean", "ActionResult<{ hideSeed }>; updates User.hideSeed; revalidates /dashboard, /bills, /vendors"],
+            ["setShowSeed(showSeed)", "boolean", "ActionResult<{ showSeed }>; updates User.showSeed and seeds the demo dataset on first enable; revalidates /dashboard, /bills, /vendors"],
           ]}
         />
 
@@ -702,7 +721,7 @@ export async function setHideSeed(hideSeed: boolean) {
         <Prose>
           Services encapsulate all business logic and database access. Each
           service takes the Prisma client and a <Code>UserContext</Code> (
-          <Code>userId</Code> + <Code>hideSeed</Code>) in its constructor and
+          <Code>userId</Code> + <Code>showSeed</Code>) in its constructor and
           appends both filters to every query. Instances are returned by{" "}
           <Code>getServices()</Code> in <Code>src/server/container.ts</Code> —
           a per-request factory consumed by both pages (RSC reads) and

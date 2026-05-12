@@ -6,7 +6,7 @@ import { StatCard } from "~/components/ui/StatCard";
 import { Card, CardContent, CardHeader } from "~/components/ui/Card";
 import { BillStatusBadge } from "~/components/bills/BillStatusBadge";
 import { Button } from "~/components/ui/Button";
-import { HideSeedToggle } from "~/components/dashboard/HideSeedToggle";
+import { ShowSeedToggle } from "~/components/dashboard/ShowSeedToggle";
 import { formatCurrency, getDueDateLabel, isOverdue } from "~/lib/utils";
 import { cn } from "~/lib/utils";
 
@@ -28,7 +28,7 @@ export default async function DashboardPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <HideSeedToggle initialHideSeed={ctx.hideSeed} />
+          <ShowSeedToggle initialShowSeed={ctx.showSeed} />
           <Link href="/bills/new">
             <Button size="md">
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -46,6 +46,7 @@ export default async function DashboardPage() {
           label="Total Outstanding"
           value={formatCurrency(stats.totalPayable)}
           sub="Across all active bills"
+          accent="indigo"
         />
         <StatCard
           label="Due This Week"
