@@ -71,9 +71,11 @@ describe("assignUserToOrganization", () => {
       data: { name: "Alice's Workspace" },
     });
 
-    const [call] = (mockDb.user.update as Mock).mock.calls;
-    expect(call[0].data.organizationId).toBe("new-org");
-    expect(call[0].data.role).toBe("MANAGER");
+    expect(mockDb.user.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ organizationId: "new-org", role: "MANAGER" }),
+      }),
+    );
   });
 
   it("joins an existing org as STAFF when a pending invitation matches the email", async () => {
@@ -107,8 +109,9 @@ describe("assignUserToOrganization", () => {
 
     await assignUserToOrganization("user-1", "CAPS@Example.COM", "Bob");
 
-    const [invCall] = (mockDb.invitation.findFirst as Mock).mock.calls;
-    expect(invCall[0].where.email).toBe("caps@example.com");
+    expect(mockDb.invitation.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ email: "caps@example.com" }) }),
+    );
   });
 
   it("uses email prefix as workspace name when no display name is provided", async () => {
@@ -119,8 +122,9 @@ describe("assignUserToOrganization", () => {
 
     await assignUserToOrganization("user-1", "someone@company.com", undefined);
 
-    const [call] = (mockDb.organization.create as Mock).mock.calls;
-    expect(call[0].data.name).toBe("someone's Workspace");
+    expect(mockDb.organization.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ name: "someone's Workspace" }) }),
+    );
   });
 
   it("falls back to 'My Workspace' when email and name are both absent", async () => {
@@ -131,7 +135,8 @@ describe("assignUserToOrganization", () => {
 
     await assignUserToOrganization("user-1", null, null);
 
-    const [call] = (mockDb.organization.create as Mock).mock.calls;
-    expect(call[0].data.name).toBe("My Workspace");
+    expect(mockDb.organization.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ name: "My Workspace" }) }),
+    );
   });
 });

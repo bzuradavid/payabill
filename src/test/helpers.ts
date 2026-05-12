@@ -89,7 +89,18 @@ export function makeMockDb() {
 
 // ── Test data builders ─────────────────────────────────────────────────────────
 
-export function makeLineItem(overrides: Partial<ReturnType<typeof makeLineItem>> = {}) {
+type LineItem = {
+  id: string;
+  billId: string;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  amount: number;
+  glAccountId: string | null;
+  createdAt: Date;
+};
+
+export function makeLineItem(overrides: Partial<LineItem> = {}): LineItem {
   return {
     id: "li-1",
     billId: "bill-1",
@@ -103,12 +114,26 @@ export function makeLineItem(overrides: Partial<ReturnType<typeof makeLineItem>>
   };
 }
 
-export function makePayment(overrides: Partial<ReturnType<typeof makePayment>> = {}) {
+type Payment = {
+  id: string;
+  billId: string;
+  amount: number;
+  method: "ACH";
+  status: PaymentStatus;
+  reference: string | null;
+  scheduledDate: Date | null;
+  processedDate: Date | null;
+  memo: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export function makePayment(overrides: Partial<Payment> = {}): Payment {
   return {
     id: "pay-1",
     billId: "bill-1",
     amount: 100,
-    method: "ACH" as const,
+    method: "ACH",
     status: PaymentStatus.PENDING,
     reference: null,
     scheduledDate: null,
@@ -120,7 +145,30 @@ export function makePayment(overrides: Partial<ReturnType<typeof makePayment>> =
   };
 }
 
-export function makeVendor(overrides: Partial<ReturnType<typeof makeVendor>> = {}) {
+type Vendor = {
+  id: string;
+  organizationId: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  website: string | null;
+  addressLine1: string | null;
+  addressLine2: string | null;
+  city: string | null;
+  state: string | null;
+  zip: string | null;
+  country: string;
+  defaultPaymentMethod: "ACH";
+  bankName: string | null;
+  bankRoutingNumber: string | null;
+  bankAccountNumber: string | null;
+  taxId: string | null;
+  status: "ACTIVE";
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export function makeVendor(overrides: Partial<Vendor> = {}): Vendor {
   return {
     id: "vendor-1",
     organizationId: "org-1",
@@ -134,19 +182,41 @@ export function makeVendor(overrides: Partial<ReturnType<typeof makeVendor>> = {
     state: null,
     zip: null,
     country: "US",
-    defaultPaymentMethod: "ACH" as const,
+    defaultPaymentMethod: "ACH",
     bankName: null,
     bankRoutingNumber: null,
     bankAccountNumber: null,
     taxId: null,
-    status: "ACTIVE" as const,
+    status: "ACTIVE",
     createdAt: new Date("2025-01-01"),
     updatedAt: new Date("2025-01-01"),
     ...overrides,
   };
 }
 
-export function makeBill(overrides: Partial<ReturnType<typeof makeBill>> = {}) {
+type Bill = {
+  id: string;
+  organizationId: string;
+  createdById: string;
+  vendorId: string;
+  invoiceNumber: string | null;
+  invoiceDate: Date | null;
+  dueDate: Date | null;
+  status: BillStatus;
+  memo: string | null;
+  paymentMethod: "ACH";
+  rejectionReason: string | null;
+  submittedAt: Date | null;
+  approvedAt: Date | null;
+  paidAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  vendor: Vendor;
+  lineItems: LineItem[];
+  payments: Payment[];
+};
+
+export function makeBill(overrides: Partial<Bill> = {}): Bill {
   return {
     id: "bill-1",
     organizationId: "org-1",

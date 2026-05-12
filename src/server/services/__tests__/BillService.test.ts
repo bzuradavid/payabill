@@ -9,7 +9,6 @@ import {
   makeBill,
   makeLineItem,
   makePayment,
-  makeVendor,
 } from "~/test/helpers";
 
 describe("BillService", () => {
@@ -33,19 +32,27 @@ describe("BillService", () => {
     it("manager list includes all org bills without createdById filter", async () => {
       (db.bill.findMany as Mock).mockResolvedValue([]);
       await manager.list();
-      const [call] = (db.bill.findMany as Mock).mock.calls;
-      expect(call[0].where).toMatchObject({ organizationId: "org-1" });
-      expect(call[0].where).not.toHaveProperty("createdById");
+      expect(db.bill.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: expect.objectContaining({ organizationId: "org-1" }) }),
+      );
+      expect(db.bill.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.not.objectContaining({ createdById: expect.anything() }),
+        }),
+      );
     });
 
     it("staff list filters to their own bills via createdById", async () => {
       (db.bill.findMany as Mock).mockResolvedValue([]);
       await staff.list();
-      const [call] = (db.bill.findMany as Mock).mock.calls;
-      expect(call[0].where).toMatchObject({
-        organizationId: "org-1",
-        createdById: staffCtx.userId,
-      });
+      expect(db.bill.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            organizationId: "org-1",
+            createdById: staffCtx.userId,
+          }),
+        }),
+      );
     });
   });
 
@@ -68,15 +75,21 @@ describe("BillService", () => {
     it("applies status filter", async () => {
       (db.bill.findMany as Mock).mockResolvedValue([]);
       await manager.list({ statuses: [BillStatus.DRAFT] });
-      const [call] = (db.bill.findMany as Mock).mock.calls;
-      expect(call[0].where.status).toEqual({ in: [BillStatus.DRAFT] });
+      expect(db.bill.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ status: { in: [BillStatus.DRAFT] } }),
+        }),
+      );
     });
 
     it("applies search filter", async () => {
       (db.bill.findMany as Mock).mockResolvedValue([]);
       await manager.list({ search: "ACME" });
-      const [call] = (db.bill.findMany as Mock).mock.calls;
-      expect(call[0].where.OR).toBeDefined();
+      expect(db.bill.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ OR: expect.anything() }),
+        }),
+      );
     });
   });
 
@@ -107,10 +120,15 @@ describe("BillService", () => {
         lineItems: [{ description: "Widget", quantity: 1, unitPrice: 100, amount: 100 }],
       });
 
-      const [call] = (db.bill.create as Mock).mock.calls;
-      expect(call[0].data.status).toBe(BillStatus.DRAFT);
-      expect(call[0].data.organizationId).toBe("org-1");
-      expect(call[0].data.createdById).toBe(managerCtx.userId);
+      expect(db.bill.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            status: BillStatus.DRAFT,
+            organizationId: "org-1",
+            createdById: managerCtx.userId,
+          }),
+        }),
+      );
     });
   });
 
@@ -178,9 +196,14 @@ describe("BillService", () => {
 
       await manager.submit("bill-1");
 
-      const [call] = (db.bill.update as Mock).mock.calls;
-      expect(call[0].data.status).toBe(BillStatus.PENDING_APPROVAL);
-      expect(call[0].data.submittedAt).toBeInstanceOf(Date);
+      expect(db.bill.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            status: BillStatus.PENDING_APPROVAL,
+            submittedAt: expect.any(Date),
+          }),
+        }),
+      );
     });
 
     it("staff can submit their own bills", async () => {
@@ -222,9 +245,14 @@ describe("BillService", () => {
 
       await manager.approve("bill-1");
 
-      const [call] = (db.bill.update as Mock).mock.calls;
-      expect(call[0].data.status).toBe(BillStatus.APPROVED);
-      expect(call[0].data.approvedAt).toBeInstanceOf(Date);
+      expect(db.bill.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            status: BillStatus.APPROVED,
+            approvedAt: expect.any(Date),
+          }),
+        }),
+      );
     });
   });
 
@@ -254,9 +282,14 @@ describe("BillService", () => {
 
       await manager.reject("bill-1", "Missing PO");
 
-      const [call] = (db.bill.update as Mock).mock.calls;
-      expect(call[0].data.status).toBe(BillStatus.REJECTED);
-      expect(call[0].data.rejectionReason).toBe("Missing PO");
+      expect(db.bill.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            status: BillStatus.REJECTED,
+            rejectionReason: "Missing PO",
+          }),
+        }),
+      );
     });
   });
 
@@ -296,13 +329,20 @@ describe("BillService", () => {
       const scheduledDate = new Date("2025-03-01");
       await manager.schedulePayment("bill-1", scheduledDate);
 
-      const updateCall = (db.bill.update as Mock).mock.calls[0]!;
-      expect(updateCall[0].data.status).toBe(BillStatus.SCHEDULED);
-
-      const paymentCall = (db.payment.create as Mock).mock.calls[0]!;
-      expect(paymentCall[0].data.amount).toBe(500);
-      expect(paymentCall[0].data.status).toBe(PaymentStatus.PENDING);
-      expect(paymentCall[0].data.scheduledDate).toEqual(scheduledDate);
+      expect(db.bill.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ status: BillStatus.SCHEDULED }),
+        }),
+      );
+      expect(db.payment.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            amount: 500,
+            status: PaymentStatus.PENDING,
+            scheduledDate,
+          }),
+        }),
+      );
     });
   });
 
@@ -332,13 +372,22 @@ describe("BillService", () => {
 
       await manager.markPaid("bill-1");
 
-      const paymentUpdate = (db.payment.update as Mock).mock.calls[0]!;
-      expect(paymentUpdate[0].data.status).toBe(PaymentStatus.COMPLETED);
-      expect(paymentUpdate[0].data.processedDate).toBeInstanceOf(Date);
-
-      const billUpdate = (db.bill.update as Mock).mock.calls[0]!;
-      expect(billUpdate[0].data.status).toBe(BillStatus.PAID);
-      expect(billUpdate[0].data.paidAt).toBeInstanceOf(Date);
+      expect(db.payment.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            status: PaymentStatus.COMPLETED,
+            processedDate: expect.any(Date),
+          }),
+        }),
+      );
+      expect(db.bill.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            status: BillStatus.PAID,
+            paidAt: expect.any(Date),
+          }),
+        }),
+      );
     });
 
     it("marks bill as paid even when no payment record exists", async () => {
@@ -385,8 +434,11 @@ describe("BillService", () => {
 
       await manager.void("bill-1");
 
-      const [call] = (db.bill.update as Mock).mock.calls;
-      expect(call[0].data.status).toBe(BillStatus.VOID);
+      expect(db.bill.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ status: BillStatus.VOID }),
+        }),
+      );
     });
   });
 

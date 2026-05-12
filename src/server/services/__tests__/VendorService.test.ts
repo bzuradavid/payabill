@@ -31,9 +31,11 @@ describe("VendorService", () => {
 
       await manager.create({ name: "ACME", email: "billing@acme.com" });
 
-      const [call] = (db.vendor.create as Mock).mock.calls;
-      expect(call[0].data.organizationId).toBe("org-1");
-      expect(call[0].data.name).toBe("ACME");
+      expect(db.vendor.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ organizationId: "org-1", name: "ACME" }),
+        }),
+      );
     });
   });
 
@@ -53,8 +55,11 @@ describe("VendorService", () => {
 
       await staff.createInline({ name: "Quick Vendor", email: "qv@example.com" });
 
-      const [call] = (db.vendor.create as Mock).mock.calls;
-      expect(call[0].data.organizationId).toBe("org-1");
+      expect(db.vendor.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ organizationId: "org-1" }),
+        }),
+      );
     });
   });
 
@@ -80,9 +85,12 @@ describe("VendorService", () => {
 
       await manager.update("vendor-1", { name: "Updated" });
 
-      const [call] = (db.vendor.update as Mock).mock.calls;
-      expect(call[0].where).toEqual({ id: "vendor-1" });
-      expect(call[0].data.name).toBe("Updated");
+      expect(db.vendor.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: "vendor-1" },
+          data: expect.objectContaining({ name: "Updated" }),
+        }),
+      );
     });
 
     it("queries with correct org scope when looking up vendor", async () => {
@@ -91,8 +99,9 @@ describe("VendorService", () => {
 
       await manager.update("vendor-1", { phone: "555-1234" });
 
-      const [lookupCall] = (db.vendor.findFirst as Mock).mock.calls;
-      expect(lookupCall[0].where).toEqual({ id: "vendor-1", organizationId: "org-1" });
+      expect(db.vendor.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: "vendor-1", organizationId: "org-1" } }),
+      );
     });
   });
 
@@ -116,8 +125,11 @@ describe("VendorService", () => {
 
       await manager.deactivate("vendor-1");
 
-      const [call] = (db.vendor.update as Mock).mock.calls;
-      expect(call[0].data.status).toBe("INACTIVE");
+      expect(db.vendor.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ status: "INACTIVE" }),
+        }),
+      );
     });
   });
 
@@ -129,8 +141,9 @@ describe("VendorService", () => {
 
       await manager.list();
 
-      const [call] = (db.vendor.findMany as Mock).mock.calls;
-      expect(call[0].where.organizationId).toBe("org-1");
+      expect(db.vendor.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: expect.objectContaining({ organizationId: "org-1" }) }),
+      );
     });
 
     it("computes totalPaid from paid bills' line items", async () => {
@@ -158,8 +171,9 @@ describe("VendorService", () => {
 
       await manager.list({ search: "acme" });
 
-      const [call] = (db.vendor.findMany as Mock).mock.calls;
-      expect(call[0].where.OR).toBeDefined();
+      expect(db.vendor.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: expect.objectContaining({ OR: expect.anything() }) }),
+      );
     });
   });
 
@@ -177,8 +191,11 @@ describe("VendorService", () => {
 
       await manager.getById("vendor-1");
 
-      const [call] = (db.vendor.findFirst as Mock).mock.calls;
-      expect(call[0].where).toMatchObject({ id: "vendor-1", organizationId: "org-1" });
+      expect(db.vendor.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ id: "vendor-1", organizationId: "org-1" }),
+        }),
+      );
     });
   });
 });

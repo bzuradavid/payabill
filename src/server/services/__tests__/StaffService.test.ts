@@ -31,8 +31,9 @@ describe("StaffService", () => {
 
       await manager.listMembers();
 
-      const [call] = (db.user.findMany as Mock).mock.calls;
-      expect(call[0].where.organizationId).toBe("org-1");
+      expect(db.user.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: expect.objectContaining({ organizationId: "org-1" }) }),
+      );
     });
   });
 
@@ -49,8 +50,9 @@ describe("StaffService", () => {
 
       await manager.listInvitations();
 
-      const [call] = (db.invitation.findMany as Mock).mock.calls;
-      expect(call[0].where.organizationId).toBe("org-1");
+      expect(db.invitation.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: expect.objectContaining({ organizationId: "org-1" }) }),
+      );
     });
   });
 
@@ -93,9 +95,11 @@ describe("StaffService", () => {
 
       await manager.inviteStaff("new@example.com");
 
-      const [call] = (db.invitation.upsert as Mock).mock.calls;
-      expect(call[0].create.email).toBe("new@example.com");
-      expect(call[0].create.organizationId).toBe("org-1");
+      expect(db.invitation.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          create: expect.objectContaining({ email: "new@example.com", organizationId: "org-1" }),
+        }),
+      );
     });
 
     it("normalises email to lowercase before creating invitation", async () => {
@@ -104,8 +108,11 @@ describe("StaffService", () => {
 
       await manager.inviteStaff("  UPPER@Example.COM  ");
 
-      const [call] = (db.invitation.upsert as Mock).mock.calls;
-      expect(call[0].create.email).toBe("upper@example.com");
+      expect(db.invitation.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          create: expect.objectContaining({ email: "upper@example.com" }),
+        }),
+      );
     });
   });
 
@@ -140,8 +147,9 @@ describe("StaffService", () => {
 
       await manager.revokeInvitation("inv-1");
 
-      const [lookupCall] = (db.invitation.findFirst as Mock).mock.calls;
-      expect(lookupCall[0].where).toMatchObject({ organizationId: "org-1" });
+      expect(db.invitation.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({ where: expect.objectContaining({ organizationId: "org-1" }) }),
+      );
     });
   });
 
@@ -178,9 +186,12 @@ describe("StaffService", () => {
 
       await manager.removeStaff("user-staff-2");
 
-      const [call] = (db.user.update as Mock).mock.calls;
-      expect(call[0].where).toEqual({ id: "user-staff-2" });
-      expect(call[0].data.organizationId).toBeNull();
+      expect(db.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: "user-staff-2" },
+          data: expect.objectContaining({ organizationId: null }),
+        }),
+      );
     });
 
     it("scopes the target user lookup to the org", async () => {
@@ -189,8 +200,9 @@ describe("StaffService", () => {
 
       await manager.removeStaff("user-staff-2");
 
-      const [lookupCall] = (db.user.findFirst as Mock).mock.calls;
-      expect(lookupCall[0].where).toMatchObject({ organizationId: "org-1" });
+      expect(db.user.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({ where: expect.objectContaining({ organizationId: "org-1" }) }),
+      );
     });
   });
 });
