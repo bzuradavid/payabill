@@ -139,7 +139,7 @@ export function Sidebar({ user, role, open = false, onClose }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "flex h-screen flex-col",
+        "flex h-dvh flex-col",
         "fixed inset-y-0 left-0 z-40 w-64 transition-transform duration-200 ease-in-out",
         open ? "translate-x-0" : "-translate-x-full",
         "md:relative md:w-56 md:shrink-0 md:translate-x-0",
