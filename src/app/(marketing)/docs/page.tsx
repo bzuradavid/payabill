@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 
 const sections = [
   { id: "overview", label: "Overview" },
-  { id: "auth", label: "Auth & User Scoping" },
-  { id: "seed-data", label: "Seed Data & Toggle" },
+  { id: "auth", label: "Auth & Org Model" },
+  { id: "seed-data", label: "Demo Data" },
   { id: "architecture", label: "Architecture" },
   { id: "data-model", label: "Data Model" },
   { id: "bill-lifecycle", label: "Bill Lifecycle" },
@@ -267,12 +267,12 @@ export default function DocsPage() {
             ]}
           />
 
-          {/* ── Auth & User Scoping ── */}
-          <SectionHeading id="auth">Auth &amp; User Scoping</SectionHeading>
+          {/* ── Auth & Org Model ── */}
+          <SectionHeading id="auth">Auth &amp; Org Model</SectionHeading>
           <Prose>
-            Payabill is a multi-tenant single-user-per-tenant product: every
-            user gets their own private workspace. The application surfaces are
-            split into two route groups:
+            Payabill is multi-tenant: every user belongs to exactly one{" "}
+            <Code>Organization</Code>. The application surfaces are split into
+            two route groups:
           </Prose>
           <Table
             headers={["Group", "Layout", "Auth", "Routes"]}
@@ -287,127 +287,110 @@ export default function DocsPage() {
                 "(app)",
                 "src/app/(app)/layout.tsx",
                 "Required — redirects to /login",
-                "/dashboard, /bills/*, /vendors/*",
+                "/dashboard, /bills/*, /vendors/*, /staff",
               ],
             ]}
           />
 
           <SubHeading>Sign-in flow</SubHeading>
           <Prose>
-            A single &quot;Continue with Google&quot; button on{" "}
-            <Code>/login</Code> handles both sign-up and sign-in. The
-            PrismaAdapter creates a new <Code>User</Code> row the first time a
-            Google account is seen.
+            The <Code>/login</Code> page supports Google OAuth (
+            <Code>Continue with Google</Code>) and email/password credentials.
+            On first Google sign-in, the PrismaAdapter creates a{" "}
+            <Code>User</Code> row and fires the{" "}
+            <Code>events.createUser</Code> hook, which calls{" "}
+            <Code>assignUserToOrganization()</Code>:
           </Prose>
-          <CodeBlock>{`/  →  /login  →  Google OAuth  →  /api/auth/callback/google
-                                          ↓
-                          PrismaAdapter creates User (first time)
-                                          ↓
-                                      /dashboard`}</CodeBlock>
+          <CodeBlock>{`/login  →  Google OAuth  →  /api/auth/callback/google
+                              ↓
+              PrismaAdapter creates User (first time)
+                              ↓
+           events.createUser → assignUserToOrganization()
+           ┌─ pending Invitation matches email?
+           │   yes → join that org as STAFF, delete invitation
+           └─ no  → create new Organization, user becomes MANAGER
+                              ↓
+                          /dashboard`}</CodeBlock>
+
+          <SubHeading>Roles</SubHeading>
+          <Table
+            headers={["Role", "Can do"]}
+            rows={[
+              [
+                "MANAGER",
+                "Approve/reject bills, schedule payments, access /staff, see all bills in the org",
+              ],
+              [
+                "STAFF",
+                "Create and submit bills (including to new vendors), see only their own bills",
+              ],
+            ]}
+          />
 
           <SubHeading>Per-request user context</SubHeading>
           <Prose>
             Every authenticated request resolves a <Code>UserContext</Code> (
-            <Code>userId</Code> + <Code>showSeed</Code> preference) via{" "}
-            <Code>requireUserContext()</Code> in{" "}
+            <Code>userId</Code>, <Code>organizationId</Code>,{" "}
+            <Code>role</Code>) via <Code>requireUserContext()</Code> in{" "}
             <Code>src/server/get-user.ts</Code>. Services are instantiated
             per-request through <Code>getServices()</Code> in{" "}
-            <Code>src/server/container.ts</Code>; they baked the user&apos;s id
-            into every query.
+            <Code>src/server/container.ts</Code>.
           </Prose>
-          <CodeBlock>{`// Every service method filters by userId automatically
-// (and by seed: false when showSeed is off)
+          <CodeBlock>{`// src/server/get-user.ts
+export interface UserContext {
+  userId: string;
+  organizationId: string;
+  role: UserRole; // "MANAGER" | "STAFF"
+}
+
+// BillService scopes by org; STAFF additionally filters to their own bills
 private scope() {
   return {
-    userId: this.ctx.userId,
-    ...(this.ctx.showSeed ? {} : { seed: false }),
+    organizationId: this.ctx.organizationId,
+    ...(this.ctx.role === "STAFF" ? { createdById: this.ctx.userId } : {}),
   };
 }`}</CodeBlock>
 
-          <SubHeading>User-scoped models</SubHeading>
+          <SubHeading>Organization-scoped models</SubHeading>
           <Prose>
             <Code>Vendor</Code>, <Code>Bill</Code>, and <Code>GLAccount</Code>{" "}
-            each carry a required <Code>userId</Code> FK (cascade-delete with
-            User). <Code>BillLineItem</Code> and <Code>Payment</Code> inherit
-            their owner via their parent bill.
+            each carry a required <Code>organizationId</Code> FK (cascade-delete
+            with Organization). <Code>Bill</Code> additionally has{" "}
+            <Code>createdById</Code> (FK to User) for role-based filtering.{" "}
+            <Code>BillLineItem</Code> and <Code>Payment</Code> inherit their org
+            via their parent bill.
           </Prose>
 
-          {/* ── Seed Data & Toggle ── */}
-          <SectionHeading id="seed-data">Seed Data &amp; Toggle</SectionHeading>
+          {/* ── Demo Data ── */}
+          <SectionHeading id="seed-data">Demo Data</SectionHeading>
           <Prose>
-            New workspaces start empty. Users can opt into a realistic demo
-            dataset (6 vendors, 8 GL accounts, ~20 bills across every status) by
-            flipping the &quot;Show demo data&quot; switch on the dashboard.
+            Running <Code>npm run db:seed</Code> creates a{" "}
+            <strong>Payable Demo Co</strong> organization with two pre-seeded
+            accounts and a full realistic dataset.
           </Prose>
 
-          <SubHeading>How seeding works</SubHeading>
-          <Prose>
-            The first time a user turns on &quot;Show demo data&quot;,{" "}
-            <Code>setShowSeed(true)</Code> calls{" "}
-            <Code>seedUserData(db, user.id)</Code> from{" "}
-            <Code>src/server/seed-user.ts</Code>, inserts a personal copy of the
-            demo dataset (all rows marked <Code>seed: true</Code>), and stamps{" "}
-            <Code>User.seededAt</Code>. The <Code>seededAt</Code> guard makes
-            seeding one-shot: toggling off-then-on again won&apos;t duplicate
-            rows.
-          </Prose>
-          <Prose>
-            Because seeding is per-user, edits never leak between accounts —
-            each user owns their own demo rows and can modify or delete them
-            freely.
-          </Prose>
-
-          <SubHeading>The seed field</SubHeading>
           <Table
-            headers={["Model", "Field", "Default"]}
+            headers={["Email", "Password", "Role"]}
             rows={[
-              ["Vendor", "seed: Boolean", "false"],
-              ["Bill", "seed: Boolean", "false"],
-              ["BillLineItem", "seed: Boolean", "false"],
-              ["Payment", "seed: Boolean", "false"],
-              ["GLAccount", "seed: Boolean", "false"],
+              ["manager@payabill.com", "pass1234", "MANAGER"],
+              ["staff@payabill.com", "pass1234", "STAFF"],
             ]}
           />
-          <Prose>
-            New rows the user creates default to <Code>seed: false</Code>, so
-            they remain visible regardless of the toggle.
-          </Prose>
 
-          <SubHeading>The toggle</SubHeading>
+          <SubHeading>What gets seeded</SubHeading>
           <Prose>
-            The dashboard header includes a &quot;Show demo data&quot; switch (
-            <Code>src/components/dashboard/ShowSeedToggle.tsx</Code>) that flips{" "}
-            <Code>User.showSeed</Code> via the <Code>setShowSeed()</Code> server
-            action. When disabled, every service method appends{" "}
-            <Code>seed: false</Code> to its where-clause, so seeded rows are
-            filtered out of every page —{" "}
-            <em>dashboards, lists, detail pages, and aggregates alike</em>.
+            <Code>seedOrganization()</Code> in{" "}
+            <Code>src/server/seed-user.ts</Code> creates 6 vendors (Stripe, AWS,
+            Notion, WeWork, Gusto, HubSpot), 8 GL accounts, and ~19 bills
+            spanning all statuses. Bills are split between the manager and staff
+            user so signing in as either role shows realistic data for that
+            perspective.
           </Prose>
-          <CodeBlock>{`// src/actions/preferences.ts
-export async function setShowSeed(showSeed: boolean) {
-  const { userId } = await requireUserContext();
-  if (showSeed) {
-    // First-time enable seeds the demo dataset; subsequent toggles just flip the flag.
-    const user = await db.user.findUniqueOrThrow({
-      where: { id: userId },
-      select: { seededAt: true },
-    });
-    if (!user.seededAt) {
-      await seedUserData(db, userId);
-      await db.user.update({
-        where: { id: userId },
-        data: { showSeed: true, seededAt: new Date() },
-      });
-    } else {
-      await db.user.update({ where: { id: userId }, data: { showSeed: true } });
-    }
-  } else {
-    await db.user.update({ where: { id: userId }, data: { showSeed: false } });
-  }
-  revalidatePath("/dashboard");
-  revalidatePath("/bills");
-  revalidatePath("/vendors");
-}`}</CodeBlock>
+          <Prose>
+            The seed script is idempotent: it deletes the existing{" "}
+            <Code>Payable Demo Co</Code> org and its users before re-creating
+            them, so running it multiple times is safe.
+          </Prose>
 
           {/* ── Architecture ── */}
           <SectionHeading id="architecture">Architecture</SectionHeading>
@@ -419,13 +402,14 @@ export async function setShowSeed(showSeed: boolean) {
 ├── app/              Next.js pages (Server Components by default)
 │   ├── (marketing)/  Public surfaces — no AppShell, no auth
 │   │   ├── page.tsx          Landing
-│   │   ├── login/page.tsx    Sign in / sign up
+│   │   ├── login/page.tsx    Sign in (Google + credentials)
 │   │   └── docs/page.tsx     This documentation
 │   ├── (app)/        Authenticated surfaces — AppShell + auth guard
 │   │   ├── layout.tsx        Calls auth() → redirect("/login") if unauthed
-│   │   ├── dashboard/        Live stats + "Show demo data" toggle
+│   │   ├── dashboard/        Role-split: ManagerDashboard | StaffDashboard
 │   │   ├── bills/            Bills inbox + create + detail
-│   │   └── vendors/          Vendor directory + create + edit + detail
+│   │   ├── vendors/          Vendor directory + create + edit + detail
+│   │   └── staff/            Manager-only: invite + manage team members
 │   ├── layout.tsx    Root: html/body + Geist font (no AppShell)
 │   └── api/
 │       ├── auth/     NextAuth route handler
@@ -434,18 +418,20 @@ export async function setShowSeed(showSeed: boolean) {
 │   ├── bills.ts      Bill lifecycle
 │   ├── vendors.ts    Vendor CRUD
 │   ├── auth.ts       signInWithGoogle, signOutAction
-│   └── preferences.ts setShowSeed (one-shot seeds on first enable)
+│   └── staff.ts      inviteStaff, revokeInvitation, removeStaff
 ├── server/
-│   ├── auth.ts       NextAuth config
+│   ├── auth.ts       NextAuth config (Google + Credentials providers)
 │   ├── db.ts         Prisma singleton
-│   ├── get-user.ts   requireUserContext() — { userId, showSeed }
+│   ├── get-user.ts   requireUserContext() — { userId, organizationId, role }
 │   ├── container.ts  Per-request service factory: getServices()
-│   ├── seed-user.ts  Per-user demo seeding (seed: true on every row)
-│   └── services/     Business logic classes — all user-scoped
+│   ├── assign-org.ts Org assignment on first sign-in
+│   ├── seed-user.ts  seedOrganization() — org-level demo data
+│   └── services/     Business logic classes — all org-scoped
 ├── components/
+│   ├── auth/         CredentialsForm, GoogleSignInButton
 │   ├── ui/           Primitive components (Button, Card, Switch, …)
 │   ├── layout/       AppShell, Sidebar (with UserMenu + sign out)
-│   ├── dashboard/    ShowSeedToggle
+│   ├── dashboard/    DashboardTour
 │   ├── bills/        Bill-specific components
 │   └── vendors/      Vendor-specific components
 └── lib/utils.ts      cn(), formatCurrency(), formatDate(), …`}</CodeBlock>
@@ -463,6 +449,10 @@ export async function setShowSeed(showSeed: boolean) {
                 "(app)/layout.tsx calls auth() and redirects unauthenticated users to /login",
               ],
               [
+                "Role gate",
+                "requireManagerContext() in get-user.ts redirects STAFF users to /dashboard",
+              ],
+              [
                 "Server Components",
                 "Pages are async RSCs that call services directly — no API round-trips",
               ],
@@ -472,11 +462,11 @@ export async function setShowSeed(showSeed: boolean) {
               ],
               [
                 "Per-request DI",
-                "getServices() returns user-scoped service instances; every query filters by userId",
+                "getServices() returns org-scoped service instances; every query filters by organizationId",
               ],
               [
-                "Seed flag",
-                "Every domain row carries a seed:Boolean. Services append seed:false unless User.showSeed is on",
+                "Role scoping",
+                "BillService.scope() adds createdById filter for STAFF users so they only see their own bills",
               ],
               [
                 "Cache invalidation",
@@ -509,26 +499,63 @@ export async function setShowSeed(showSeed: boolean) {
           {/* ── Data Model ── */}
           <SectionHeading id="data-model">Data Model</SectionHeading>
 
+          <SubHeading>Organization</SubHeading>
+          <Prose>Top-level tenant. All domain data is scoped to an org.</Prose>
+          <Table
+            headers={["Field", "Type", "Notes"]}
+            rows={[
+              ["id", "String (cuid)", "Primary key"],
+              ["name", "String", "e.g. &quot;Acme Corp&quot;"],
+              ["users", "User[]", "Members of this workspace"],
+              ["vendors / bills / glAccounts / invitations", "[]", "Owned data (cascade delete)"],
+            ]}
+          />
+
+          <SubHeading>User</SubHeading>
+          <Prose>
+            Workspace member. NextAuth PrismaAdapter creates one row per account
+            on first sign-in, then <Code>assignUserToOrganization()</Code>{" "}
+            attaches the user to an org.
+          </Prose>
+          <Table
+            headers={["Field", "Type", "Notes"]}
+            rows={[
+              ["id", "String (cuid)", "Primary key"],
+              ["name / email / image", "String?", "From Google profile or credentials"],
+              ["passwordHash", "String?", "Bcrypt hash — only set for credentials users"],
+              ["organizationId", "String?", "FK → Organization"],
+              ["role", "UserRole", "MANAGER · STAFF"],
+              ["accounts / sessions", "[]", "NextAuth adapter tables"],
+            ]}
+          />
+
+          <SubHeading>Invitation</SubHeading>
+          <Prose>
+            Pending invite. When a new user signs in and their email matches an
+            invitation, they join that org as STAFF and the invitation is
+            deleted.
+          </Prose>
+          <Table
+            headers={["Field", "Type", "Notes"]}
+            rows={[
+              ["id", "String (cuid)", ""],
+              ["organizationId", "String", "FK → Organization (cascade delete)"],
+              ["email", "String", "Unique per org (@@unique([organizationId, email]))"],
+            ]}
+          />
+
           <SubHeading>Bill</SubHeading>
           <Prose>Central entity. One bill per vendor invoice.</Prose>
           <Table
             headers={["Field", "Type", "Notes"]}
             rows={[
               ["id", "String (cuid)", "Primary key"],
-              [
-                "userId",
-                "String",
-                "FK → User (workspace owner, cascade delete)",
-              ],
-              [
-                "seed",
-                "Boolean",
-                "true for demo rows; hidden unless User.showSeed = true",
-              ],
+              ["organizationId", "String", "FK → Organization (cascade delete)"],
+              ["createdById", "String", "FK → User; used for STAFF role scoping"],
               ["vendorId", "String", "FK → Vendor"],
               ["invoiceNumber", "String?", "Vendor's invoice reference"],
-              ["invoiceDate", "DateTime?", ""],
-              ["dueDate", "DateTime?", "Used for overdue calculation"],
+              ["invoiceDate", "DateTime", ""],
+              ["dueDate", "DateTime", "Used for overdue calculation"],
               ["status", "BillStatus", "See Bill Lifecycle"],
               ["memo", "String?", ""],
               ["paymentMethod", "PaymentMethod?", "ACH · CHECK · WIRE"],
@@ -543,11 +570,10 @@ export async function setShowSeed(showSeed: boolean) {
             rows={[
               ["id", "String (cuid)", ""],
               ["billId", "String", "FK → Bill (cascade delete)"],
-              ["seed", "Boolean", "Inherits from parent bill at seed time"],
               ["description", "String", ""],
-              ["quantity", "Decimal", ""],
-              ["unitPrice", "Decimal", ""],
-              ["amount", "Decimal", "quantity × unitPrice"],
+              ["quantity", "Float", ""],
+              ["unitPrice", "Float", ""],
+              ["amount", "Float", "quantity × unitPrice"],
               ["glAccountId", "String?", "FK → GLAccount"],
             ]}
           />
@@ -557,22 +583,13 @@ export async function setShowSeed(showSeed: boolean) {
             headers={["Field", "Type", "Notes"]}
             rows={[
               ["id", "String (cuid)", ""],
-              ["userId", "String", "FK → User (cascade delete)"],
-              ["seed", "Boolean", "true for demo rows"],
+              ["organizationId", "String", "FK → Organization (cascade delete)"],
               ["name", "String", "Indexed"],
               ["email / phone / website", "String?", ""],
-              [
-                "address.*",
-                "String?",
-                "line1, line2, city, state, zip, country",
-              ],
-              [
-                "bankName / bankRoutingNumber / bankAccountNumber",
-                "String?",
-                "",
-              ],
+              ["address.*", "String?", "line1, line2, city, state, zip, country"],
+              ["bankName / bankRoutingNumber / bankAccountNumber", "String?", ""],
               ["taxId", "String?", ""],
-              ["defaultPaymentMethod", "PaymentMethod?", ""],
+              ["defaultPaymentMethod", "PaymentMethod", "ACH · CHECK · WIRE"],
               ["status", "VendorStatus", "ACTIVE · INACTIVE"],
             ]}
           />
@@ -582,9 +599,8 @@ export async function setShowSeed(showSeed: boolean) {
             headers={["Field", "Type", "Notes"]}
             rows={[
               ["id", "String (cuid)", ""],
-              ["userId", "String", "FK → User (cascade delete)"],
-              ["seed", "Boolean", "true for demo rows"],
-              ["code", "String", "Unique per user (@@unique([userId, code]))"],
+              ["organizationId", "String", "FK → Organization (cascade delete)"],
+              ["code", "String", "Unique per org (@@unique([organizationId, code]))"],
               ["name", "String", ""],
               ["type", "GLAccountType", "EXPENSE · LIABILITY · ASSET"],
             ]}
@@ -596,48 +612,12 @@ export async function setShowSeed(showSeed: boolean) {
             rows={[
               ["id", "String (cuid)", ""],
               ["billId", "String", "FK → Bill"],
-              ["seed", "Boolean", "Inherits from parent bill at seed time"],
-              ["amount", "Decimal", ""],
+              ["amount", "Float", ""],
               ["method", "PaymentMethod", "ACH · CHECK · WIRE"],
-              [
-                "status",
-                "PaymentStatus",
-                "PENDING · PROCESSING · COMPLETED · FAILED",
-              ],
+              ["status", "PaymentStatus", "PENDING · PROCESSING · COMPLETED · FAILED"],
               ["reference", "String?", ""],
               ["scheduledDate", "DateTime?", ""],
               ["processedDate", "DateTime?", ""],
-            ]}
-          />
-
-          <SubHeading>User</SubHeading>
-          <Prose>
-            Workspace owner. NextAuth PrismaAdapter creates one row per Google
-            account on first sign-in. New workspaces start empty;{" "}
-            <Code>seedUserData()</Code> only runs when the user first turns on
-            &quot;Show demo data&quot;.
-          </Prose>
-          <Table
-            headers={["Field", "Type", "Notes"]}
-            rows={[
-              ["id", "String (cuid)", "Primary key"],
-              ["name / email / image", "String?", "From Google profile"],
-              [
-                "showSeed",
-                "Boolean",
-                "When false (default), services filter out seed:true rows",
-              ],
-              [
-                "seededAt",
-                "DateTime?",
-                "Stamped on first showSeed=true; gates one-shot seeding",
-              ],
-              ["accounts / sessions", "[]", "NextAuth"],
-              [
-                "vendors / bills / glAccounts",
-                "[]",
-                "Cascade-delete on user delete",
-              ],
             ]}
           />
 
@@ -794,6 +774,12 @@ export async function setShowSeed(showSeed: boolean) {
                 "Edit vendor",
               ],
               [
+                "/staff",
+                "(app)",
+                "app/(app)/staff/page.tsx",
+                "Manager-only: invite staff by email, view team members, revoke invitations.",
+              ],
+              [
                 "/docs",
                 "(marketing)",
                 "app/(marketing)/docs/page.tsx",
@@ -878,14 +864,25 @@ export async function setShowSeed(showSeed: boolean) {
             ]}
           />
 
-          <SubHeading>Preferences — src/actions/preferences.ts</SubHeading>
+          <SubHeading>Staff — src/actions/staff.ts</SubHeading>
+          <Prose>All operations require the MANAGER role.</Prose>
           <Table
             headers={["Function", "Input", "Returns"]}
             rows={[
               [
-                "setShowSeed(showSeed)",
-                "boolean",
-                "ActionResult<{ showSeed }>; updates User.showSeed and seeds the demo dataset on first enable; revalidates /dashboard, /bills, /vendors",
+                "inviteStaff()",
+                "FormData { email }",
+                "ActionResult — creates a pending Invitation; user joins on next sign-in",
+              ],
+              [
+                "revokeInvitation()",
+                "FormData { id }",
+                "ActionResult — deletes the Invitation",
+              ],
+              [
+                "removeStaff()",
+                "FormData { userId }",
+                "ActionResult — detaches user from org (cannot remove yourself or another manager)",
               ],
             ]}
           />
@@ -895,17 +892,18 @@ export async function setShowSeed(showSeed: boolean) {
           <Prose>
             Services encapsulate all business logic and database access. Each
             service takes the Prisma client and a <Code>UserContext</Code> (
-            <Code>userId</Code> + <Code>showSeed</Code>) in its constructor and
-            appends both filters to every query. Instances are returned by{" "}
+            <Code>userId</Code>, <Code>organizationId</Code>,{" "}
+            <Code>role</Code>) in its constructor and scopes every query to the
+            org. Instances are returned by{" "}
             <Code>getServices()</Code> in <Code>src/server/container.ts</Code> —
             a per-request factory consumed by both pages (RSC reads) and actions
             (mutations).
           </Prose>
           <CodeBlock>{`// In any RSC or server action
-const { billService, vendorService, glAccountService, ctx } =
+const { billService, vendorService, glAccountService, staffService, ctx } =
   await getServices();
-// Throws/redirects to /login if unauthenticated.
-// All subsequent service calls are scoped to ctx.userId.`}</CodeBlock>
+// Redirects to /login if unauthenticated.
+// All service calls are scoped to ctx.organizationId.`}</CodeBlock>
 
           <SubHeading>BillService</SubHeading>
           <Table
@@ -945,7 +943,20 @@ const { billService, vendorService, glAccountService, ctx } =
           <SubHeading>GLAccountService</SubHeading>
           <Table
             headers={["Method", "Description"]}
-            rows={[["list()", "All GL accounts ordered by type then code"]]}
+            rows={[["list()", "All GL accounts for the org, ordered by type then code"]]}
+          />
+
+          <SubHeading>StaffService</SubHeading>
+          <Prose>All methods require the MANAGER role; throws if called by STAFF.</Prose>
+          <Table
+            headers={["Method", "Description"]}
+            rows={[
+              ["listMembers()", "All users in the org, ordered by role then createdAt"],
+              ["listInvitations()", "All pending invitations for the org"],
+              ["inviteStaff(email)", "Upserts an Invitation; rejects existing org members or cross-org emails"],
+              ["revokeInvitation(id)", "Deletes the invitation after verifying org ownership"],
+              ["removeStaff(userId)", "Detaches user from org; cannot remove self or managers"],
+            ]}
           />
 
           {/* ── Environment ── */}
