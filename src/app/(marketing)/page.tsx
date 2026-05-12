@@ -83,7 +83,7 @@ export default async function LandingPage() {
             teams. Collect invoices, route approvals, and schedule payments —
             all from one calm, fast workspace.
           </p>
-          <div className="mt-10 flex items-center justify-center gap-4">
+          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               href="/login"
               className="inline-flex items-center gap-2 rounded-full bg-[#312D97] px-7 py-3 text-base font-semibold text-white shadow-xl shadow-[#312D97]/30 transition-all hover:-translate-y-0.5 hover:bg-[#1d175a]"
@@ -121,7 +121,7 @@ export default async function LandingPage() {
                 </span>
                 <span className="w-12" />
               </div>
-              <div className="grid grid-cols-4 gap-4 px-6 py-6">
+              <div className="grid grid-cols-2 gap-3 px-4 py-4 sm:grid-cols-4 sm:gap-4 sm:px-6 sm:py-6">
                 {[
                   { label: "Outstanding", value: "$48,210", tone: "text-[#1a174f]" },
                   { label: "Due this week", value: "$21,750", tone: "text-amber-600" },
@@ -130,20 +130,20 @@ export default async function LandingPage() {
                 ].map((s) => (
                   <div
                     key={s.label}
-                    className="rounded-2xl border border-[#ecebff] bg-white px-4 py-4 shadow-sm"
+                    className="rounded-2xl border border-[#ecebff] bg-white px-3 py-3 shadow-sm sm:px-4 sm:py-4"
                   >
-                    <p className="text-[0.7rem] font-medium uppercase tracking-wide text-slate-400">
+                    <p className="text-[0.65rem] font-medium uppercase tracking-wide text-slate-400 sm:text-[0.7rem]">
                       {s.label}
                     </p>
-                    <p className={`mt-1 text-xl font-bold ${s.tone}`}>
+                    <p className={`mt-1 text-lg font-bold sm:text-xl ${s.tone}`}>
                       {s.value}
                     </p>
                   </div>
                 ))}
               </div>
-              <div className="px-6 pb-6">
+              <div className="px-4 pb-4 sm:px-6 sm:pb-6">
                 <div className="overflow-hidden rounded-2xl border border-[#ecebff]">
-                  <div className="grid grid-cols-[2fr_1fr_1fr_1fr] gap-4 border-b border-[#ecebff] bg-brand-50 px-5 py-2.5 text-[0.65rem] font-semibold uppercase tracking-wider text-slate-500">
+                  <div className="hidden grid-cols-[2fr_1fr_1fr_1fr] gap-4 border-b border-[#ecebff] bg-brand-50 px-5 py-2.5 text-[0.65rem] font-semibold uppercase tracking-wider text-slate-500 sm:grid">
                     <span>Vendor</span>
                     <span>Due</span>
                     <span className="text-right">Amount</span>
@@ -156,15 +156,21 @@ export default async function LandingPage() {
                   ].map((b) => (
                     <div
                       key={b.name}
-                      className="grid grid-cols-[2fr_1fr_1fr_1fr] gap-4 border-b border-[#ecebff] px-5 py-3 text-sm last:border-0"
+                      className="flex items-center justify-between gap-3 border-b border-[#ecebff] px-3 py-3 last:border-0 sm:grid sm:grid-cols-[2fr_1fr_1fr_1fr] sm:gap-4 sm:px-5 sm:text-sm"
                     >
-                      <span className="font-medium text-[#1a174f]">{b.name}</span>
-                      <span className="text-slate-500">Due {b.due}</span>
-                      <span className="text-right font-medium text-slate-900">{b.amt}</span>
-                      <span>
-                        <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${b.color}`}>
+                      <div className="min-w-0 flex-1 sm:flex-none">
+                        <p className="truncate text-sm font-medium text-[#1a174f]">{b.name}</p>
+                        <p className="mt-0.5 text-[0.7rem] text-slate-500 sm:hidden">Due {b.due}</p>
+                      </div>
+                      <span className="hidden text-slate-500 sm:inline">Due {b.due}</span>
+                      <span className="whitespace-nowrap text-right text-sm font-medium text-slate-900">{b.amt}</span>
+                      <span className="hidden sm:inline">
+                        <span className={`whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold ${b.color}`}>
                           {b.status}
                         </span>
+                      </span>
+                      <span className={`whitespace-nowrap rounded-full px-2 py-0.5 text-[0.65rem] font-semibold sm:hidden ${b.color}`}>
+                        {b.status}
                       </span>
                     </div>
                   ))}
