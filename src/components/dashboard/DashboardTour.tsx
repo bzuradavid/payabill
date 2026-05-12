@@ -58,6 +58,20 @@ export function DashboardTour() {
     setStep(0);
   }, []);
 
+  // Lift the current target above the backdrop while its step is active.
+  useEffect(() => {
+    if (step === null) return;
+    const target = document.getElementById(STEPS[step]!.targetId);
+    if (!target) return;
+    const prev = { position: target.style.position, zIndex: target.style.zIndex };
+    target.style.position = "relative";
+    target.style.zIndex = "101";
+    return () => {
+      target.style.position = prev.position;
+      target.style.zIndex = prev.zIndex;
+    };
+  }, [step]);
+
   const measure = useCallback(() => {
     if (step === null) return;
     const target = document.getElementById(STEPS[step]!.targetId);
