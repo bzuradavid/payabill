@@ -13,7 +13,7 @@ export async function StaffDashboard({
   billService: BillService;
   userName: string | null;
 }) {
-  const myBills = await billService.list({
+  const { data: myBills } = await billService.list({
     sortBy: "createdAt",
     sortDir: "desc",
   });

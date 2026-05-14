@@ -20,8 +20,8 @@ Payabill is a multi-tenant workflow engine for managing vendor invoices through 
 
 The product has four primary surfaces:
 
-- **Bills inbox** — a triage view of all outstanding invoices, filterable by status, with overdue bills visually surfaced
-- **Vendor directory** — a record of suppliers with their contact info, bank details, and payment history
+- **Bills inbox** — a paginated triage view of all outstanding invoices, filterable by status and searchable, with overdue bills visually surfaced
+- **Vendor directory** — a paginated record of suppliers with their contact info, bank details, and payment history
 - **Dashboard** — a role-differentiated view of cash position (managers see org-wide totals; staff see their own submitted bills)
 - **Staff management** — manager-only page to invite teammates and manage who can submit bills in the workspace
 

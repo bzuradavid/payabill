@@ -23,7 +23,9 @@ export default function BillsLoading() {
         <Skeleton className="h-9 w-56 rounded-md" />
       </div>
 
-      <BillsTableSkeleton />
+      <div className="overflow-hidden rounded-2xl border border-[#ecebff] bg-white shadow-lg shadow-[#d3d1ff]/40">
+        <BillsTableSkeleton />
+      </div>
     </div>
   );
 }

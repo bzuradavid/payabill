@@ -161,9 +161,10 @@ describe("VendorService", () => {
         ],
       };
       (db.vendor.findMany as Mock).mockResolvedValue([vendorWithBills]);
+      (db.vendor.count as Mock).mockResolvedValue(1);
 
       const result = await manager.list();
-      expect(result[0]!.totalPaid).toBe(500);
+      expect(result.data[0]!.totalPaid).toBe(500);
     });
 
     it("applies search filter to name and email", async () => {

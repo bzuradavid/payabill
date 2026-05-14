@@ -920,7 +920,7 @@ const { billService, vendorService, glAccountService, staffService, ctx } =
           <Table
             headers={["Method", "Description"]}
             rows={[
-              ["list(filters?)", "Filter by status[], search string, sort"],
+              ["list(filters?)", "Filter by status[], search string, sort. Paginated: page (default 1), pageSize (default 20). Returns { data, total, page, pageSize, totalPages }."],
               ["getById(id)", "Includes vendor, lineItems.glAccount, payments"],
               ["create(data)", "Creates bill in DRAFT with nested line items"],
               ["update(id, data)", "Only allowed in DRAFT status"],
@@ -942,7 +942,7 @@ const { billService, vendorService, glAccountService, staffService, ctx } =
             rows={[
               [
                 "list(filters?)",
-                "Search by name/email; includes _count.bills and totalPaid aggregate",
+                "Search by name/email; includes _count.bills and totalPaid aggregate. Paginated: page (default 1), pageSize (default 20). Returns { data, total, page, pageSize, totalPages }.",
               ],
               ["getById(id)", "Includes bills"],
               ["create(data)", ""],

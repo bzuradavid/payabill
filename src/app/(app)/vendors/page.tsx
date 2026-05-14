@@ -7,11 +7,22 @@ import { Button } from "~/components/ui/Button";
 import { Badge } from "~/components/ui/Badge";
 import { EmptyState } from "~/components/ui/EmptyState";
 import { formatCurrency } from "~/lib/utils";
+import { Pagination } from "~/components/ui/Pagination";
 
-export default async function VendorsPage() {
+const DEFAULT_PAGE_SIZE = 20;
+
+interface VendorsPageProps {
+  searchParams: Promise<{ page?: string; pageSize?: string }>;
+}
+
+export default async function VendorsPage({ searchParams }: VendorsPageProps) {
   await requireManagerContext();
+  const params = await searchParams;
+  const page = Math.max(1, parseInt(params.page ?? "1", 10) || 1);
+  const pageSize = Math.max(1, parseInt(params.pageSize ?? String(DEFAULT_PAGE_SIZE), 10) || DEFAULT_PAGE_SIZE);
+
   const { vendorService } = await getServices();
-  const vendors = await vendorService.list();
+  const { data: vendors, total, totalPages } = await vendorService.list({ page, pageSize });
 
   return (
     <div className="flex flex-col gap-6 p-4 sm:p-6 lg:p-8">
@@ -20,7 +31,7 @@ export default async function VendorsPage() {
         <div>
           <h1 className="text-xl font-bold text-[#1a174f]">Vendors</h1>
           <p className="mt-0.5 text-sm text-slate-500">
-            {vendors.length} vendor{vendors.length !== 1 ? "s" : ""}
+            {total} vendor{total !== 1 ? "s" : ""}
           </p>
         </div>
         <Link href="/vendors/new">
@@ -52,61 +63,71 @@ export default async function VendorsPage() {
             }
           />
         ) : (
-          <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-[#ecebff] bg-brand-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
-                <th className="px-6 py-3">Vendor</th>
-                <th className="px-6 py-3">Contact</th>
-                <th className="px-6 py-3">Payment Method</th>
-                <th className="px-6 py-3 text-right">Active Bills</th>
-                <th className="px-6 py-3 text-right">Total Paid</th>
-                <th className="px-6 py-3">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {vendors.map((vendor) => (
-                <tr
-                  key={vendor.id}
-                  className="border-b border-[#ecebff] last:border-0 transition-colors hover:bg-brand-50"
-                >
-                  <td className="px-6 py-3.5">
-                    <Link
-                      href={`/vendors/${vendor.id}`}
-                      className="font-medium text-[#1a174f] hover:text-[#312D97]"
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-[#ecebff] bg-brand-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
+                    <th className="px-6 py-3">Vendor</th>
+                    <th className="px-6 py-3">Contact</th>
+                    <th className="px-6 py-3">Payment Method</th>
+                    <th className="px-6 py-3 text-right">Active Bills</th>
+                    <th className="px-6 py-3 text-right">Total Paid</th>
+                    <th className="px-6 py-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {vendors.map((vendor) => (
+                    <tr
+                      key={vendor.id}
+                      className="border-b border-[#ecebff] last:border-0 transition-colors hover:bg-brand-50"
                     >
-                      {vendor.name}
-                    </Link>
-                    {vendor.website && (
-                      <p className="text-xs text-slate-400">
-                        {vendor.website.replace(/^https?:\/\//, "")}
-                      </p>
-                    )}
-                  </td>
-                  <td className="px-6 py-3.5 text-slate-500">
-                    {vendor.email ?? <span className="text-slate-300">—</span>}
-                  </td>
-                  <td className="px-6 py-3.5 text-slate-500">
-                    {vendor.defaultPaymentMethod}
-                  </td>
-                  <td className="px-6 py-3.5 text-right text-slate-900">
-                    {vendor.activeBillCount}
-                  </td>
-                  <td className="px-6 py-3.5 text-right font-medium text-slate-900">
-                    {formatCurrency(vendor.totalPaid)}
-                  </td>
-                  <td className="px-6 py-3.5">
-                    <Badge
-                      variant={vendor.status === "ACTIVE" ? "emerald" : "gray"}
-                    >
-                      {vendor.status === "ACTIVE" ? "Active" : "Inactive"}
-                    </Badge>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          </div>
+                      <td className="px-6 py-3.5">
+                        <Link
+                          href={`/vendors/${vendor.id}`}
+                          className="font-medium text-[#1a174f] hover:text-[#312D97]"
+                        >
+                          {vendor.name}
+                        </Link>
+                        {vendor.website && (
+                          <p className="text-xs text-slate-400">
+                            {vendor.website.replace(/^https?:\/\//, "")}
+                          </p>
+                        )}
+                      </td>
+                      <td className="px-6 py-3.5 text-slate-500">
+                        {vendor.email ?? <span className="text-slate-300">—</span>}
+                      </td>
+                      <td className="px-6 py-3.5 text-slate-500">
+                        {vendor.defaultPaymentMethod}
+                      </td>
+                      <td className="px-6 py-3.5 text-right text-slate-900">
+                        {vendor.activeBillCount}
+                      </td>
+                      <td className="px-6 py-3.5 text-right font-medium text-slate-900">
+                        {formatCurrency(vendor.totalPaid)}
+                      </td>
+                      <td className="px-6 py-3.5">
+                        <Badge
+                          variant={vendor.status === "ACTIVE" ? "emerald" : "gray"}
+                        >
+                          {vendor.status === "ACTIVE" ? "Active" : "Inactive"}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              pageSize={pageSize}
+              total={total}
+              basePath="/vendors"
+              defaultPageSize={DEFAULT_PAGE_SIZE}
+            />
+          </>
         )}
       </div>
     </div>

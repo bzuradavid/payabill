@@ -19,24 +19,27 @@ const STATUS_TABS: { label: string; value: BillStatus | "ALL" }[] = [
   { label: "Paid", value: "PAID" },
 ];
 
+const DEFAULT_PAGE_SIZE = 10;
+
 interface BillsPageProps {
-  searchParams: Promise<{ status?: string; q?: string }>;
+  searchParams: Promise<{ status?: string; q?: string; page?: string; pageSize?: string }>;
 }
 
 export default async function BillsPage({ searchParams }: BillsPageProps) {
   const params = await searchParams;
   const activeStatus = (params.status as BillStatus | "ALL") ?? "ALL";
   const search = params.q ?? "";
+  const page = Math.max(1, parseInt(params.page ?? "1", 10) || 1);
+  const pageSize = Math.max(1, parseInt(params.pageSize ?? String(DEFAULT_PAGE_SIZE), 10) || DEFAULT_PAGE_SIZE);
 
   const { billService } = await getServices();
-  const bills = await billService.list({
-    statuses:
-      activeStatus === "ALL"
-        ? undefined
-        : [activeStatus],
-    search: search ? search : undefined,
+  const { data: bills, total, totalPages } = await billService.list({
+    statuses: activeStatus === "ALL" ? undefined : [activeStatus],
+    search: search || undefined,
     sortBy: "dueDate",
     sortDir: "asc",
+    page,
+    pageSize,
   });
 
   return (
@@ -46,7 +49,7 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
         <div>
           <h1 className="text-xl font-bold text-[#1a174f]">Bills</h1>
           <p className="mt-0.5 text-sm text-slate-500">
-            {bills.length} bill{bills.length !== 1 ? "s" : ""}
+            {total} bill{total !== 1 ? "s" : ""}
             {activeStatus !== "ALL" ? ` · ${activeStatus.toLowerCase().replace("_", " ")}` : ""}
           </p>
         </div>
@@ -60,33 +63,39 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
         </Link>
       </div>
 
-      {/* Filter bar wraps the table so it can swap in a skeleton while a navigation transition is pending. */}
-      <BillsFilterBar tabs={STATUS_TABS} activeStatus={activeStatus} search={search}>
-        <div className="overflow-hidden rounded-2xl border border-[#ecebff] bg-white shadow-lg shadow-[#d3d1ff]/40">
-          {bills.length === 0 ? (
-            <EmptyState
-              title="No bills found"
-              description={
-                search
-                  ? `No bills matching "${search}"`
-                  : "Get started by creating your first bill."
-              }
-              action={
-                !search && (
-                  <Link href="/bills/new">
-                    <Button variant="primary" size="sm">New Bill</Button>
-                  </Link>
-                )
-              }
-              icon={
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              }
-            />
-          ) : (
-            <div className="overflow-x-auto">
+      <BillsFilterBar
+        tabs={STATUS_TABS}
+        activeStatus={activeStatus}
+        search={search}
+        page={page}
+        totalPages={totalPages}
+        pageSize={pageSize}
+        total={total}
+      >
+        {bills.length === 0 ? (
+          <EmptyState
+            title="No bills found"
+            description={
+              search
+                ? `No bills matching "${search}"`
+                : "Get started by creating your first bill."
+            }
+            action={
+              !search && (
+                <Link href="/bills/new">
+                  <Button variant="primary" size="sm">New Bill</Button>
+                </Link>
+              )
+            }
+            icon={
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            }
+          />
+        ) : (
+          <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[#ecebff] bg-brand-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
@@ -146,9 +155,8 @@ export default async function BillsPage({ searchParams }: BillsPageProps) {
                 })}
               </tbody>
             </table>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </BillsFilterBar>
     </div>
   );

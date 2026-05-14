@@ -67,9 +67,10 @@ describe("BillService", () => {
         ],
       });
       (db.bill.findMany as Mock).mockResolvedValue([bill]);
+      (db.bill.count as Mock).mockResolvedValue(1);
 
       const result = await manager.list();
-      expect(result[0]!.totalAmount).toBe(350);
+      expect(result.data[0]!.totalAmount).toBe(350);
     });
 
     it("applies status filter", async () => {

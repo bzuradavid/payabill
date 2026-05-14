@@ -2,8 +2,7 @@ import { Skeleton } from "~/components/ui/Skeleton";
 
 export function BillsTableSkeleton({ rows = 8 }: { rows?: number }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-[#ecebff] bg-white shadow-lg shadow-[#d3d1ff]/40">
-      <div className="overflow-x-auto">
+    <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[#ecebff] bg-brand-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
@@ -42,7 +41,6 @@ export function BillsTableSkeleton({ rows = 8 }: { rows?: number }) {
             ))}
           </tbody>
         </table>
-      </div>
     </div>
   );
 }

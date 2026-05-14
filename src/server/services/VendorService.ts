@@ -1,5 +1,6 @@
 import {
   type PrismaClient,
+  type Prisma,
   type VendorStatus,
   type PaymentMethod,
   BillStatus,
@@ -29,6 +30,8 @@ export type UpdateVendorInput = Partial<CreateVendorInput>;
 export interface VendorListFilters {
   search?: string;
   status?: VendorStatus;
+  page?: number;
+  pageSize?: number;
 }
 
 export interface CreateInlineVendorInput {
@@ -50,58 +53,74 @@ export class VendorService {
   }
 
   async list(filters: VendorListFilters = {}) {
-    const vendors = await this.db.vendor.findMany({
-      where: {
-        organizationId: this.ctx.organizationId,
-        status: filters.status,
-        ...(filters.search
-          ? {
-              OR: [
-                { name: { contains: filters.search, mode: "insensitive" } },
-                { email: { contains: filters.search, mode: "insensitive" } },
-              ],
-            }
-          : {}),
-      },
-      include: {
-        _count: {
-          select: {
-            bills: {
-              where: {
-                status: {
-                  notIn: [BillStatus.VOID, BillStatus.REJECTED],
+    const page = Math.max(1, filters.page ?? 1);
+    const pageSize = Math.max(1, filters.pageSize ?? 20);
+
+    const where: Prisma.VendorWhereInput = {
+      organizationId: this.ctx.organizationId,
+      status: filters.status,
+      ...(filters.search
+        ? {
+            OR: [
+              { name: { contains: filters.search, mode: "insensitive" } },
+              { email: { contains: filters.search, mode: "insensitive" } },
+            ],
+          }
+        : {}),
+    };
+
+    const [vendors, total] = await Promise.all([
+      this.db.vendor.findMany({
+        where,
+        include: {
+          _count: {
+            select: {
+              bills: {
+                where: {
+                  status: {
+                    notIn: [BillStatus.VOID, BillStatus.REJECTED],
+                  },
                 },
               },
             },
           },
+          bills: {
+            where: { status: BillStatus.PAID },
+            include: { lineItems: true },
+          },
         },
-        bills: {
-          where: { status: BillStatus.PAID },
-          include: { lineItems: true },
-        },
-      },
-      orderBy: { name: "asc" },
-    });
+        orderBy: { name: "asc" },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      this.db.vendor.count({ where }),
+    ]);
 
-    return vendors.map((v) => {
-      const totalPaid = v.bills.reduce(
-        (sum, bill) =>
-          sum + bill.lineItems.reduce((s, li) => s + li.amount, 0),
-        0,
-      );
-      return {
-        id: v.id,
-        name: v.name,
-        email: v.email,
-        phone: v.phone,
-        website: v.website,
-        defaultPaymentMethod: v.defaultPaymentMethod,
-        status: v.status,
-        activeBillCount: v._count.bills,
-        totalPaid,
-        createdAt: v.createdAt,
-      };
-    });
+    return {
+      data: vendors.map((v) => {
+        const totalPaid = v.bills.reduce(
+          (sum, bill) =>
+            sum + bill.lineItems.reduce((s, li) => s + li.amount, 0),
+          0,
+        );
+        return {
+          id: v.id,
+          name: v.name,
+          email: v.email,
+          phone: v.phone,
+          website: v.website,
+          defaultPaymentMethod: v.defaultPaymentMethod,
+          status: v.status,
+          activeBillCount: v._count.bills,
+          totalPaid,
+          createdAt: v.createdAt,
+        };
+      }),
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize) || 1,
+    };
   }
 
   /** Lightweight list for vendor pickers — active org vendors only, sorted by name. */

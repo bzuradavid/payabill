@@ -3,7 +3,7 @@ import { type NextRequest, NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 const docs = {
-  version: "1.2.0",
+  version: "1.3.0",
   name: "Payabill AP",
   description:
     "Accounts payable workflow engine. Moves vendor invoices from receipt through approval to payment. Built with Next.js 15 App Router, Prisma, PostgreSQL, and NextAuth v5. Multi-tenant: each Organization is a workspace with MANAGER and STAFF roles.",
@@ -124,7 +124,7 @@ const docs = {
       group: "(app)",
       auth: "required",
       description:
-        "Bills inbox. Filter by status, search by vendor name or invoice number. Org-scoped; STAFF see only their own bills.",
+        "Bills inbox. Filter by status, search by vendor name or invoice number. Paginated (20 per page, ?page=N). Org-scoped; STAFF see only their own bills.",
       file: "src/app/(app)/bills/page.tsx",
     },
     {
@@ -162,7 +162,7 @@ const docs = {
       type: "page",
       group: "(app)",
       auth: "required",
-      description: "Vendor directory with bill-count aggregates. Org-scoped.",
+      description: "Vendor directory with bill-count aggregates. Paginated (20 per page, ?page=N). MANAGER only. Org-scoped.",
       file: "src/app/(app)/vendors/page.tsx",
     },
     {
@@ -547,7 +547,7 @@ const docs = {
       scoping:
         "Constructor takes (db, ctx: UserContext). Filters by organizationId. STAFF users additionally filtered to createdById === userId.",
       methods: [
-        { name: "list(filters?)", description: "Org-scoped (+ STAFF: own bills). Filter by status[], search, sort." },
+        { name: "list(filters?)", description: "Org-scoped (+ STAFF: own bills). Filter by status[], search, sort. Accepts page (default 1) and pageSize (default 20). Returns { data, total, page, pageSize, totalPages }." },
         { name: "getById(id)", description: "Returns null if bill belongs to another org." },
         { name: "create(data)", description: "Validates vendor belongs to org. Creates bill in DRAFT." },
         { name: "update(id, data)", description: "Only allowed when status === DRAFT." },
@@ -565,7 +565,7 @@ const docs = {
       factory: "src/server/container.ts → getServices()",
       scoping: "Filters by organizationId.",
       methods: [
-        { name: "list(filters?)", description: "Org-scoped. Search by name/email; includes _count.bills and totalPaid." },
+        { name: "list(filters?)", description: "Org-scoped. Search by name/email; includes _count.bills and totalPaid. Accepts page (default 1) and pageSize (default 20). Returns { data, total, page, pageSize, totalPages }." },
         { name: "getById(id)", description: "Returns null if vendor belongs to another org." },
         { name: "create(data)", description: "Creates a vendor owned by the current org." },
         { name: "update(id, data)", description: "Partial updates; rejects vendors from another org." },

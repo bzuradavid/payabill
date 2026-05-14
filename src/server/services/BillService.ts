@@ -1,5 +1,6 @@
 import {
   type PrismaClient,
+  type Prisma,
   BillStatus,
   PaymentStatus,
   type PaymentMethod,
@@ -33,6 +34,16 @@ export interface BillListFilters {
   search?: string;
   sortBy?: "dueDate" | "amount" | "createdAt";
   sortDir?: "asc" | "desc";
+  page?: number;
+  pageSize?: number;
+}
+
+export interface PaginatedResult<T> {
+  data: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
 }
 
 const BILL_INCLUDE = {
@@ -64,45 +75,61 @@ export class BillService {
   }
 
   async list(filters: BillListFilters = {}) {
-    const bills = await this.db.bill.findMany({
-      where: {
-        ...this.scope(),
-        ...(filters.statuses?.length ? { status: { in: filters.statuses } } : {}),
-        ...(filters.search
-          ? {
-              OR: [
-                {
-                  vendor: {
-                    name: { contains: filters.search, mode: "insensitive" },
-                  },
-                },
-                {
-                  invoiceNumber: {
-                    contains: filters.search,
-                    mode: "insensitive",
-                  },
-                },
-              ],
-            }
-          : {}),
-      },
-      include: {
-        vendor: true,
-        lineItems: true,
-        payments: { orderBy: { createdAt: "desc" } },
-      },
-      orderBy:
-        filters.sortBy === "dueDate"
-          ? { dueDate: filters.sortDir ?? "asc" }
-          : filters.sortBy === "createdAt"
-            ? { createdAt: filters.sortDir ?? "desc" }
-            : { dueDate: filters.sortDir ?? "asc" },
-    });
+    const page = Math.max(1, filters.page ?? 1);
+    const pageSize = Math.max(1, filters.pageSize ?? 20);
 
-    return bills.map((b) => ({
-      ...b,
-      totalAmount: b.lineItems.reduce((s, li) => s + li.amount, 0),
-    }));
+    const where: Prisma.BillWhereInput = {
+      ...this.scope(),
+      ...(filters.statuses?.length ? { status: { in: filters.statuses } } : {}),
+      ...(filters.search
+        ? {
+            OR: [
+              {
+                vendor: {
+                  name: { contains: filters.search, mode: "insensitive" },
+                },
+              },
+              {
+                invoiceNumber: {
+                  contains: filters.search,
+                  mode: "insensitive",
+                },
+              },
+            ],
+          }
+        : {}),
+    };
+
+    const orderBy =
+      filters.sortBy === "createdAt"
+        ? { createdAt: filters.sortDir ?? ("desc" as const) }
+        : { dueDate: filters.sortDir ?? ("asc" as const) };
+
+    const [bills, total] = await Promise.all([
+      this.db.bill.findMany({
+        where,
+        include: {
+          vendor: true,
+          lineItems: true,
+          payments: { orderBy: { createdAt: "desc" } },
+        },
+        orderBy,
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      this.db.bill.count({ where }),
+    ]);
+
+    return {
+      data: bills.map((b) => ({
+        ...b,
+        totalAmount: b.lineItems.reduce((s, li) => s + li.amount, 0),
+      })),
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize) || 1,
+    };
   }
 
   async getById(id: string) {

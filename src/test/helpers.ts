@@ -35,6 +35,7 @@ export function makeMockDb() {
     bill: {
       findFirst: vi.fn(),
       findMany: vi.fn(),
+      count: vi.fn().mockResolvedValue(0),
       update: vi.fn(),
       create: vi.fn(),
     },
@@ -44,6 +45,7 @@ export function makeMockDb() {
     vendor: {
       findFirst: vi.fn(),
       findMany: vi.fn(),
+      count: vi.fn().mockResolvedValue(0),
       update: vi.fn(),
       create: vi.fn(),
     },
@@ -163,7 +165,7 @@ type Vendor = {
   bankRoutingNumber: string | null;
   bankAccountNumber: string | null;
   taxId: string | null;
-  status: "ACTIVE";
+  status: "ACTIVE" | "INACTIVE";
   createdAt: Date;
   updatedAt: Date;
 };
