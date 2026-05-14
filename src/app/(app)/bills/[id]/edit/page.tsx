@@ -19,7 +19,7 @@ export default async function EditBillPage({ params }: EditBillPageProps) {
   ]);
 
   if (!bill) notFound();
-  if (bill.status !== "DRAFT") redirect(`/bills/${id}`);
+  if (bill.status !== "DRAFT" && bill.status !== "REJECTED") redirect(`/bills/${id}`);
 
   const n2u = <T,>(v: T | null): T | undefined => v ?? undefined;
 

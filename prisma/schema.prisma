@@ -72,20 +72,21 @@ model Invitation {
 }
 
 model User {
-    id             String        @id @default(cuid())
-    name           String?
-    email          String?       @unique
-    emailVerified  DateTime?
-    image          String?
-    passwordHash   String?
-    organizationId String?
-    organization   Organization? @relation(fields: [organizationId], references: [id])
-    role           UserRole      @default(STAFF)
-    accounts       Account[]
-    sessions       Session[]
-    createdBills   Bill[]
-    createdAt      DateTime      @default(now())
-    updatedAt      DateTime      @updatedAt
+    id              String               @id @default(cuid())
+    name            String?
+    email           String?              @unique
+    emailVerified   DateTime?
+    image           String?
+    passwordHash    String?
+    organizationId  String?
+    organization    Organization?        @relation(fields: [organizationId], references: [id])
+    role            UserRole             @default(STAFF)
+    accounts        Account[]
+    sessions        Session[]
+    createdBills    Bill[]
+    statusHistories BillStatusHistory[]
+    createdAt       DateTime             @default(now())
+    updatedAt       DateTime             @updatedAt
 
     @@index([organizationId])
 }
@@ -189,6 +190,7 @@ model Bill {
     paidAt          DateTime?
     lineItems       BillLineItem[]
     payments        Payment[]
+    statusHistory   BillStatusHistory[]
     createdAt       DateTime       @default(now())
     updatedAt       DateTime       @updatedAt
 
@@ -225,4 +227,19 @@ model Payment {
     memo          String?
     createdAt     DateTime      @default(now())
     updatedAt     DateTime      @updatedAt
+}
+
+model BillStatusHistory {
+    id          String      @id @default(cuid())
+    billId      String
+    bill        Bill        @relation(fields: [billId], references: [id], onDelete: Cascade)
+    fromStatus  BillStatus?
+    toStatus    BillStatus
+    changedById String?
+    changedBy   User?       @relation(fields: [changedById], references: [id])
+    note        String?
+    createdAt   DateTime    @default(now())
+
+    @@index([billId])
+    @@index([createdAt])
 }

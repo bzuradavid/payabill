@@ -153,7 +153,7 @@ const docs = {
       type: "page",
       group: "(app)",
       auth: "required",
-      description: "Edit a draft bill. Redirects to /bills/[id] if bill is not in DRAFT status.",
+      description: "Edit a DRAFT or REJECTED bill. Redirects to /bills/[id] for any other status.",
       file: "src/app/(app)/bills/[id]/edit/page.tsx",
     },
     {
@@ -369,6 +369,20 @@ const docs = {
         { name: "memo", type: "String", required: false, description: "" },
       ],
     },
+    {
+      name: "BillStatusHistory",
+      description: "Immutable audit log. One row per bill status transition, written atomically inside the same $transaction as the bill update.",
+      file: "prisma/schema.prisma",
+      fields: [
+        { name: "id", type: "String (cuid)", required: true, description: "Primary key" },
+        { name: "billId", type: "String", required: true, description: "FK → Bill (cascade delete)" },
+        { name: "fromStatus", type: "BillStatus", required: false, description: "null for initial DRAFT creation" },
+        { name: "toStatus", type: "BillStatus", required: true, description: "" },
+        { name: "changedById", type: "String", required: false, description: "FK → User who made the transition" },
+        { name: "note", type: "String", required: false, description: "Rejection reason when toStatus = REJECTED" },
+        { name: "createdAt", type: "DateTime", required: true, description: "Indexed; ordered ascending in queries" },
+      ],
+    },
   ],
 
   enums: {
@@ -389,14 +403,15 @@ const docs = {
       { name: "APPROVED", description: "Approved, ready to schedule payment." },
       { name: "SCHEDULED", description: "Payment scheduled. Payment record exists." },
       { name: "PAID", description: "Payment completed. Terminal state." },
-      { name: "REJECTED", description: "Rejected during approval. Can be resubmitted." },
+      { name: "REJECTED", description: "Rejected during approval. Creator or manager can edit and resubmit — editing resets status to DRAFT and clears rejectionReason." },
       { name: "VOID", description: "Cancelled. Terminal state." },
     ],
     transitions: [
       { from: "DRAFT", to: "PENDING_APPROVAL", action: "submitBill()" },
       { from: "PENDING_APPROVAL", to: "APPROVED", action: "approveBill()" },
       { from: "PENDING_APPROVAL", to: "REJECTED", action: "rejectBill(id, reason)" },
-      { from: "REJECTED", to: "PENDING_APPROVAL", action: "submitBill()" },
+      { from: "REJECTED", to: "DRAFT", action: "updateBill() — clears rejectionReason, resets status to DRAFT" },
+      { from: "DRAFT", to: "PENDING_APPROVAL", action: "submitBill() — second submission after edit/resubmit cycle" },
       { from: "APPROVED", to: "SCHEDULED", action: "schedulePayment()" },
       { from: "SCHEDULED", to: "PAID", action: "markPaid()" },
       {
@@ -550,11 +565,12 @@ const docs = {
         { name: "list(filters?)", description: "Org-scoped (+ STAFF: own bills). Filter by status[], search, sort. Accepts page (default 1) and pageSize (default 20). Returns { data, total, page, pageSize, totalPages }." },
         { name: "getById(id)", description: "Returns null if bill belongs to another org." },
         { name: "create(data)", description: "Validates vendor belongs to org. Creates bill in DRAFT." },
-        { name: "update(id, data)", description: "Only allowed when status === DRAFT." },
+        { name: "update(id, data)", description: "Allowed when status is DRAFT or REJECTED. Editing a REJECTED bill resets status to DRAFT and clears rejectionReason." },
         {
           name: "submit / approve / reject / schedulePayment / markPaid / void",
-          description: "State transitions with pre-condition checks. approve/reject/schedule/pay/void require MANAGER role.",
+          description: "State transitions with pre-condition checks. approve/reject/schedule/pay/void require MANAGER role. Each writes a BillStatusHistory row inside the same $transaction.",
         },
+        { name: "logTransition() (private)", description: "Writes a BillStatusHistory row. Accepts either a PrismaClient or a transaction client so it can be called atomically." },
         { name: "getDashboardStats()", description: "Org-wide aggregates: totalPayable, overdue, dueSoon, paidThisMonth." },
         { name: "getRecentBills(limit)", description: "Most recent N bills in the org (STAFF: own bills only)." },
       ],

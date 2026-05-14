@@ -46,6 +46,11 @@ export interface PaginatedResult<T> {
   totalPages: number;
 }
 
+type TxClient = Omit<
+  PrismaClient,
+  "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
+>;
+
 const BILL_INCLUDE = {
   vendor: true,
   lineItems: {
@@ -53,6 +58,10 @@ const BILL_INCLUDE = {
     orderBy: { createdAt: "asc" as const },
   },
   payments: { orderBy: { createdAt: "desc" as const } },
+  statusHistory: {
+    include: { changedBy: { select: { name: true, email: true } } },
+    orderBy: { createdAt: "asc" as const },
+  },
 } as const;
 
 export class BillService {
@@ -72,6 +81,24 @@ export class BillService {
     if (this.ctx.role !== "MANAGER") {
       throw new Error("Forbidden: manager role required");
     }
+  }
+
+  private async logTransition(
+    tx: TxClient | PrismaClient,
+    billId: string,
+    fromStatus: BillStatus | null,
+    toStatus: BillStatus,
+    note?: string,
+  ) {
+    await tx.billStatusHistory.create({
+      data: {
+        billId,
+        fromStatus: fromStatus ?? undefined,
+        toStatus,
+        changedById: this.ctx.userId,
+        note,
+      },
+    });
   }
 
   async list(filters: BillListFilters = {}) {
@@ -152,15 +179,19 @@ export class BillService {
     if (!vendor) throw new Error("Vendor not found");
 
     const { lineItems, ...billData } = data;
-    return this.db.bill.create({
-      data: {
-        ...billData,
-        organizationId: this.ctx.organizationId,
-        createdById: this.ctx.userId,
-        status: BillStatus.DRAFT,
-        lineItems: { create: lineItems },
-      },
-      include: BILL_INCLUDE,
+    return this.db.$transaction(async (tx) => {
+      const bill = await tx.bill.create({
+        data: {
+          ...billData,
+          organizationId: this.ctx.organizationId,
+          createdById: this.ctx.userId,
+          status: BillStatus.DRAFT,
+          lineItems: { create: lineItems },
+        },
+        include: BILL_INCLUDE,
+      });
+      await this.logTransition(tx, bill.id, null, BillStatus.DRAFT);
+      return bill;
     });
   }
 
@@ -169,22 +200,31 @@ export class BillService {
       where: { id, ...this.scope() },
     });
     if (!bill) throw new Error("Bill not found");
-    if (bill.status !== BillStatus.DRAFT) {
-      throw new Error("Only draft bills can be edited");
+    if (bill.status !== BillStatus.DRAFT && bill.status !== BillStatus.REJECTED) {
+      throw new Error("Only draft or rejected bills can be edited");
     }
 
+    const isRejected = bill.status === BillStatus.REJECTED;
     const { lineItems, ...billData } = data;
+
     if (lineItems) {
       await this.db.billLineItem.deleteMany({ where: { billId: id } });
     }
 
-    return this.db.bill.update({
-      where: { id },
-      data: {
-        ...billData,
-        ...(lineItems ? { lineItems: { create: lineItems } } : {}),
-      },
-      include: BILL_INCLUDE,
+    return this.db.$transaction(async (tx) => {
+      const updated = await tx.bill.update({
+        where: { id },
+        data: {
+          ...billData,
+          ...(isRejected ? { status: BillStatus.DRAFT, rejectionReason: null } : {}),
+          ...(lineItems ? { lineItems: { create: lineItems } } : {}),
+        },
+        include: BILL_INCLUDE,
+      });
+      if (isRejected) {
+        await this.logTransition(tx, id, BillStatus.REJECTED, BillStatus.DRAFT);
+      }
+      return updated;
     });
   }
 
@@ -200,10 +240,14 @@ export class BillService {
     if (bill.lineItems.length === 0) {
       throw new Error("Bill must have at least one line item");
     }
-    return this.db.bill.update({
-      where: { id },
-      data: { status: BillStatus.PENDING_APPROVAL, submittedAt: new Date() },
-      include: BILL_INCLUDE,
+    return this.db.$transaction(async (tx) => {
+      const updated = await tx.bill.update({
+        where: { id },
+        data: { status: BillStatus.PENDING_APPROVAL, submittedAt: new Date() },
+        include: BILL_INCLUDE,
+      });
+      await this.logTransition(tx, id, BillStatus.DRAFT, BillStatus.PENDING_APPROVAL);
+      return updated;
     });
   }
 
@@ -216,10 +260,14 @@ export class BillService {
     if (bill.status !== BillStatus.PENDING_APPROVAL) {
       throw new Error("Only pending bills can be approved");
     }
-    return this.db.bill.update({
-      where: { id },
-      data: { status: BillStatus.APPROVED, approvedAt: new Date() },
-      include: BILL_INCLUDE,
+    return this.db.$transaction(async (tx) => {
+      const updated = await tx.bill.update({
+        where: { id },
+        data: { status: BillStatus.APPROVED, approvedAt: new Date() },
+        include: BILL_INCLUDE,
+      });
+      await this.logTransition(tx, id, BillStatus.PENDING_APPROVAL, BillStatus.APPROVED);
+      return updated;
     });
   }
 
@@ -232,13 +280,14 @@ export class BillService {
     if (bill.status !== BillStatus.PENDING_APPROVAL) {
       throw new Error("Only pending bills can be rejected");
     }
-    return this.db.bill.update({
-      where: { id },
-      data: {
-        status: BillStatus.REJECTED,
-        rejectionReason: reason,
-      },
-      include: BILL_INCLUDE,
+    return this.db.$transaction(async (tx) => {
+      const updated = await tx.bill.update({
+        where: { id },
+        data: { status: BillStatus.REJECTED, rejectionReason: reason },
+        include: BILL_INCLUDE,
+      });
+      await this.logTransition(tx, id, BillStatus.PENDING_APPROVAL, BillStatus.REJECTED, reason);
+      return updated;
     });
   }
 
@@ -270,6 +319,7 @@ export class BillService {
           scheduledDate,
         },
       });
+      await this.logTransition(tx, id, BillStatus.APPROVED, BillStatus.SCHEDULED);
       return updated;
     });
   }
@@ -292,17 +342,16 @@ export class BillService {
       if (pendingPayment) {
         await tx.payment.update({
           where: { id: pendingPayment.id },
-          data: {
-            status: PaymentStatus.COMPLETED,
-            processedDate: new Date(),
-          },
+          data: { status: PaymentStatus.COMPLETED, processedDate: new Date() },
         });
       }
-      return tx.bill.update({
+      const updated = await tx.bill.update({
         where: { id },
         data: { status: BillStatus.PAID, paidAt: new Date() },
         include: BILL_INCLUDE,
       });
+      await this.logTransition(tx, id, BillStatus.SCHEDULED, BillStatus.PAID);
+      return updated;
     });
   }
 
@@ -315,10 +364,14 @@ export class BillService {
     if (bill.status === BillStatus.PAID) {
       throw new Error("Paid bills cannot be voided");
     }
-    return this.db.bill.update({
-      where: { id },
-      data: { status: BillStatus.VOID },
-      include: BILL_INCLUDE,
+    return this.db.$transaction(async (tx) => {
+      const updated = await tx.bill.update({
+        where: { id },
+        data: { status: BillStatus.VOID },
+        include: BILL_INCLUDE,
+      });
+      await this.logTransition(tx, id, bill.status, BillStatus.VOID);
+      return updated;
     });
   }
 

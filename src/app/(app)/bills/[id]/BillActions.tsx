@@ -65,6 +65,14 @@ export function BillActions({ bill, role, userId }: BillActionsProps) {
     );
   }
 
+  if (bill.status === "REJECTED" && (isManager || isCreator)) {
+    actions.push(
+      <Link key="edit-rejected" href={`/bills/${bill.id}/edit`} className="w-full">
+        <Button variant="secondary" className="w-full">Edit &amp; Resubmit</Button>
+      </Link>,
+    );
+  }
+
   if (bill.status === "PENDING_APPROVAL" && isManager) {
     actions.push(
       <Button

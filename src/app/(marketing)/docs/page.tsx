@@ -621,6 +621,24 @@ private scope() {
             ]}
           />
 
+          <SubHeading>BillStatusHistory</SubHeading>
+          <Prose>
+            Immutable audit log. One row per bill status transition, written
+            inside the same <Code>$transaction</Code> as the bill update.
+          </Prose>
+          <Table
+            headers={["Field", "Type", "Notes"]}
+            rows={[
+              ["id", "String (cuid)", "Primary key"],
+              ["billId", "String", "FK → Bill (cascade delete)"],
+              ["fromStatus", "BillStatus?", "null for the initial DRAFT creation"],
+              ["toStatus", "BillStatus", ""],
+              ["changedById", "String?", "FK → User who made the transition"],
+              ["note", "String?", "Rejection reason when toStatus = REJECTED"],
+              ["createdAt", "DateTime", "Indexed; ordered ascending in queries"],
+            ]}
+          />
+
           <SubHeading>NextAuth models</SubHeading>
           <Prose>
             <Code>Account</Code>, <Code>Session</Code>, and{" "}
@@ -697,6 +715,12 @@ private scope() {
                 "REJECTED",
                 "rejectBill(id, reason)",
               ],
+              [
+                "Edit & resubmit",
+                "REJECTED",
+                "DRAFT",
+                "updateBill() — clears rejectionReason, resets to DRAFT",
+              ],
               ["Schedule", "APPROVED", "SCHEDULED", "schedulePayment()"],
               ["Mark paid", "SCHEDULED", "PAID", "markPaid()"],
               ["Void", "Any except PAID", "VOID", "voidBill()"],
@@ -753,7 +777,7 @@ private scope() {
                 "/bills/[id]/edit",
                 "(app)",
                 "app/(app)/bills/[id]/edit/page.tsx",
-                "Edit a draft bill. Redirects to /bills/[id] if bill is not in DRAFT status.",
+                "Edit a DRAFT or REJECTED bill. Redirects to /bills/[id] for any other status.",
               ],
               [
                 "/vendors",
@@ -923,11 +947,12 @@ const { billService, vendorService, glAccountService, staffService, ctx } =
               ["list(filters?)", "Filter by status[], search string, sort. Paginated: page (default 1), pageSize (default 20). Returns { data, total, page, pageSize, totalPages }."],
               ["getById(id)", "Includes vendor, lineItems.glAccount, payments"],
               ["create(data)", "Creates bill in DRAFT with nested line items"],
-              ["update(id, data)", "Only allowed in DRAFT status"],
+              ["update(id, data)", "Allowed for DRAFT and REJECTED. Editing a REJECTED bill resets it to DRAFT and clears rejectionReason."],
               [
                 "submit / approve / reject / schedulePayment / markPaid / void",
-                "State transitions with pre-condition validation",
+                "State transitions with pre-condition validation; each logs a BillStatusHistory row",
               ],
+              ["logTransition() (private)", "Writes a BillStatusHistory row inside the active $transaction for every status change"],
               [
                 "getDashboardStats()",
                 "Aggregates: totalPayable, overdue count/amount, dueSoon, paidThisMonth",

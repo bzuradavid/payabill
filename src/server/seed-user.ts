@@ -19,6 +19,11 @@ const daysFromNow = (n: number) => {
   d.setHours(0, 0, 0, 0);
   return d;
 };
+const addDays = (d: Date, n: number): Date => {
+  const r = new Date(d);
+  r.setDate(r.getDate() + n);
+  return r;
+};
 
 /**
  * Seed a complete demo dataset for one organization.
@@ -569,16 +574,51 @@ export async function seedOrganization(
   for (const b of billsToCreate) {
     const { lineItems, payment, ...rest } = b;
     const bill = await db.bill.create({
-      data: {
-        ...rest,
-        organizationId,
-        lineItems: { create: lineItems },
-      },
+      data: { ...rest, organizationId, lineItems: { create: lineItems } },
     });
     if (payment) {
-      await db.payment.create({
-        data: { ...payment, billId: bill.id },
-      });
+      await db.payment.create({ data: { ...payment, billId: bill.id } });
+    }
+
+    // Seed status history entries that mirror this bill's lifecycle
+    type H = {
+      fromStatus?: BillStatus;
+      toStatus: BillStatus;
+      changedById: string;
+      note?: string;
+      createdAt: Date;
+    };
+    const hist: H[] = [];
+
+    const draftAt = b.submittedAt ? addDays(b.submittedAt, -1) : b.invoiceDate;
+    hist.push({ toStatus: BillStatus.DRAFT, changedById: b.createdById, createdAt: draftAt });
+
+    if (b.submittedAt) {
+      hist.push({ fromStatus: BillStatus.DRAFT, toStatus: BillStatus.PENDING_APPROVAL, changedById: b.createdById, createdAt: b.submittedAt });
+    }
+
+    if (b.status === BillStatus.REJECTED && b.submittedAt) {
+      hist.push({ fromStatus: BillStatus.PENDING_APPROVAL, toStatus: BillStatus.REJECTED, changedById: M, note: b.rejectionReason, createdAt: addDays(b.submittedAt, 1) });
+    }
+
+    if (b.status === BillStatus.VOID && b.submittedAt) {
+      hist.push({ fromStatus: BillStatus.PENDING_APPROVAL, toStatus: BillStatus.VOID, changedById: M, createdAt: addDays(b.submittedAt, 1) });
+    }
+
+    if (b.approvedAt) {
+      hist.push({ fromStatus: BillStatus.PENDING_APPROVAL, toStatus: BillStatus.APPROVED, changedById: M, createdAt: b.approvedAt });
+    }
+
+    if (b.approvedAt && (b.status === BillStatus.SCHEDULED || b.status === BillStatus.PAID)) {
+      hist.push({ fromStatus: BillStatus.APPROVED, toStatus: BillStatus.SCHEDULED, changedById: M, createdAt: addDays(b.approvedAt, 1) });
+    }
+
+    if (b.paidAt) {
+      hist.push({ fromStatus: BillStatus.SCHEDULED, toStatus: BillStatus.PAID, changedById: M, createdAt: b.paidAt });
+    }
+
+    for (const h of hist) {
+      await db.billStatusHistory.create({ data: { billId: bill.id, ...h } });
     }
   }
 }

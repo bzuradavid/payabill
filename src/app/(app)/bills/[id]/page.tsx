@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader } from "~/components/ui/Card";
 import { BillStatusBadge } from "~/components/bills/BillStatusBadge";
 import { formatCurrency, formatDate } from "~/lib/utils";
 import { BillActions } from "./BillActions";
+import { BillStatusTimeline } from "~/components/bills/BillStatusTimeline";
 
 interface BillDetailPageProps {
   params: Promise<{ id: string }>;
@@ -276,6 +277,18 @@ export default async function BillDetailPage({ params }: BillDetailPageProps) {
               )}
             </CardContent>
           </Card>
+
+          {/* Status history */}
+          {bill.statusHistory.length > 0 && (
+            <Card>
+              <CardHeader>
+                <h2 className="text-sm font-semibold text-slate-900">History</h2>
+              </CardHeader>
+              <CardContent>
+                <BillStatusTimeline history={bill.statusHistory} />
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>
