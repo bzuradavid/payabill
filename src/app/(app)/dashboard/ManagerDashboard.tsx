@@ -50,24 +50,49 @@ export async function ManagerDashboard({
           value={formatCurrency(stats.totalPayable)}
           sub="Across all active bills"
           accent="indigo"
+          icon={
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="5" width="20" height="14" rx="2" />
+              <path d="M2 10h20" />
+            </svg>
+          }
         />
         <StatCard
           label="Due This Week"
           value={formatCurrency(stats.dueSoonAmount)}
           sub={`${stats.dueSoonCount} bill${stats.dueSoonCount !== 1 ? "s" : ""}`}
           accent="amber"
+          icon={
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <path d="M16 2v4M8 2v4M3 10h18" />
+              <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" />
+            </svg>
+          }
         />
         <StatCard
           label="Overdue"
           value={formatCurrency(stats.overdueAmount)}
           sub={`${stats.overdueCount} bill${stats.overdueCount !== 1 ? "s" : ""}`}
           accent="red"
+          icon={
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 7v5l3 3" />
+            </svg>
+          }
         />
         <StatCard
           label="Paid This Month"
           value={formatCurrency(stats.paidThisMonthAmount)}
           sub={`${stats.paidThisMonthCount} bill${stats.paidThisMonthCount !== 1 ? "s" : ""} processed`}
           accent="emerald"
+          icon={
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <path d="M22 4 12 14.01l-3-3" />
+            </svg>
+          }
         />
       </div>
 

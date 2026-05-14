@@ -5,46 +5,108 @@ interface StatCardProps {
   value: string;
   sub?: string;
   trend?: "up" | "down" | "neutral";
-  className?: string;
   accent?: "default" | "indigo" | "red" | "amber" | "emerald";
+  icon?: React.ReactNode;
+  className?: string;
 }
 
-const accentClasses: Record<NonNullable<StatCardProps["accent"]>, string> = {
-  default: "",
-  indigo: "border-l-2 border-l-indigo-300 bg-gradient-to-r from-indigo-50/30 via-white to-white",
-  red: "border-l-2 border-l-red-200 bg-gradient-to-r from-red-50/25 via-white to-white",
-  amber: "border-l-2 border-l-amber-200 bg-gradient-to-r from-amber-50/25 via-white to-white",
-  emerald: "border-l-2 border-l-emerald-200 bg-gradient-to-r from-emerald-50/25 via-white to-white",
-};
+type AccentKey = NonNullable<StatCardProps["accent"]>;
 
-const accentValueClasses: Record<NonNullable<StatCardProps["accent"]>, string> = {
-  default: "text-[#1a174f]",
-  indigo: "text-indigo-800",
-  red: "text-red-700",
-  amber: "text-amber-700",
-  emerald: "text-emerald-700",
+const configs: Record<
+  AccentKey,
+  { card: string; iconWrap: string; value: string; symbol: string }
+> = {
+  default: {
+    card: "bg-white border-slate-200",
+    iconWrap: "bg-slate-100 text-slate-500",
+    value: "text-slate-900",
+    symbol: "text-slate-400",
+  },
+  indigo: {
+    card: "bg-white border-[#ecebff]",
+    iconWrap: "bg-[#eceaff] text-[#312D97]",
+    value: "text-[#1a174f]",
+    symbol: "text-[#312D97]/50",
+  },
+  amber: {
+    card: "bg-white border-slate-200",
+    iconWrap: "bg-amber-100 text-amber-700",
+    value: "text-amber-900",
+    symbol: "text-amber-600/60",
+  },
+  red: {
+    card: "bg-white border-slate-200",
+    iconWrap: "bg-red-100 text-red-600",
+    value: "text-red-900",
+    symbol: "text-red-500/60",
+  },
+  emerald: {
+    card: "bg-white border-slate-200",
+    iconWrap: "bg-emerald-100 text-emerald-700",
+    value: "text-emerald-900",
+    symbol: "text-emerald-600/60",
+  },
 };
 
 export function StatCard({
   label,
   value,
   sub,
-  className,
   accent = "default",
+  icon,
+  className,
 }: StatCardProps) {
+  const config = configs[accent];
+  const isCurrency = value.startsWith("$");
+  const symbol = isCurrency ? value[0] : null;
+  const numericValue = isCurrency ? value.slice(1) : value;
+
   return (
     <div
       className={cn(
-        "rounded-2xl border border-[#ecebff] bg-white px-6 py-5 shadow-lg shadow-[#d3d1ff]/40 transition-shadow hover:shadow-xl hover:shadow-[#d3d1ff]/60",
-        accentClasses[accent],
+        "rounded-2xl border px-5 py-5 shadow-sm transition-shadow hover:shadow-md",
+        config.card,
         className,
       )}
     >
-      <p className="text-sm font-medium text-slate-500">{label}</p>
-      <p className={cn("mt-1 text-2xl font-semibold tracking-tight", accentValueClasses[accent])}>
-        {value}
-      </p>
-      {sub && <p className="mt-1 text-xs text-slate-400">{sub}</p>}
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500">
+          {label}
+        </p>
+        {icon && (
+          <span
+            className={cn(
+              "flex h-8 w-8 shrink-0 items-center justify-center rounded-xl",
+              config.iconWrap,
+            )}
+          >
+            {icon}
+          </span>
+        )}
+      </div>
+
+      <div className="mt-3 flex items-start gap-0.5">
+        {symbol && (
+          <span
+            className={cn(
+              "mt-1.5 text-sm font-semibold leading-none",
+              config.symbol,
+            )}
+          >
+            {symbol}
+          </span>
+        )}
+        <span
+          className={cn(
+            "text-[1.875rem] font-bold leading-none tracking-tight",
+            config.value,
+          )}
+        >
+          {numericValue}
+        </span>
+      </div>
+
+      {sub && <p className="mt-2.5 text-xs text-slate-400">{sub}</p>}
     </div>
   );
 }
