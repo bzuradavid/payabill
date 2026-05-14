@@ -128,9 +128,9 @@ function StatusPill({ label, color }: { label: string; color: string }) {
 
 export default function DocsPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="flex h-screen flex-col bg-white">
       {/* Top bar */}
-      <header className="sticky top-0 z-10 border-b border-slate-100 bg-white/80 backdrop-blur">
+      <header className="shrink-0 border-b border-slate-100 bg-white/80 backdrop-blur">
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 lg:px-8">
           <Link href="/" className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#312D97] shadow-md shadow-[#312D97]/30">
@@ -172,10 +172,9 @@ export default function DocsPage() {
         </nav>
       </header>
 
-      <div className="flex min-h-full">
-        {/* Sticky TOC */}
-        <aside className="hidden w-52 flex-shrink-0 xl:block">
-          <div className="sticky top-0 overflow-y-auto py-10 pr-4 pl-8">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
+        {/* Fixed TOC */}
+        <aside className="hidden w-52 shrink-0 overflow-y-auto py-10 pr-4 pl-8 xl:block">
             <p className="mb-4 text-[0.65rem] font-semibold tracking-widest text-slate-400 uppercase">
               On this page
             </p>
@@ -202,11 +201,10 @@ export default function DocsPage() {
                 GET /api/docs
               </a>
             </div>
-          </div>
         </aside>
 
         {/* Main content */}
-        <article className="min-w-0 flex-1 px-8 py-10 xl:pr-16">
+        <article className="min-w-0 flex-1 overflow-y-auto px-8 py-10 xl:pr-16">
           {/* Header */}
           <div className="mb-12">
             <div className="mb-3 flex items-center gap-2">
