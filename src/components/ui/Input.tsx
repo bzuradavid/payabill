@@ -23,7 +23,7 @@ export function Input({ label, error, hint, className, id, ...props }: InputProp
       <input
         id={inputId}
         className={cn(
-          "rounded-xl border px-3 py-2 text-sm text-[#1a174f] placeholder:text-slate-400 transition-colors focus:border-[#312D97] focus:ring-1 focus:ring-[#312D97] focus:outline-none disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500",
+          "rounded-xl border px-3 py-2 text-base text-[#1a174f] placeholder:text-slate-400 transition-colors focus:border-[#312D97] focus:ring-1 focus:ring-[#312D97] focus:outline-none disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500 sm:text-sm",
           error ? "border-red-400 bg-red-50" : "border-[#ecebff] bg-white",
           className,
         )}

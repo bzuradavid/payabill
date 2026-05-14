@@ -40,7 +40,7 @@ export function Select({
         <select
           id={selectId}
           className={cn(
-            "w-full appearance-none rounded-xl border py-2 pr-10 pl-3 text-sm text-[#1a174f] transition-colors focus:border-[#312D97] focus:ring-1 focus:ring-[#312D97] focus:outline-none disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500",
+            "w-full appearance-none rounded-xl border py-2 pr-10 pl-3 text-base text-[#1a174f] transition-colors focus:border-[#312D97] focus:ring-1 focus:ring-[#312D97] focus:outline-none disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500 sm:text-sm",
             error ? "border-red-400 bg-red-50" : "border-[#ecebff] bg-white",
             className,
           )}

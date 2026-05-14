@@ -169,7 +169,7 @@ export function BillActions({ bill, role, userId }: BillActionsProps) {
             onChange={(e) => setRejectionReason(e.target.value)}
             placeholder="e.g. Invoice exceeds approved budget. Please resubmit with updated approval."
             rows={4}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none sm:text-sm"
           />
           <div className="flex justify-end gap-3">
             <Button variant="secondary" onClick={() => setRejectModal(false)}>
@@ -209,7 +209,7 @@ export function BillActions({ bill, role, userId }: BillActionsProps) {
               value={scheduledDate}
               onChange={(e) => setScheduledDate(e.target.value)}
               min={new Date().toISOString().split("T")[0]}
-              className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+              className="rounded-lg border border-slate-300 px-3 py-2 text-base focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none sm:text-sm"
             />
           </div>
           <div className="flex justify-end gap-3">

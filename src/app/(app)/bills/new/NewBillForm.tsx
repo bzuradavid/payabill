@@ -256,7 +256,7 @@ export function NewBillForm({ vendors, glAccounts, bill }: NewBillFormProps) {
               placeholder="Notes about this bill (optional)"
               defaultValue={bill?.memo ?? ""}
               rows={2}
-              className="w-full rounded-xl border border-[#ecebff] px-3 py-2 text-sm text-[#1a174f] placeholder:text-slate-400 transition-colors focus:border-[#312D97] focus:ring-1 focus:ring-[#312D97] focus:outline-none"
+              className="w-full rounded-xl border border-[#ecebff] px-3 py-2 text-base text-[#1a174f] placeholder:text-slate-400 transition-colors focus:border-[#312D97] focus:ring-1 focus:ring-[#312D97] focus:outline-none sm:text-sm"
             />
           </div>
         </CardContent>
