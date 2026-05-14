@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "~/server/auth";
+import { SmoothScroll } from "~/components/marketing/SmoothScroll";
 
 export default async function LandingPage() {
   const session = await auth();
@@ -10,6 +11,7 @@ export default async function LandingPage() {
 
   return (
     <main className="relative overflow-hidden bg-white">
+      <SmoothScroll />
       {/* Decorative background */}
       <div
         aria-hidden
