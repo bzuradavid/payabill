@@ -148,6 +148,15 @@ const docs = {
       file: "src/app/(app)/bills/[id]/page.tsx",
     },
     {
+      path: "/bills/[id]/edit",
+      method: "GET",
+      type: "page",
+      group: "(app)",
+      auth: "required",
+      description: "Edit a draft bill. Redirects to /bills/[id] if bill is not in DRAFT status.",
+      file: "src/app/(app)/bills/[id]/edit/page.tsx",
+    },
+    {
       path: "/vendors",
       method: "GET",
       type: "page",
@@ -416,6 +425,12 @@ const docs = {
           input: "vendorId, invoiceNumber?, invoiceDate, dueDate, memo?, paymentMethod?, lineItems[]",
           returns: "ActionResult<{ id: string }>",
           description: "Creates a bill in DRAFT status for the current user.",
+        },
+        {
+          name: "updateBill",
+          input: "id, vendorId, invoiceNumber?, invoiceDate, dueDate, memo?, paymentMethod?, lineItems[]",
+          returns: "ActionResult",
+          description: "Updates a bill. Only allowed when status === DRAFT. Replaces all line items.",
         },
         {
           name: "submitBill",

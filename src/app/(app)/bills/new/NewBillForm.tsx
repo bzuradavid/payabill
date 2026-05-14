@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
-import { createBill } from "~/actions/bills";
+import { createBill, updateBill } from "~/actions/bills";
 import { LineItemsEditor, type LineItem } from "~/components/bills/LineItemsEditor";
 import { Button } from "~/components/ui/Button";
 import { Card, CardContent, CardHeader } from "~/components/ui/Card";
@@ -23,23 +23,47 @@ interface GLAccount {
   name: string;
 }
 
+interface BillData {
+  id: string;
+  vendorId: string;
+  invoiceNumber?: string;
+  invoiceDate: Date;
+  dueDate: Date;
+  paymentMethod?: string;
+  memo?: string;
+  lineItems: Array<{
+    id: string;
+    description: string;
+    quantity: number;
+    unitPrice: number;
+    amount: number;
+    glAccountId?: string;
+  }>;
+}
+
 interface NewBillFormProps {
   vendors: Vendor[];
   glAccounts: GLAccount[];
+  bill?: BillData;
 }
 
 const NEW_VENDOR_VALUE = "__new__";
 
-export function NewBillForm({ vendors, glAccounts }: NewBillFormProps) {
+const formatDateInput = (d: Date) => new Date(d).toISOString().split("T")[0]!;
+
+export function NewBillForm({ vendors, glAccounts, bill }: NewBillFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [submitMode, setSubmitMode] = useState<"draft" | "submit">("draft");
-  const [lineItems, setLineItems] = useState<LineItem[]>([]);
-  const [vendorChoice, setVendorChoice] = useState<string>("");
+  const [lineItems, setLineItems] = useState<LineItem[]>(
+    bill?.lineItems.map((li) => ({ ...li, glAccountId: li.glAccountId ?? "" })) ?? [],
+  );
+  const [vendorChoice, setVendorChoice] = useState<string>(bill?.vendorId ?? "");
   const [newVendorName, setNewVendorName] = useState("");
   const [newVendorEmail, setNewVendorEmail] = useState("");
   const [newVendorPaymentMethod, setNewVendorPaymentMethod] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<string>(bill?.paymentMethod ?? "");
 
   const today = new Date().toISOString().split("T")[0]!;
   const thirtyDaysFromNow = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
@@ -79,7 +103,7 @@ export function NewBillForm({ vendors, glAccounts }: NewBillFormProps) {
       invoiceNumber: data.invoiceNumber ? (data.invoiceNumber as string) : undefined,
       invoiceDate: data.invoiceDate as string,
       dueDate: data.dueDate as string,
-      paymentMethod: data.paymentMethod ? (data.paymentMethod as string) : undefined,
+      paymentMethod: paymentMethod || undefined,
       memo: data.memo ? (data.memo as string) : undefined,
       lineItems: lineItems.map(({ description, quantity, unitPrice, amount, glAccountId }) => ({
         description,
@@ -91,20 +115,34 @@ export function NewBillForm({ vendors, glAccounts }: NewBillFormProps) {
     };
 
     startTransition(async () => {
-      const result = await createBill(payload);
-      if (!result.success) {
-        setError(result.error);
-        return;
-      }
-
-      if (submitMode === "draft") {
-        router.push(`/bills/${result.data.id}`);
-      } else {
-        const { submitBill } = await import("~/actions/bills");
-        const submitResult = await submitBill(result.data.id);
-        if (!submitResult.success) {
-          setError(submitResult.error);
+      if (bill?.id) {
+        const result = await updateBill(bill.id, payload);
+        if (!result.success) {
+          setError(result.error);
           return;
+        }
+        if (submitMode === "submit") {
+          const { submitBill } = await import("~/actions/bills");
+          const submitResult = await submitBill(bill.id);
+          if (!submitResult.success) {
+            setError(submitResult.error);
+            return;
+          }
+        }
+        router.push(`/bills/${bill.id}`);
+      } else {
+        const result = await createBill(payload);
+        if (!result.success) {
+          setError(result.error);
+          return;
+        }
+        if (submitMode === "submit") {
+          const { submitBill } = await import("~/actions/bills");
+          const submitResult = await submitBill(result.data.id);
+          if (!submitResult.success) {
+            setError(submitResult.error);
+            return;
+          }
         }
         router.push(`/bills/${result.data.id}`);
       }
@@ -181,10 +219,13 @@ export function NewBillForm({ vendors, glAccounts }: NewBillFormProps) {
             name="invoiceNumber"
             label="Invoice Number"
             placeholder="INV-2025-001"
+            defaultValue={bill?.invoiceNumber ?? ""}
           />
           <Select
             name="paymentMethod"
             label="Payment Method"
+            value={paymentMethod}
+            onChange={(e) => setPaymentMethod(e.target.value)}
             options={[
               { value: "ACH", label: "ACH Transfer" },
               { value: "CHECK", label: "Check" },
@@ -196,14 +237,14 @@ export function NewBillForm({ vendors, glAccounts }: NewBillFormProps) {
             name="invoiceDate"
             label="Invoice Date"
             type="date"
-            defaultValue={today}
+            defaultValue={bill ? formatDateInput(bill.invoiceDate) : today}
             required
           />
           <Input
             name="dueDate"
             label="Due Date"
             type="date"
-            defaultValue={thirtyDaysFromNow}
+            defaultValue={bill ? formatDateInput(bill.dueDate) : thirtyDaysFromNow}
             required
           />
           <div className="col-span-2">
@@ -213,6 +254,7 @@ export function NewBillForm({ vendors, glAccounts }: NewBillFormProps) {
             <textarea
               name="memo"
               placeholder="Notes about this bill (optional)"
+              defaultValue={bill?.memo ?? ""}
               rows={2}
               className="w-full rounded-xl border border-[#ecebff] px-3 py-2 text-sm text-[#1a174f] placeholder:text-slate-400 transition-colors focus:border-[#312D97] focus:ring-1 focus:ring-[#312D97] focus:outline-none"
             />
@@ -231,7 +273,13 @@ export function NewBillForm({ vendors, glAccounts }: NewBillFormProps) {
           )}
         </CardHeader>
         <CardContent>
-          <LineItemsEditor glAccounts={glAccounts} onChange={setLineItems} />
+          <LineItemsEditor
+            glAccounts={glAccounts}
+            initialItems={
+              bill?.lineItems.map((li) => ({ ...li, glAccountId: li.glAccountId ?? "" }))
+            }
+            onChange={setLineItems}
+          />
         </CardContent>
       </Card>
 

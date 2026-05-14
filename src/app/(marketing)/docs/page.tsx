@@ -750,6 +750,12 @@ private scope() {
                 "Bill detail + state-machine actions",
               ],
               [
+                "/bills/[id]/edit",
+                "(app)",
+                "app/(app)/bills/[id]/edit/page.tsx",
+                "Edit a draft bill. Redirects to /bills/[id] if bill is not in DRAFT status.",
+              ],
+              [
                 "/vendors",
                 "(app)",
                 "app/(app)/vendors/page.tsx",
@@ -817,6 +823,11 @@ private scope() {
                 "createBill()",
                 "FormData (vendor, dates, lineItems, paymentMethod)",
                 "ActionResult<{ id: string }>",
+              ],
+              [
+                "updateBill()",
+                "id + same shape as createBill",
+                "ActionResult — DRAFT only; replaces all line items",
               ],
               ["submitBill()", "FormData { id }", "ActionResult"],
               ["approveBill()", "FormData { id }", "ActionResult"],

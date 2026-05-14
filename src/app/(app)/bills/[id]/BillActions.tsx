@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { type BillStatus, type UserRole } from "../../../../../generated/prisma";
 import { Button } from "~/components/ui/Button";
 import { Modal } from "~/components/ui/Modal";
@@ -50,6 +51,9 @@ export function BillActions({ bill, role, userId }: BillActionsProps) {
 
   if (bill.status === "DRAFT" && (isManager || isCreator)) {
     actions.push(
+      <Link key="edit" href={`/bills/${bill.id}/edit`} className="w-full">
+        <Button variant="secondary" className="w-full">Edit</Button>
+      </Link>,
       <Button
         key="submit"
         variant="primary"

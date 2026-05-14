@@ -148,6 +148,43 @@ export async function markPaid(id: string): Promise<ActionResult> {
   }
 }
 
+export async function updateBill(
+  id: string,
+  rawData: unknown,
+): Promise<ActionResult> {
+  try {
+    const data = createBillSchema.parse(rawData);
+    const { billService, vendorService } = await getServices();
+
+    let vendorId = data.vendorId;
+    if (!vendorId && data.inlineVendor) {
+      const created = await vendorService.createInline({
+        name: data.inlineVendor.name,
+        email: data.inlineVendor.email ?? undefined,
+        defaultPaymentMethod: data.inlineVendor.defaultPaymentMethod,
+      });
+      vendorId = created.id;
+    }
+    if (!vendorId) {
+      return { success: false, error: "Select an existing vendor or add a new one" };
+    }
+
+    await billService.update(id, {
+      vendorId,
+      invoiceNumber: data.invoiceNumber,
+      invoiceDate: new Date(data.invoiceDate),
+      dueDate: new Date(data.dueDate),
+      paymentMethod: data.paymentMethod,
+      memo: data.memo,
+      lineItems: data.lineItems,
+    });
+    invalidateBillSurfaces(id);
+    return { success: true, data: undefined };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : "Failed to update bill" };
+  }
+}
+
 export async function voidBill(id: string): Promise<ActionResult> {
   try {
     const { billService } = await getServices();
