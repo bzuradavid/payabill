@@ -44,7 +44,7 @@ export function CredentialsForm() {
   return (
     <>
       {isNavigating && <LogoOverlay />}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3 sm:gap-4">
       <div className="grid grid-cols-2 gap-1 rounded-full border border-[#ecebff] bg-brand-50/60 p-1 text-sm">
         <button
           type="button"

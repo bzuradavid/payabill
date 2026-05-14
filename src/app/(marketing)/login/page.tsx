@@ -28,7 +28,7 @@ export default async function LoginPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white px-6 py-10">
+    <div className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-white px-6 py-4 sm:py-10">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
@@ -39,9 +39,9 @@ export default async function LoginPage() {
       <div className="w-full max-w-md">
         <Link
           href="/"
-          className="mb-8 flex items-center justify-center gap-2.5"
+          className="mb-4 flex items-center justify-center gap-2.5 sm:mb-8"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#312D97] shadow-lg shadow-[#312D97]/30">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#312D97] shadow-lg shadow-[#312D97]/30 sm:h-10 sm:w-10">
             <svg
               className="h-5 w-5 text-white"
               fill="none"
@@ -61,21 +61,21 @@ export default async function LoginPage() {
           </span>
         </Link>
 
-        <div className="rounded-3xl border border-[#ecebff] bg-white p-7 shadow-2xl shadow-[#312D97]/10 sm:p-8">
+        <div className="rounded-3xl border border-[#ecebff] bg-white p-5 shadow-2xl shadow-[#312D97]/10 sm:p-8">
           <div className="text-center">
-            <h1 className="text-2xl font-bold tracking-tight text-[#1a174f]">
+            <h1 className="text-xl font-bold tracking-tight text-[#1a174f] sm:text-2xl">
               Welcome
             </h1>
-            <p className="mt-1.5 text-sm leading-6 text-slate-500">
+            <p className="mt-1 text-sm leading-6 text-slate-500 sm:mt-1.5">
               Sign in to your workspace or create a new one.
             </p>
           </div>
 
-          <div className="mt-6">
+          <div className="mt-4 sm:mt-6">
             <GoogleSignInButton />
           </div>
 
-          <div className="mt-5 flex items-center gap-4">
+          <div className="mt-4 flex items-center gap-4 sm:mt-5">
             <div className="h-px flex-1 bg-slate-100" />
             <span className="text-[0.7rem] font-medium tracking-widest text-slate-400 uppercase">
               Or with email
@@ -83,12 +83,12 @@ export default async function LoginPage() {
             <div className="h-px flex-1 bg-slate-100" />
           </div>
 
-          <div className="mt-5">
+          <div className="mt-4 sm:mt-5">
             <CredentialsForm />
           </div>
         </div>
 
-        <p className="mt-6 text-center text-xs text-slate-400">
+        <p className="mt-4 text-center text-xs text-slate-400 sm:mt-6">
           Try the demo:{" "}
           <span className="font-medium">manager@payabill.com</span> or{" "}
           <span className="font-medium">staff@payabill.com</span> with password{" "}
