@@ -114,7 +114,7 @@ export function BillsFilterBar({
             defaultValue={search}
             placeholder="Search vendor or invoice #"
             onChange={(e) => navigate(activeStatus, e.target.value, 1, pageSize)}
-            className="w-full rounded-xl border border-[#ecebff] bg-white py-2 pr-3 pl-9 text-sm text-[#1a174f] placeholder:text-slate-400 transition-colors focus:border-[#312D97] focus:ring-1 focus:ring-[#312D97] focus:outline-none sm:w-64"
+            className="w-full rounded-xl border border-[#ecebff] bg-white py-2 pr-3 pl-9 text-base text-[#1a174f] placeholder:text-slate-400 transition-colors focus:border-[#312D97] focus:ring-1 focus:ring-[#312D97] focus:outline-none sm:w-64 sm:text-sm"
           />
         </div>
       </div>
