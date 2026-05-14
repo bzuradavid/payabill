@@ -74,7 +74,123 @@ export function LineItemsEditor({
 
   return (
     <div className="space-y-3">
-      <div className="overflow-x-auto rounded-lg border border-slate-200">
+      {/* Mobile: card per line item */}
+      <div className="space-y-3 sm:hidden">
+        {items.map((item) => (
+          <div
+            key={item.id}
+            className="space-y-3 rounded-lg border border-slate-200 bg-white p-3"
+          >
+            <div className="flex items-start gap-2">
+              <div className="flex-1">
+                <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-500">
+                  Description
+                </label>
+                <input
+                  type="text"
+                  value={item.description}
+                  onChange={(e) =>
+                    setField(item.id, "description", e.target.value)
+                  }
+                  placeholder="Description"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#312D97] focus:ring-1 focus:ring-[#312D97] focus:outline-none"
+                  required
+                />
+              </div>
+              {items.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeItem(item.id)}
+                  aria-label="Remove line item"
+                  className="mt-6 shrink-0 rounded p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-500"
+                >
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-500">
+                  Qty
+                </label>
+                <input
+                  type="number"
+                  min={0.01}
+                  step={0.01}
+                  value={item.quantity}
+                  onChange={(e) =>
+                    setField(item.id, "quantity", parseFloat(e.target.value) || 0)
+                  }
+                  className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm text-slate-900 focus:border-[#312D97] focus:ring-1 focus:ring-[#312D97] focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-500">
+                  Unit Price
+                </label>
+                <div className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1.5 focus-within:border-[#312D97] focus-within:ring-1 focus-within:ring-[#312D97]">
+                  <span className="text-sm text-slate-400">$</span>
+                  <input
+                    type="number"
+                    min={0}
+                    step={0.01}
+                    value={item.unitPrice}
+                    onChange={(e) =>
+                      setField(item.id, "unitPrice", parseFloat(e.target.value) || 0)
+                    }
+                    className="w-full border-0 bg-transparent p-0 text-sm text-slate-900 focus:ring-0 focus:outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-xs font-medium uppercase tracking-wide text-slate-500">
+                GL Account
+              </label>
+              <select
+                value={item.glAccountId ?? ""}
+                onChange={(e) =>
+                  setField(item.id, "glAccountId", e.target.value)
+                }
+                className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm text-slate-700 focus:border-[#312D97] focus:ring-1 focus:ring-[#312D97] focus:outline-none"
+              >
+                <option value="">— None —</option>
+                {glAccounts.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.code} · {a.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-center justify-between border-t border-slate-100 pt-3">
+              <span className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                Amount
+              </span>
+              <span className="text-sm font-semibold text-slate-900">
+                {formatCurrency(item.amount)}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop: table */}
+      <div className="hidden overflow-x-auto rounded-lg border border-slate-200 sm:block">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-slate-200 bg-slate-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
@@ -181,7 +297,7 @@ export function LineItemsEditor({
         </table>
       </div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <button
           type="button"
           onClick={addItem}
