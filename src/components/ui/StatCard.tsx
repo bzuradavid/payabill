@@ -25,26 +25,26 @@ const configs: Record<
   indigo: {
     card: "bg-white border-[#ecebff]",
     iconWrap: "bg-[#eceaff] text-[#312D97]",
-    value: "text-[#1a174f]",
-    symbol: "text-[#312D97]/50",
+    value: "text-slate-800",
+    symbol: "text-slate-400",
   },
   amber: {
     card: "bg-white border-slate-200",
     iconWrap: "bg-amber-100 text-amber-700",
-    value: "text-amber-900",
-    symbol: "text-amber-600/60",
+    value: "text-slate-800",
+    symbol: "text-slate-400",
   },
   red: {
     card: "bg-white border-slate-200",
     iconWrap: "bg-red-100 text-red-600",
-    value: "text-red-900",
-    symbol: "text-red-500/60",
+    value: "text-slate-800",
+    symbol: "text-slate-400",
   },
   emerald: {
     card: "bg-white border-slate-200",
     iconWrap: "bg-emerald-100 text-emerald-700",
-    value: "text-emerald-900",
-    symbol: "text-emerald-600/60",
+    value: "text-slate-800",
+    symbol: "text-slate-400",
   },
 };
 
@@ -98,7 +98,7 @@ export function StatCard({
         )}
         <span
           className={cn(
-            "text-[1.875rem] font-bold leading-none tracking-tight",
+            "text-[1.875rem] font-medium leading-none tracking-tight",
             config.value,
           )}
         >
