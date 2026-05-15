@@ -162,8 +162,8 @@ export function NewBillForm({ vendors, glAccounts, bill }: NewBillFormProps) {
         <CardHeader>
           <h2 className="text-sm font-semibold text-[#1a174f]">Bill Details</h2>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="col-span-2 flex flex-col gap-3">
+        <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="flex flex-col gap-3 md:col-span-2">
             <Select
               label="Vendor"
               required
@@ -182,8 +182,8 @@ export function NewBillForm({ vendors, glAccounts, bill }: NewBillFormProps) {
                   New vendor — just enter the basics. A manager can fill in the
                   rest later.
                 </p>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <div className="sm:col-span-2">
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                  <div className="md:col-span-2">
                     <Input
                       label="Vendor name"
                       placeholder="Acme Co."
@@ -247,7 +247,7 @@ export function NewBillForm({ vendors, glAccounts, bill }: NewBillFormProps) {
             defaultValue={bill ? formatDateInput(bill.dueDate) : thirtyDaysFromNow}
             required
           />
-          <div className="col-span-2">
+          <div className="md:col-span-2">
             <label className="mb-1 block text-sm font-medium text-[#1a174f]">
               Memo
             </label>
@@ -284,11 +284,12 @@ export function NewBillForm({ vendors, glAccounts, bill }: NewBillFormProps) {
       </Card>
 
       {/* Actions */}
-      <div className="flex flex-wrap items-center justify-end gap-3">
+      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
         <Button
           type="button"
           variant="secondary"
           onClick={() => router.back()}
+          className="w-full sm:w-auto"
         >
           Cancel
         </Button>
@@ -297,6 +298,7 @@ export function NewBillForm({ vendors, glAccounts, bill }: NewBillFormProps) {
           variant="secondary"
           loading={isPending && submitMode === "draft"}
           onClick={() => setSubmitMode("draft")}
+          className="w-full sm:w-auto"
         >
           Save as Draft
         </Button>
@@ -305,6 +307,7 @@ export function NewBillForm({ vendors, glAccounts, bill }: NewBillFormProps) {
           variant="primary"
           loading={isPending && submitMode === "submit"}
           onClick={() => setSubmitMode("submit")}
+          className="w-full sm:w-auto"
         >
           Submit for Approval
         </Button>

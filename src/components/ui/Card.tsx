@@ -30,7 +30,7 @@ export function CardHeader({
   return (
     <div
       className={cn(
-        "flex items-center justify-between border-b border-[#ecebff] px-6 py-4",
+        "flex items-center justify-between border-b border-[#ecebff] px-4 py-4 sm:px-6",
         className,
       )}
     >
@@ -46,5 +46,5 @@ export function CardContent({
   className?: string;
   children: React.ReactNode;
 }) {
-  return <div className={cn("px-6 py-4", className)}>{children}</div>;
+  return <div className={cn("px-4 py-4 sm:px-6", className)}>{children}</div>;
 }
