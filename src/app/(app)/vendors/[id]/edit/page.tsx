@@ -38,7 +38,7 @@ export default async function EditVendorPage({ params }: EditVendorPageProps) {
   };
 
   return (
-    <div className="flex flex-col gap-6 p-8">
+    <div className="flex flex-col gap-6 p-4 sm:p-6 lg:p-8">
       <div>
         <h1 className="text-xl font-semibold text-slate-900">
           Edit {vendor.name}
