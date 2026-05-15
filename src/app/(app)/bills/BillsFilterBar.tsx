@@ -124,7 +124,7 @@ export function BillsFilterBar({
         {isPending ? <BillsTableSkeleton /> : children}
 
         {total > 0 && (
-          <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#ecebff] px-6 py-4">
+          <div className="flex flex-col-reverse items-center gap-3 border-t border-[#ecebff] px-4 py-4 sm:flex-row sm:flex-wrap sm:justify-between sm:gap-4 sm:px-6">
             {/* Page size selector */}
             <div className="flex items-center gap-2">
               <span className="text-sm text-slate-500">Rows per page</span>
